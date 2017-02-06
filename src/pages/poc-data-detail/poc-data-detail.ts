@@ -29,8 +29,8 @@ export class PocDataDetail {
     aceEditor: any;
     okDetail: boolean = false;
     constructor(public navCtrl: NavController, public navParams: NavParams, public toastCtrl: ToastController, public events: Events, public couch: CouchDbServices) {
-        console.log("Params", this.navParams);
-        console.log(this.navParams['data']);
+        //console.log("Params", this.navParams);
+        //console.log(this.navParams['data']);
         this.couch.getDbViewCount('poc_data', 'countByType').then(response => {
             this.lstType = response['rows'];
         }, error => {
@@ -78,7 +78,7 @@ export class PocDataDetail {
         try {
             let t = JSON.parse(this.aceEditor.getSession().getValue());
             this.useCaseDetail['dataUseCase'] = t;
-            console.log(this.useCaseDetail);
+            //console.log(this.useCaseDetail);
             this.couch.addDoc('poc_data', this.useCaseDetail).then(response => {
                 //console.log(response, this.useCaseDetail);
                 this.useCaseDetail['_rev'] = response['rev'];

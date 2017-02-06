@@ -160,29 +160,30 @@ export class CouchDbServices {
   createBase(key, params?) {
     return new Promise((resolve, reject) => {
       if (!params) params = defaultParams;
-      //console.log("HTTP Params :", params);
       var rootUrl = 'http://' + params.srv + '/' + key;
       this.credHeaders.delete('Authorization');
       this.credHeaders.append('Authorization', 'Basic ' + window.btoa(params.user + ':' + params.password))
-      //console.log("HTTP Hearder :", this.credHeaders);
       var options = new Request({
         method: RequestMethod.Put,
         headers: this.credHeaders,
+        responseType: ResponseContentType.Json,
+        withCredentials: true,
+        body: {},
         url: rootUrl
       });
       this.http.request(options)
         .map(res => res.json())
         .subscribe(
         data => {
-          this.dataBases = data;
-          resolve(this.dataBases);
+          resolve(data);
         }, error => {
-          //console.log("PROVIDER : Request error", error);
+          console.log("PROVIDER : Request error", error);
           if (typeof (error._body) === "string") {
             reject(JSON.parse(error._body));
           } else {
             reject({ error: "Erreur de connexion", reason: "Le site n'est pas accessible" });
           }
+          reject(error);
         });
     });
   }
@@ -205,13 +206,15 @@ export class CouchDbServices {
         }
       }
       if (!params) params = defaultParams;
-      let rootUrl = 'http://' + defaultParams.srv + '/' + base + '/' + viewName;
+      let rootUrl = 'http://' + defaultParams.srv + '/' + base + '/_design/' + viewName;
       this.credHeaders.delete('Authorization');
       this.credHeaders.append('Authorization', 'Basic ' + window.btoa(params.user + ':' + params.password));
       this.credHeaders.append('Accept', 'application/json;charset=utf-8');
       var options = new Request({
         method: RequestMethod.Put,
         headers: this.credHeaders,
+        responseType: ResponseContentType.Json,
+        withCredentials: true,
         url: rootUrl
       });
       options['_body'] = JSON.stringify(jsonCode);

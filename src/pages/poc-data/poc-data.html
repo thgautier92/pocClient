@@ -11,9 +11,9 @@
       		<ion-icon name="menu"></ion-icon>
     	</button>
 		<ion-buttons end>
-			<button ion-button style="font-size: 25px;" color="primary" (click)="addUseCase()"><ion-icon name="add-circle"></ion-icon></button>
-			<button ion-button style="font-size: 25px;" color="secondary" (click)="getUseCases()"><ion-icon name="refresh" ></ion-icon></button>
-			<button ion-button style="font-size: 25px;" color="secondary" (click)="displayData=!displayData"><ion-icon name="eye"></ion-icon></button>
+			<button ion-button class="buttonHeader" color="primary" (click)="addUseCase()"><ion-icon name="add-circle"></ion-icon></button>
+			<button ion-button class="buttonHeader" color="secondary" (click)="getUseCases()"><ion-icon name="refresh" ></ion-icon></button>
+			<button ion-button class="buttonHeader" color="secondary" (click)="displayData=!displayData"><ion-icon name="eye"></ion-icon></button>
 		</ion-buttons>
 	</ion-navbar>
 </ion-header>
@@ -21,7 +21,7 @@
 	<ion-list>
 		<ion-item-sliding *ngFor="let us of lstUseCase;let idx=index">
 			<ion-item text-wrap (click)="selectUseCase(us)">
-				<h2 color="primary">{{us.value.title}}</h2>
+				<h2 ion-text color="primary">{{us.value.title}}</h2>
 				<ion-row wrap>
 					<ion-col width-80>
 						{{us.value.description}}

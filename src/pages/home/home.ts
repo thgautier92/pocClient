@@ -59,11 +59,48 @@ export class Home {
       });
       if (refresher) refresher.complete();
     }, error => {
+      if (refresher) refresher.complete();
+
       let toast = this.toastCtrl.create({
         message: 'Erreur de comptage des cas de test : ' + error['reason'],
         duration: 5000
       });
       toast.present();
+      // Try to create the DataBase and Filters
+      this.couch.createBase('poc_data', this.params).then(createResponse => {
+        console.log(createResponse);
+        this.couch.createFilters('poc_data', 'filter', this.params).then(filterResponse => {
+          let toastCreate = this.toastCtrl.create({
+            message: 'Configuration rétablie',
+            duration: 2000
+          });
+          toastCreate.present();
+        }, filterError => {
+          // Filter error
+          let toastCreate = this.toastCtrl.create({
+            message: 'Erreur de configuration : ' + error['reason'],
+            duration: 2000
+          });
+          toastCreate.present();
+        })
+      }, createError => {
+        // Try to restore filters
+        this.couch.createFilters('poc_data', 'filter', this.params).then(filterResponse => {
+          let toastCreate = this.toastCtrl.create({
+            message: 'Configuration rétablie',
+            duration: 2000
+          });
+          toastCreate.present();
+          toast.dismiss();
+        }, filterError => {
+          let toastCreate = this.toastCtrl.create({
+            message: 'Erreur de configuration : ' + error['reason'],
+            duration: 5000
+          });
+          toastCreate.present();
+        })
+
+      })
     })
   }
   openPage(page) {
