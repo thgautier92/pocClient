@@ -1,0 +1,50 @@
+<!--
+  Generated template for the Simu page.
+
+  See http://ionicframework.com/docs/v2/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+	<ion-navbar>
+		<ion-title>simu</ion-title>
+		<button ion-button menuToggle>
+      		<ion-icon name="menu"></ion-icon>
+    	</button>
+	</ion-navbar>
+
+</ion-header>
+<ion-content padding>
+	<img src="assets/img/logo_sma.png" />
+	<h2>Bienvenue sur l'outil d'évaluation des outils de simulations</h2>
+	<p>Cette application est conçue
+		<u>exclusivement</u> pour évaluer les solutions de simulations, sur les points suivants :
+	</p>
+	<ul>
+		<li>L'intégration par API avec le SI SMA</li>
+	</ul>
+	<ion-row wrap>
+		<ion-col *ngFor="let p of products">
+			<ion-card (click)="openPage(p)">
+				<img [src]=p.logo/>
+
+				<ion-card-content>
+					<ion-card-title>{{p.title}}</ion-card-title>
+					<p>{{p.description}}</p>
+				</ion-card-content>
+			</ion-card>
+		</ion-col>
+	</ion-row>
+	<ion-row>
+		<ion-col>
+			<ion-card>
+				<img src="assets/img/logo-web.jpg" />
+				<ion-card-content>
+					<ion-card-title>Les liens utiles</ion-card-title>
+					<a href="https://www.ssi.gouv.fr/entreprise/reglementation/confiance-numerique/le-reglement-eidas/" target="_blank">Le réglement eIDAS</a>
+				</ion-card-content>
+			</ion-card>
+		</ion-col>
+		<ion-col>
+		</ion-col>
+	</ion-row>
+</ion-content>

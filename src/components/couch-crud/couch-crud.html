@@ -1,0 +1,50 @@
+<!--
+  Generated template for the CouchCrud component.
+
+  See https://angular.io/docs/ts/latest/api/core/index/ComponentMetadata-class.html
+  for more info on Angular 2 Components.
+-->
+<ion-item-group>
+  <ion-item-divider color="light">
+    <ion-icon name="information-circle"></ion-icon>
+    Base SERVEUR <b ion-text color="danger">{{noSqlEnv.base}}</b>
+    <button ion-button icon-only clear item-right icon-left (click)="getBaseInfo()"><ion-icon name="refresh"></ion-icon></button>
+    <button ion-button icon-only clear item-right icon-left (click)="noSqlEnv.dbInfo=!noSqlEnv.dbInfo"><ion-icon name="expand"></ion-icon></button>
+  </ion-item-divider>
+  <ion-item *ngIf="noSqlEnv.dbInfo">
+    <button ion-button *ngIf="params">{{params.srv}}</button>
+    <record [dataRecord]='dbInfo' [displaySelector]='displaySelector'></record>
+  </ion-item>
+  <ion-item-divider *ngIf="noSqlEnv.base" color="light">
+    <button color="primary" ion-button icon-only clear item-left icon-left (click)="addBaseData()"><ion-icon name="add-circle"></ion-icon></button>
+    <span text-center>Contenu de la base <b ion-text color="danger">{{noSqlEnv.base}}</b></span>
+    <button color="primary" ion-button icon-only clear item-right icon-left (click)="getBaseStart()"><ion-icon name="skip-backward"></ion-icon></button>
+    <button color="primary" ion-button icon-only clear item-right icon-left (click)="getBasePrevious()"><ion-icon name="rewind"></ion-icon></button>
+    <button color="primary" ion-button outline clear item-right icon-left (click)="getBaseData()"><ion-icon name="refresh"></ion-icon>&nbsp;&nbsp;{{noSqlEnv['page']}}/{{noSqlEnv['rows']}}</button>
+    <button color="primary" ion-button icon-only clear item-right icon-right (click)="getBaseNext()"><ion-icon name="fastforward"></ion-icon></button>
+    <button color="primary" ion-button icon-only clear item-right icon-right (click)="getBaseEnd()"><ion-icon name="skip-forward"></ion-icon></button>
+    <button color="primary" ion-button icon-only clear item-right icon-left (click)="noSqlEnv.dbData=!noSqlEnv.dbData"><ion-icon name="expand"></ion-icon></button>
+  </ion-item-divider>
+  <ion-item *ngIf="noSqlEnv.dbData">
+    <ion-list>
+      <ion-item-sliding *ngFor="let item of baseItems;let idx=index" text-wrap>
+        <ion-item>
+          <ion-row>
+            <ion-col width-25>
+              <h3><b>Id&nbsp;:</b>{{item.id}}</h3>
+              <h3><b>Key:</b>{{item.key}}</h3>
+              <h3><b>Rev:</b>{{item.value.rev}}</h3>
+            </ion-col>
+            <ion-col width-75>
+              <record [dataRecord]='item.doc' [displaySelector]='displaySelector'></record>
+            </ion-col>
+          </ion-row>
+        </ion-item>
+        <ion-item-options side="right">
+          <button ion-button color="primary" (click)="editBaseData(item);">Editer</button>
+          <button ion-button color="danger" (click)="deleteBaseData(item,idx);">Supprimer</button>
+        </ion-item-options>
+      </ion-item-sliding>
+    </ion-list>
+  </ion-item>
+</ion-item-group>

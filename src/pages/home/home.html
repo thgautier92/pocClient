@@ -1,0 +1,49 @@
+<ion-header>
+	<ion-navbar color="primary">
+		<button ion-button menuToggle>
+      		<ion-icon name="menu"></ion-icon>
+    	</button>
+		<ion-title>Boite à outils POCs</ion-title>
+		<ion-buttons end>
+			<button ion-button *ngIf="params">{{params.srv}}</button>
+		</ion-buttons>
+	</ion-navbar>
+</ion-header>
+
+<ion-content padding>
+	<ion-refresher (ionRefresh)="getUseCaseStat($event)">
+		<ion-refresher-content pullingText="Tirer pour actualiser" refreshingSpinner="circles" refreshingText="Opération en cours...">
+		</ion-refresher-content>
+	</ion-refresher>
+	<img src="assets/img/logo_sma.png" />
+	<h2>Bienvenue sur l'outil de support aux évaluations des technologies</h2>
+	<h4>Cet outil permet de :</h4>
+	<ul>
+		<li>Définir un modèle de données</li>
+		<li>Paramétrer des cas de test, avec les données associées</li>
+		<li>d'intégrer les API des solutions qui sont evaluées</li>
+	</ul>
+	<ion-list>
+		<ion-item-divider>Les POC disponibles
+			<ion-badge item-right color="danger" (click)="getUseCaseStat()">
+				<ion-icon name="refresh"></ion-icon> Nb cas de tests
+			</ion-badge>
+		</ion-item-divider>
+		<ion-item text-wrap *ngFor="let p of pages" (click)="openPage(p)">
+			<ion-thumbnail item-left>
+				<img [src]="p.img">
+			</ion-thumbnail>
+			<h2>{{p.title}}</h2>
+			<ion-badge item-right color="danger">{{p.useCaseNum}}</ion-badge>
+		</ion-item>
+	</ion-list>
+
+</ion-content>
+<ion-footer>
+	<ion-toolbar color="primary">
+		<ion-title><span class="small">© SMA-DSI/ARC Fev 2017 - DSI LAB - Recherches et Développements</span></ion-title>
+		<ion-buttons right>
+			<button ion-button secondary menuToggle> <ion-icon name="menu"></ion-icon>Menu</button>
+		</ion-buttons>
+	</ion-toolbar>
+</ion-footer>

@@ -1,0 +1,58 @@
+<!--
+  Generated template for the Nosql page.
+
+  See http://ionicframework.com/docs/v2/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Bases NO SQL</ion-title>
+    <button ion-button menuToggle>
+      		<ion-icon name="menu"></ion-icon>
+    	</button>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <img src="assets/img/logo_sma.png" />
+  <h2>Bienvenue sur l'outil d'évaluation des bases NOSQL</h2>
+  <p>Cette application est conçue
+    <u>exclusivement</u> pour évaluer les solutions de NOSQL, sur les points suivants :
+  </p>
+  <ul>
+    <li>L'intégration par API avec le SI SMA</li>
+    <li>La logique de base locale synchronisée avec un serveur central</li>
+  </ul>
+  <ion-row wrap>
+    <ion-col *ngFor="let p of products">
+      <ion-card (click)="openPage(p)">
+        <img [src]=p.logo/>
+        <ion-card-content>
+          <ion-card-title>{{p.title}}</ion-card-title>
+          <p>{{p.description}}</p>
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col>
+      <ion-card>
+        <img src="assets/img/logo-web.jpg" />
+        <ion-card-content>
+          <ion-card-title>Les liens utiles</ion-card-title>
+          <p>
+            <a href="http://docs.couchdb.org/en/2.0.0/" target="_blank">Les API CouchDB</a>
+            <a href="https://pouchdb.com/api.html" target="_blank">Les API PouchDB</a>
+            <a href="https://www.npmjs.com/package/couchdb-dump" target="_blank">Couchdb-Dump</a>
+            <a href="https://cwiki.apache.org/confluence/display/COUCHDB/Useful+utilities" target="_blank">Outils</a>
+          </p>
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+    <ion-col>
+    </ion-col>
+  </ion-row>
+</ion-content>

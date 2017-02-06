@@ -1,0 +1,19 @@
+[
+    {
+        "title": "fonds",
+        "values": [
+            {
+                "support": "BAI",
+                "part": "10"
+            },
+            {
+                "support": "ACF",
+                "part": "60"
+            },
+            {
+                "support": "BAA",
+                "part": "30"
+            }
+        ]
+    }
+]

@@ -1,0 +1,85 @@
+<!--
+  Generated template for the Jspdf page.
+
+  See http://ionicframework.com/docs/v2/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+	<ion-navbar>
+		<ion-title>jspdf</ion-title>
+	</ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+	<div id="zonePdf">
+		<div style='position: relative'>
+			<h1>Tableaux</h1>
+			<table class='tablePres'>
+				<tr>
+					<td>Item</td>
+					<td>Prix</td>
+					<td>Description</td>
+					<td>Disponible</td>
+				</tr>
+				<tr>
+					<td>Lait</td>
+					<td>€1.00</td>
+					<td>Hello PDF World</td>
+					<td>Out Of Stock</td>
+				</tr>
+				<tr>
+					<td>Lait</td>
+					<td>€1.00</td>
+					<td>Hello PDF World</td>
+					<td>Out Of Stock</td>
+				</tr>
+			</table>
+			<table class='tablePres'>
+				<tr>
+					<td>Item</td>
+					<td>Prix</td>
+					<td>Description</td>
+					<td>Disponible</td>
+				</tr>
+				<tr>
+					<td>Milk</td>
+					<td>€1.00</td>
+					<td>Hello PDF World</td>
+					<td>Out Of Stock</td>
+				</tr>
+				<tr>
+					<td>Milk</td>
+					<td>€1.00</td>
+					<td>Hello PDF World</td>
+					<td>Out Of Stock</td>
+				</tr>
+			</table>
+
+			<table class='tablePres'>
+				<tr>
+					<td>Item</td>
+					<td>Cost</td>
+					<td>Description</td>
+					<td>Available</td>
+				</tr>
+				<tr>
+					<td>Milk</td>
+					<td>€1.00</td>
+					<td>Hello PDF World</td>
+					<td>Out Of Stock</td>
+				</tr>
+				<tr>
+					<td>Milk</td>
+					<td>€1.00</td>
+					<td>Hello PDF World</td>
+					<td>Out Of Stock</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<button ion-button (click)="getPdf('zonePdf')">Génération à partir de la zone</button>
+	<button ion-button (click)="makePdf()">Création</button>
+</ion-content>

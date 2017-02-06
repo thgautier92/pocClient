@@ -1,0 +1,17 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-title>Détail local CRUD</ion-title>
+        <ion-buttons start>
+            <button ion-button color="primary" (click)="cancelDetail()">Annuler</button>
+        </ion-buttons>
+        <ion-buttons end>
+            <button ion-button style="font-size: 25px;" color="primary" (click)="saveDetail()"><ion-icon name="cloud-upload"></ion-icon></button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <ion-scroll scrollY="true" scrollX="true" class="editorStyle">
+        <div id="editor"></div>
+    </ion-scroll>
+</ion-content>

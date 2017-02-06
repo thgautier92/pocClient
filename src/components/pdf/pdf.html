@@ -1,0 +1,44 @@
+<!--
+  Generated template for the Pdf component.
+
+  See https://angular.io/docs/ts/latest/api/core/index/ComponentMetadata-class.html
+  for more info on Angular 2 Components.
+-->
+<ion-header>
+  <ion-navbar>
+    <ion-buttons start *ngIf="!showAll">
+      <ion-item no-lines color="light">
+        <label>Page:</label>
+        <ion-input type="number" placeholder="Page" [(ngModel)]="page"></ion-input>
+        <button ion-button icon-only clear item-right icon-left (click)="pdfStart()"><ion-icon name="skip-backward"></ion-icon></button>
+        <button ion-button icon-only clear item-right icon-left (click)="pdfPrevious()"><ion-icon name="rewind"></ion-icon></button>
+        <button ion-button outline clear item-right icon-left><ion-icon name="information-circle"></ion-icon>&nbsp;&nbsp;{{page}}/{{totalPages}}</button>
+        <button ion-button icon-only clear item-right icon-right (click)="pdfNext()"><ion-icon name="fastforward"></ion-icon></button>
+        <button ion-button icon-only clear item-right icon-right (click)="pdfEnd()"><ion-icon name="skip-forward"></ion-icon></button>
+      </ion-item>
+    </ion-buttons>
+    <ion-title>{{pdfSrc.url}}</ion-title>
+    <ion-buttons end>
+      <ion-item no-lines color="light">
+        <ion-label>Multi-pages</ion-label>
+        <ion-toggle [(ngModel)]="showAll"></ion-toggle>
+      </ion-item>
+    </ion-buttons>
+    <ion-buttons end>
+      <ion-item no-lines color="light">
+        <ion-label>Pleine largeur</ion-label>
+        <ion-toggle [(ngModel)]="showSize"></ion-toggle>
+      </ion-item>
+    </ion-buttons>
+    <ion-buttons end color="light">
+      <button ion-button icon-only clear item-right icon-right (click)="zoomReset()"><ion-icon name="reset"></ion-icon></button>
+      <button ion-button icon-only clear item-right icon-right (click)="zoomIn()"><ion-icon name="remove"></ion-icon></button>
+      <button ion-button outline clear item-right icon-left>&nbsp;{{zoom}}&nbsp;</button>
+      <button ion-button icon-only clear item-right icon-right (click)="zoomOut()"><ion-icon name="add"></ion-icon></button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+<ion-content>
+  <pdf-viewer [src]="pdfSrc.url" [page]="page" [(zoom)]="zoom" [(show-all)]="showAll" [(original-size)]="showSize" [after-load-complete]="pdfData"
+    style="display: block;"></pdf-viewer>
+</ion-content>

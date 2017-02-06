@@ -1,0 +1,154 @@
+<!--
+  Generated template for the Docapost page.
+
+  See http://ionicframework.com/docs/v2/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+	<ion-navbar>
+		<ion-title>DOCAPOST</ion-title>
+		<ion-buttons end>
+			<button ion-button style="font-size: 25px;" color="secondary" (click)="displayData=!displayData"><ion-icon name="eye"></ion-icon></button>
+			<button ion-button block (click)="presentActionSheet()">Options</button>
+		</ion-buttons>
+	</ion-navbar>
+</ion-header>
+
+<ion-content padding>
+	<h4>Opérations de signature</h4>
+	<div padding>
+		<ion-segment [(ngModel)]="option">
+			<ion-segment-button text-wrap *ngFor="let api of lstApi" [value]="api.code">{{api.title}}</ion-segment-button>
+		</ion-segment>
+	</div>
+	<div [ngSwitch]="option">
+		<div *ngSwitchCase="'modelSign'">
+			<ion-row wrap>
+				<ion-col>
+					<h2>Actions réalisées par le conseiller</h2>
+					<ion-list>
+						<ion-item-group>
+							<ion-item-divider>
+								<h1 color="primary">Modèles de documents</h1>
+							</ion-item-divider>
+							<ion-item>
+								<ion-label>Choix du modèle</ion-label>
+								<ion-select [(ngModel)]="sendData.model" okText="Choisir" cancelText="Annuler">
+									<ion-option *ngFor="let m of lstModels" [value]="m.modelId">{{m.name}}</ion-option>
+								</ion-select>
+							</ion-item>
+						</ion-item-group>
+						<ion-item-group>
+							<ion-item-divider>
+								<h1 color="primary">Destinataires</h1>
+							</ion-item-divider>
+							<ion-item>
+								<ion-label>Données nécéssaires à la signature (Cas de tests)</ion-label>
+								<ion-select [(ngModel)]="sendData.useCase" okText="Choisir" cancelText="Annuler" (ionChange)="updateSignModel();updateSignData();">
+									<ion-option *ngFor="let m of lstUseCase" [value]="m.value.name">{{m.value.title}}</ion-option>
+								</ion-select>
+								<button ion-button clear item-right icon-left (click)="getUseCase()"><ion-icon name="refresh"></ion-icon></button>
+							</ion-item>
+							<ion-item *ngFor="let item of metaData['participants']">
+								<h2>{{item.name}}</h2>
+							</ion-item>
+						</ion-item-group>
+						<ion-item-group>
+							<ion-item-divider>
+								<h1 color="primary">Création du document à signer</h1>
+							</ion-item-divider>
+							<ion-item text-wrap>
+								<p>{{sendData['doc']|json}}</p>
+								<button ion-button clear color="danger" item-right icon-left (click)="createDoc()"><ion-icon name="open"></ion-icon> Créer</button>
+							</ion-item>
+							<ion-item *ngIf="displayData">
+								<record [dataRecord]='sendData'></record>
+							</ion-item>
+						</ion-item-group>
+					</ion-list>
+				</ion-col>
+				<ion-col>
+					<ion-item-group>
+						<ion-item-divider>
+							<h1 color="primary">Actions réalisées par le client</h1>
+						</ion-item-divider>
+						<ion-item>
+							<ul>
+								<li *ngFor="let msg of msgProgress">
+									<h4>{{msg}}</h4>
+								</li>
+							</ul>
+							<h4 *ngIf="percentProgress>0">Document chargé à {{percentProgress}}%</h4>
+							<button ion-button clear color="danger" item-right icon-left (click)="signDoc()"><ion-icon name="open"></ion-icon> Signer le document</button>
+						</ion-item>
+					</ion-item-group>
+				</ion-col>
+			</ion-row>
+		</div>
+		<div *ngSwitchCase="'oneSign'">
+			<ion-list>
+				<ion-item>
+					<ion-label floating>Transaction </ion-label>
+					<ion-input [(ngModel)]="sendData.id" type="text" clearInput=true></ion-input>
+					<button ion-button clear item-right icon-left (click)="initTransaction()"><ion-icon name="refresh"></ion-icon>Init</button>
+					<button ion-button clear color="danger" item-right icon-left (click)="getStatus()"><ion-icon name="refresh"></ion-icon>Status</button>
+				</ion-item>
+				<ion-item *ngIf="sendData.status">
+					Status : {{sendData.status.transaction.$.state}}, Limite : {{sendData.status.transaction.$.timeoutDate}}
+				</ion-item>
+			</ion-list>
+			<ion-row wrap>
+				<ion-col>
+					<ion-list>
+						<ion-item-group>
+							<ion-item-divider>
+								<h1 color="primary">Document à signer</h1>
+							</ion-item-divider>
+							<ion-item>
+								<input type="file" (change)="selectFile($event)">
+								<h4 item-right *ngIf="sendData['files']">Taille : {{sendData['files'][0]['size']}}</h4>
+								<h4 item-right *ngIf="sendData['files']">Type : {{sendData['files'][0]['type']}}</h4>
+								<button ion-button clear color="danger" item-right icon-left (click)="sendDoc()"><ion-icon name="cloud-upload"></ion-icon>Envoyer</button>
+								<h4 *ngIf="percentProgress>0">Chargé à {{percentProgress}}%</h4>
+								<h4 *ngIf="sendData['fileSend']">Hash : {{sendData['fileSend']['hash'][0]['_']}}</h4>
+							</ion-item>
+						</ion-item-group>
+						<ion-item-group>
+							<ion-item-divider>
+								<h1 color="primary">Destinataires</h1>
+							</ion-item-divider>
+							<ion-item>
+								<ion-label>Données signatures (Cas de tests)</ion-label>
+								<ion-select [(ngModel)]="sendData.useCase" okText="Choisir" cancelText="Annuler" (ionChange)="updateSignData()">
+									<ion-option *ngFor="let m of lstUseCase" [value]="m.value.name">{{m.value.title}}</ion-option>
+								</ion-select>
+								<button ion-button clear item-right icon-left (click)="getUseCase()"><ion-icon name="refresh"></ion-icon></button>
+							</ion-item>
+							<ion-item *ngFor='let item of lstSignatory'>
+								<h2>{{item.firstname}} {{item.lastname}}</h2>
+								<button ion-button clear color="danger" item-right icon-left (click)="addSignatory(item)"><ion-icon name="cloud-upload"></ion-icon>Ajouter le signataire</button>
+								<h2 *ngIf="item.sign">Id signataire : <span color="secondary">{{item.sign.id}}</span>, authentification par <span color="secondary">{{item.sign.signatureType}}</span></h2>
+							</ion-item>
+						</ion-item-group>
+						<ion-item-group>
+							<ion-item-divider>
+								<h1 color="primary">Signature</h1>
+							</ion-item-divider>
+							<ion-item>
+								<button ion-button clear color="danger" item-right icon-left (click)="sendSign()"><ion-icon name="cloud-upload"></ion-icon>Signer</button>
+							</ion-item>
+						</ion-item-group>
+					</ion-list>
+				</ion-col>
+				<ion-col *ngIf="displayData">
+					<record [dataRecord]='dataApi'></record>
+				</ion-col>
+			</ion-row>
+		</div>
+		<div *ngSwitchCase="'detail'">
+		</div>
+		<div *ngSwitchCase="'factures'">
+		</div>
+	</div>
+</ion-content>

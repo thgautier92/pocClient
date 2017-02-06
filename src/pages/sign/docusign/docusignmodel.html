@@ -1,0 +1,68 @@
+<ion-header>
+    <ion-navbar color="secondary">
+        <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+        <ion-title>DocuSign - Modèles</ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-list no-lines>
+        <ion-item>
+            <ion-label>Modèle de document</ion-label>
+            <ion-select [(ngModel)]="signModel.docModel" okText="Choisir" cancelText="Annuler" (ionChange)="loadModel()">
+                <ion-option *ngFor="let m of lstModels['envelopeTemplates']" [value]="m.templateId">{{m.name}}</ion-option>
+            </ion-select>
+            <button ion-button clear item-right icon-left (click)="getLstModel()"><ion-icon name="refresh"></ion-icon></button>
+            <button *ngIf="signModel.docModel" ion-button clear item-right icon-left (click)="loadModel()"><ion-icon name="eye"></ion-icon>Détail</button>
+        </ion-item>
+    </ion-list>
+    <ion-card>
+        <ion-card-header>
+            <ion-item (click)="display.dataModel=!display.dataModel">
+                <h2>Caractéristiques de l'enveloppe modèle</h2>
+                <button ion-button icon-only item-right clear><ion-icon name="expand"></ion-icon></button>
+            </ion-item>
+        </ion-card-header>
+        <ion-card-content>
+            <ion-list [hidden]="!display.dataModel" no-lines>
+                <ion-item *ngIf="dataDoc">
+                    <ion-row wrap>
+                        <ion-col padding>
+                            <record [dataRecord]='dataDoc'></record>
+                        </ion-col>
+                        <ion-col padding>
+                            <textarea rows="15" cols="80">{{dataDoc | json}}</textarea>
+                        </ion-col>
+                    </ion-row>
+                </ion-item>
+            </ion-list>
+        </ion-card-content>
+    </ion-card>
+    <ion-card>
+        <ion-card-header>
+            <ion-item (click)="display.generatorModel=!display.generatorModel">
+                <h2>Génération d'un modèle d'enveloppe</h2>
+                <button ion-button icon-only clear item-right><ion-icon name="expand"></ion-icon></button>
+            </ion-item>
+        </ion-card-header>
+        <ion-card-content>
+            <ion-list [hidden]="!display.generatorModel">
+                <ion-label>Document à charger dans le modèle</ion-label>
+                <ion-item>
+                    <file-upload></file-upload>
+                </ion-item>
+                <ion-item>
+                    <ion-label>Données de paramétrage du modèle</ion-label>
+                    <ion-select [(ngModel)]="signModel.useCase" okText="Choisir" cancelText="Annuler" (ionChange)="generateModelData()">
+                        <ion-option *ngFor="let cm of lstUseCaseModel" [value]="cm">{{cm.value.title}}</ion-option>
+                    </ion-select>
+                    <button ion-button clear item-right icon-left (click)="getUseCaseModel()"><ion-icon name="refresh"></ion-icon></button>
+                </ion-item>
+                <ion-item>
+                    <record [dataRecord]='signModel.useCase'></record>
+                </ion-item>
+            </ion-list>
+        </ion-card-content>
+    </ion-card>
+</ion-content>

@@ -1,0 +1,16 @@
+page-simu {
+    img {
+        max-height: 100px;
+        max-width: 150px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto
+    }
+    ion-card {
+        position: relative;
+        text-align: center;
+        align-items: center;
+        padding: 5px;
+        height: 230px
+    }
+}

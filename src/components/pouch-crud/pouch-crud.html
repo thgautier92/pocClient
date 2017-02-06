@@ -1,0 +1,60 @@
+<!--
+  Generated template for the PouchCrud component.
+
+  See https://angular.io/docs/ts/latest/api/core/index/ComponentMetadata-class.html
+  for more info on Angular 2 Components.
+-->
+
+<ion-item-group>
+  <ion-item-divider color="divider">
+    Manipulation de la base locale <b ion-text color="danger">{{noSqlLocalEnv.base}}</b>
+    <button color="light" ion-button icon-only clear item-right icon-left (click)="getLocalBaseInfo()"><ion-icon name="refresh"></ion-icon></button>
+    <button color="danger" ion-button icon-only clear item-right icon-left (click)="resetLocalBase()"><ion-icon name="trash"></ion-icon></button>
+    <button color="light" ion-button icon-only clear item-right icon-left (click)="noSqlLocalEnv.dbInfo=!noSqlLocalEnv.dbInfo"><ion-icon name="expand"></ion-icon></button>
+  </ion-item-divider>
+  <ion-item *ngIf="noSqlLocalEnv.dbInfo">
+    <record [dataRecord]='localDbInfo' [displaySelector]='displaySelector'></record>
+  </ion-item>
+  <ion-item-divider color="divider">
+    <ion-label> Synchronisation
+      <ion-icon name="sync" [color]="(syncActive ) ? 'danger' : 'light'"></ion-icon>
+    </ion-label>
+    <ion-toggle [(ngModel)]="noSqlLocalEnv.synchro" (ionChange)="changeSynchro()"></ion-toggle>
+    <button color="light" ion-button icon-only clear item-right icon-left (click)="noSqlLocalEnv.dbSync=!noSqlLocalEnv.dbSync"><ion-icon name="expand"></ion-icon></button>
+  </ion-item-divider>
+  <ion-item *ngIf="noSqlLocalEnv.dbSync">
+    <record [dataRecord]='syncInfo' [displaySelector]='displaySelector'></record>
+  </ion-item>
+  <ion-item-divider *ngIf="noSqlLocalEnv.base" color="divider">
+    <button color="light" ion-button icon-only clear item-left icon-left (click)="addLocalBaseData()"><ion-icon name="add-circle"></ion-icon></button>
+    <span text-center>Contenu de la base locale <b ion-text color="danger">{{noSqlLocalEnv.base}}</b></span>
+    <button color="light" ion-button icon-only clear item-right icon-left (click)="getLocalBaseStart()"><ion-icon name="skip-backward"></ion-icon></button>
+    <button color="light" ion-button icon-only clear item-right icon-left (click)="getLocalBasePrevious()"><ion-icon name="rewind"></ion-icon></button>
+    <button color="light" ion-button outline clear item-right icon-left (click)="getLocalBaseData()"><ion-icon name="refresh"></ion-icon>&nbsp;&nbsp;{{noSqlLocalEnv['page']}}/{{noSqlLocalEnv['rows']}}</button>
+    <button color="light" ion-button icon-only clear item-right icon-right (click)="getLocalBaseNext()"><ion-icon name="fastforward"></ion-icon></button>
+    <button color="light" ion-button icon-only clear item-right icon-right (click)="getLocalBaseEnd()"><ion-icon name="skip-forward"></ion-icon></button>
+    <button color="light" ion-button icon-only clear item-right icon-left (click)="noSqlLocalEnv.dbData=!noSqlLocalEnv.dbData"><ion-icon name="expand"></ion-icon></button>
+  </ion-item-divider>
+  <ion-item *ngIf="noSqlLocalEnv.dbData">
+    <ion-list>
+      <ion-item-sliding *ngFor="let item of localBaseItems;let idx=index" text-wrap>
+        <ion-item>
+          <ion-row>
+            <ion-col width-25>
+              <h3><b>Id&nbsp;:</b>{{item.id}}</h3>
+              <h3><b>Key:</b>{{item.key}}</h3>
+              <h3><b>Rev:</b>{{item.value.rev}}</h3>
+            </ion-col>
+            <ion-col width-75>
+              <record [dataRecord]='item.doc' [displaySelector]='displaySelector'></record>
+            </ion-col>
+          </ion-row>
+        </ion-item>
+        <ion-item-options side="right">
+          <button ion-button color="primary" (click)="editLocalBaseData(item);">Editer</button>
+          <button ion-button color="danger" (click)="deleteLocalBaseData(item,idx);">Supprimer</button>
+        </ion-item-options>
+      </ion-item-sliding>
+    </ion-list>
+  </ion-item>
+</ion-item-group>

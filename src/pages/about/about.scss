@@ -1,0 +1,22 @@
+page-about {
+    .about {
+        padding: 10px
+    }
+    .slide-zoom {
+        height: 100%;
+        text-align: left;
+    }
+    .slide-title {
+        margin-top: 2.8rem;
+    }
+    ion-toolbar {
+        margin-top: 20px;
+    }
+    pre: {
+        font-size: 10px;
+    }
+    p {
+        text-align: left;
+        font-size: smaller;
+    }
+}

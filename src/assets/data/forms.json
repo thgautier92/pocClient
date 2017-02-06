@@ -1,0 +1,1437 @@
+{
+    "forms": [
+        {
+            "id": 1,
+            "name": "client",
+            "title": "Client",
+            "icon": "body",
+            "fields": [
+                {
+                    "group": "Identification",
+                    "model": "numsous",
+                    "title": "Numéro de sociétaire",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "true",
+                    "error": "Veuillez vérifier la zone : 'Numéro de sociétaire'",
+                    "type": "text"
+                },
+                {
+                    "group": "Identification",
+                    "model": "civilite",
+                    "title": "Civilité",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Civilité'",
+                    "type": "enum",
+                    "enum": {
+                        "v1": "valeur1",
+                        "v2": "valeur2",
+                        "v3": "valeur3"
+                    }
+                },
+                {
+                    "group": "Identification",
+                    "model": "nom",
+                    "title": "Nom",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "true",
+                    "error": "Veuillez vérifier la zone : 'Nom'",
+                    "type": "text"
+                },
+                {
+                    "group": "Identification",
+                    "model": "prenom",
+                    "title": "Prénom",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "true",
+                    "error": "Veuillez vérifier la zone : 'Prénom'",
+                    "type": "text"
+                },
+                {
+                    "group": "Identification",
+                    "model": "naiss_nom",
+                    "title": "Nom de naissance",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Nom de naissance'",
+                    "type": "text"
+                },
+                {
+                    "group": "Identification",
+                    "model": "naiss_date",
+                    "title": "Date de naissance",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Date de naissance'",
+                    "type": "date"
+                },
+                {
+                    "group": "Identification",
+                    "model": "naiss_lieu",
+                    "title": "Lieu de naissance",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Lieu de naissance'",
+                    "type": "text"
+                },
+                {
+                    "group": "Identification",
+                    "model": "naiss_dep",
+                    "title": "Département de naissance",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Département de naissance'",
+                    "type": "text"
+                },
+                {
+                    "group": "Identification",
+                    "model": "nationnalite",
+                    "title": "Nationalité",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Nationalité'",
+                    "type": "text"
+                },
+                {
+                    "group": "Identification",
+                    "model": "nation_pays",
+                    "title": "Pays de naissance",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Pays de naissance'",
+                    "type": "text"
+                },
+                {
+                    "group": "Identification",
+                    "model": "residFiscale",
+                    "title": "Résidence fiscale",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Résidence fiscale'",
+                    "type": "text"
+                },
+                {
+                    "group": "Identification",
+                    "model": "numFiscUS",
+                    "title": "Numéro fiscal américain TIN",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Numéro fiscal américain TIN'",
+                    "type": "boolean"
+                },
+                {
+                    "group": "Activité",
+                    "model": "csp",
+                    "title": "Code CSP",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Code CSP'",
+                    "type": "enum",
+                    "enum": {
+                        "v1": "valeur1",
+                        "v2": "valeur2",
+                        "v3": "valeur3"
+                    }
+                },
+                {
+                    "group": "Activité",
+                    "model": "prod",
+                    "title": "Profession",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Profession'",
+                    "type": "text"
+                },
+                {
+                    "group": "Adresse",
+                    "model": "adr_ident_Vie",
+                    "title": "Comp.identification Vie",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Comp.identification Vie'",
+                    "type": "text"
+                },
+                {
+                    "group": "Adresse",
+                    "model": "adr_compDistrib_vie",
+                    "title": "Comp. Distribution Vie",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Comp. Distribution Vie'",
+                    "type": "text"
+                },
+                {
+                    "group": "Adresse",
+                    "model": "adr_vie",
+                    "title": "Numéro et rue Vie",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Numéro et rue Vie'",
+                    "type": "text"
+                },
+                {
+                    "group": "Adresse",
+                    "model": "adr_lieudit_vie",
+                    "title": "Lieu-dit Vie",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Lieu-dit Vie'",
+                    "type": "text"
+                },
+                {
+                    "group": "Adresse",
+                    "model": "adr_cp_vie",
+                    "title": "Code postal Vie",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Code postal Vie'",
+                    "type": "text"
+                },
+                {
+                    "group": "Adresse",
+                    "model": "adr_ville_vie",
+                    "title": "Ville Vie",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Ville Vie'",
+                    "type": "text"
+                },
+                {
+                    "group": "Adresse",
+                    "model": "adr_pays_vie",
+                    "title": "Pays Vie",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Pays Vie'",
+                    "type": "text"
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "name": "contacts",
+            "title": "Contacts",
+            "icon": "body",
+            "fields": [
+                {
+                    "group": "Personnel",
+                    "model": "email_perso",
+                    "title": "Email personnel",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Email personnel'",
+                    "type": "email"
+                },
+                {
+                    "group": "Personnel",
+                    "model": "optin_perso",
+                    "title": "Opt-in Email perso",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Opt-in Email perso'",
+                    "type": "boolean"
+                },
+                {
+                    "group": "Professionel",
+                    "model": "email_prof",
+                    "title": "Email professionnel",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Email professionnel'",
+                    "type": "email"
+                },
+                {
+                    "group": "Professionel",
+                    "model": "mobile",
+                    "title": "Tél. mobile",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Tél. mobile'",
+                    "type": "tel"
+                },
+                {
+                    "group": "Professionel",
+                    "model": "optin_mobile",
+                    "title": "Opt-in tél mobile",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Opt-in tél mobile'",
+                    "type": "boolean"
+                },
+                {
+                    "group": "Personnel",
+                    "model": "tel_perso",
+                    "title": "Tél. personnel",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Tél. personnel'",
+                    "type": "tel"
+                },
+                {
+                    "group": "Personnel",
+                    "model": "optin_tel_perso",
+                    "title": "Opt-in tél perso",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Opt-in tél perso'",
+                    "type": "boolean"
+                },
+                {
+                    "group": "Professionel",
+                    "model": "tel_prof",
+                    "title": "Tél. professionnel",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Tél. professionnel'",
+                    "type": "tel"
+                },
+                {
+                    "group": "Professionel",
+                    "model": "optin_tel_prof",
+                    "title": "Opt-in tél. pro",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Opt-in tél. pro'",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "name": "identite",
+            "title": "Identité",
+            "icon": "body",
+            "fields": [
+                {
+                    "group": "Identité",
+                    "model": "pi_nature",
+                    "title": "Nature de la pièce d’identité",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Nature de la pièce d’identité'",
+                    "type": "enum",
+                    "enum": {
+                        "v1": "valeur1",
+                        "v2": "valeur2",
+                        "v3": "valeur3"
+                    }
+                },
+                {
+                    "group": "Identité",
+                    "model": "pi_date_delivr",
+                    "title": "Date de délivrance",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Date de délivrance'",
+                    "type": "date"
+                },
+                {
+                    "group": "Identité",
+                    "model": "pi_autorite",
+                    "title": "Autorité",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Autorité'",
+                    "type": "text"
+                },
+                {
+                    "group": "Identité",
+                    "model": "pi_piece_nom",
+                    "title": "Nom fichier PJ",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Nom fichier PJ'",
+                    "type": "text"
+                },
+                {
+                    "group": "Situation",
+                    "model": "situation",
+                    "title": "Situation de famille",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Situation de famille'",
+                    "type": "enum",
+                    "enum": {
+                        "v1": "valeur1",
+                        "v2": "valeur2",
+                        "v3": "valeur3"
+                    }
+                },
+                {
+                    "group": "Situation",
+                    "model": "mtri_regime",
+                    "title": "Régime matrimonial",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Régime matrimonial'",
+                    "type": "enum",
+                    "enum": {
+                        "v1": "valeur1",
+                        "v2": "valeur2",
+                        "v3": "valeur3"
+                    }
+                },
+                {
+                    "group": "Situation",
+                    "model": "nb_enfants",
+                    "title": "Nombre d’enfants (à charge)",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Nombre d’enfants (à charge)'",
+                    "type": "number",
+                    "enum": [
+                        0,
+                        12
+                    ]
+                },
+                {
+                    "group": "Situation",
+                    "model": "matri_autre",
+                    "title": "Autres dispositions matrimoniales",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Autres dispositions matrimoniales'",
+                    "type": "text"
+                },
+                {
+                    "group": "Situation",
+                    "model": "enfant_nom",
+                    "title": "Nom enfant",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Nom enfant'",
+                    "type": "text"
+                },
+                {
+                    "group": "Situation",
+                    "model": "enfant_prenom",
+                    "title": "Prénom enfant",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Prénom enfant'",
+                    "type": "text"
+                },
+                {
+                    "group": "Situation",
+                    "model": "enfant_date_naissance",
+                    "title": "Date de naissance enfant",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Date de naissance enfant'",
+                    "type": "date"
+                },
+                {
+                    "group": "Situation",
+                    "model": "lien",
+                    "title": "Lien",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Lien'",
+                    "type": "enum",
+                    "enum": {
+                        "v1": "valeur1",
+                        "v2": "valeur2",
+                        "v3": "valeur3"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 4,
+            "name": "fiscalite",
+            "title": "ICS",
+            "icon": "body",
+            "fields": [
+                {
+                    "group": "Fiscalité",
+                    "model": "nb_pers_foyer_fiscal",
+                    "title": "Nombre de personnes du foyer fiscal",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Nombre de personnes du foyer fiscal'",
+                    "type": "number",
+                    "enum": [
+                        1,
+                        12
+                    ]
+                },
+                {
+                    "group": "Fiscalité",
+                    "model": "tranche_revenu",
+                    "title": "Tranche de revenu  sociétaire",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Tranche de revenu  sociétaire'",
+                    "type": "enum",
+                    "enum": {
+                        "v1": "valeur1",
+                        "v2": "valeur2",
+                        "v3": "valeur3"
+                    }
+                },
+                {
+                    "group": "Fiscalité",
+                    "model": "annee_revenu",
+                    "title": "Année de référence revenu sociétaire",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Année de référence revenu sociétaire'",
+                    "type": "number",
+                    "enum": [
+                        2000,
+                        2015
+                    ]
+                },
+                {
+                    "group": "Fiscalité",
+                    "model": "tranche_patrimoine",
+                    "title": "Tranche de patrimoine total",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Tranche de patrimoine total'",
+                    "type": "enum",
+                    "enum": {
+                        "v1": "valeur1",
+                        "v2": "valeur2",
+                        "v3": "valeur3"
+                    }
+                },
+                {
+                    "group": "Fiscalité",
+                    "model": "annee_patrimoine",
+                    "title": "Année de référence patrimoine total",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Année de référence patrimoine total'",
+                    "type": "number",
+                    "enum": [
+                        2000,
+                        2015
+                    ]
+                },
+                {
+                    "group": "Fiscalité",
+                    "model": "tranche_revenu_foyer",
+                    "title": "Tranche de revenu foyer",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Tranche de revenu foyer'",
+                    "type": "enum",
+                    "enum": {
+                        "v1": "valeur1",
+                        "v2": "valeur2",
+                        "v3": "valeur3"
+                    }
+                },
+                {
+                    "group": "Fiscalité",
+                    "model": "annee_revenu_foyer",
+                    "title": "Année de référence revenu foyer",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Année de référence revenu foyer'",
+                    "type": "number",
+                    "enum": [
+                        2000,
+                        2015
+                    ]
+                },
+                {
+                    "group": "Fiscalité",
+                    "model": "autre_revenu",
+                    "title": "Autres revenus du foyer",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Autres revenus du foyer'",
+                    "type": "number",
+                    "enum": [
+                        15000,
+                        300000
+                    ]
+                },
+                {
+                    "group": "Fiscalité",
+                    "model": "annee_autre_revenu",
+                    "title": "Année de référence autres revenus du foyer",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Année de référence autres revenus du foyer'",
+                    "type": "number",
+                    "enum": [
+                        2000,
+                        2015
+                    ]
+                },
+                {
+                    "group": "Epargne",
+                    "model": "epargne_foyer",
+                    "title": "Capacité d’épargne mensuelle foyer",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Capacité d’épargne mensuelle foyer'",
+                    "type": "number",
+                    "enum": [
+                        0,
+                        300000
+                    ]
+                },
+                {
+                    "group": "Epargne",
+                    "model": "epargne_autre",
+                    "title": "Année de référence capacité d’épargne",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Année de référence capacité d’épargne'",
+                    "type": "number",
+                    "enum": [
+                        2000,
+                        2015
+                    ]
+                },
+                {
+                    "group": "Fiscalité",
+                    "model": "isf",
+                    "title": "Soumis à ISF",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Soumis à ISF'",
+                    "type": "boolean"
+                },
+                {
+                    "group": "Epargne",
+                    "model": "urlSimu",
+                    "title": "Simuler (demo retraite)",
+                    "default": "https://www.labanquepostale.fr/particulier/Outils/simulateurs/diagnostic_retraite.diagretraite.html",
+                    "required": false,
+                    "readonly": false,
+                    "error": "Simulateur indisponible",
+                    "type": "url"
+                }
+            ]
+        },
+        {
+            "id": 5,
+            "name": "concurrents",
+            "title": "Conccurrents",
+            "icon": "body",
+            "fields": [
+                {
+                    "group": "Identification",
+                    "model": "nom",
+                    "title": "Nom",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "true",
+                    "error": "Veuillez vérifier la zone : 'Nom'",
+                    "type": "text"
+                },
+                {
+                    "group": "Identification",
+                    "model": "prenom",
+                    "title": "Prénom",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "true",
+                    "error": "Veuillez vérifier la zone : 'Prénom'",
+                    "type": "text"
+                },
+                {
+                    "group": "Identification",
+                    "model": "tel_prof",
+                    "title": "Tél. professionnel",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Tél. professionnel'",
+                    "type": "tel"
+                }
+            ]
+        },
+        {
+            "id": 6,
+            "name": "simulator",
+            "title": "Demo Simulateur",
+            "icon": "body",
+            "fields": [
+                {
+                    "group": "",
+                    "model": "urlSimu",
+                    "title": "Simuler avec transmission de données",
+                    "default": "",
+                    "required": false,
+                    "readonly": false,
+                    "error": "Simulateur indisponible",
+                    "type": "urlData"
+                }
+            ]
+        },
+        {
+            "id": 7,
+            "name": "signClient",
+            "title": "Signature",
+            "icon": "body",
+            "fields": [
+                {
+                    "group": "Identité numérique",
+                    "model": "nom",
+                    "title": "Nom",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "true",
+                    "error": "Veuillez vérifier la zone : 'Nom'",
+                    "type": "text"
+                },
+                {
+                    "group": "Identité numérique",
+                    "model": "prenom",
+                    "title": "Prénom",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "true",
+                    "error": "Veuillez vérifier la zone : 'Prénom'",
+                    "type": "text"
+                },
+                {
+                    "group": "Identité numérique",
+                    "model": "email_perso",
+                    "title": "Email personnel",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Email personnel'",
+                    "type": "email"
+                },
+                {
+                    "group": "Identité numérique",
+                    "model": "mobile",
+                    "title": "Téléphone Mobile",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "true",
+                    "error": "Veuillez vérifier la zone : 'Téléphone'",
+                    "type": "tel"
+                },
+                {
+                    "group": "Action réservé conseiller",
+                    "model": "signature_valid",
+                    "title": "Validation de la signature des documents ?",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "id": 8,
+            "name": "docClient",
+            "title": "Documents clients",
+            "icon": "body",
+            "fields": [
+                {
+                    "group": "Action réservé conseiller",
+                    "model": "doc_valid",
+                    "title": "Validation des documents reçus ?",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "id": 9,
+            "name": "docSmaVie",
+            "title": "Documents SmaVie",
+            "icon": "body",
+            "fields": []
+        },
+        {
+            "id": 11,
+            "name": "souscription",
+            "title": "Souscription",
+            "icon": "body",
+            "fields": [
+                {
+                    "group": "Produit",
+                    "model": "fiscalite",
+                    "title": "Fiscalité",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "enum",
+                    "enum": {
+                        "f1": "Fiscalité PEA",
+                        "f2": "Fiscalité Hors PEA"
+                    }
+                },
+                {
+                    "group": "Versement initial",
+                    "model": "vsi_montant",
+                    "title": "Montant",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "number",
+                    "enum": [
+                        1000,
+                        20000
+                    ]
+                },
+                {
+                    "group": "Versement initial",
+                    "model": "vsi_date",
+                    "title": "Date",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "date"
+                },
+                {
+                    "group": "Versement initial",
+                    "model": "vsi_paiement",
+                    "title": "Mode de paiement",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "enum",
+                    "enum": {
+                        "cheque": "Chèque",
+                        "prelevement": "Prélévement",
+                        "virement": "Virement"
+                    }
+                },
+                {
+                    "group": "Versement programmé",
+                    "model": "vsp_montant",
+                    "title": "Montant",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "number",
+                    "enum": [
+                        1000,
+                        10000
+                    ]
+                },
+                {
+                    "group": "Versement programmé",
+                    "model": "vsp_date",
+                    "title": "Date",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "date"
+                },
+                {
+                    "group": "Versement programmé",
+                    "model": "vsp_periodicite",
+                    "title": "Periodicité",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "enum",
+                    "enum": {
+                        "m": "Mensuel",
+                        "t": "Trimestriel",
+                        "s": "Semestriel",
+                        "a": "Annuel"
+                    }
+                },
+                {
+                    "group": "mandat SEPA",
+                    "model": "sepa_iban",
+                    "title": "IBAN",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "text"
+                },
+                {
+                    "group": "mandat SEPA",
+                    "model": "sepa_bic",
+                    "title": "BIC",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "text"
+                }
+            ]
+        },
+        {
+            "id": 12,
+            "name": "Concurrents",
+            "title": "Concurrents",
+            "icon": "body",
+            "fields": [
+                {
+                    "group": "Concurrents",
+                    "model": "nom_concurrent",
+                    "title": "Nom de la compagnie d'assurance",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "text"
+                },
+                {
+                    "group": "Concurrents",
+                    "model": "famprod_concurrent",
+                    "title": "Famille de produits",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "enum",
+                    "enum": {
+                        "Batiretraite": "Batiretraite",
+                        "Batiprojet": "Batiprojet",
+                        "Autre": "Autre"
+                    }
+                },
+                {
+                    "group": "Concurrents",
+                    "model": "echeance_concurrent",
+                    "title": "Echéance du contrat",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "date"
+                }
+            ]
+        },
+        {
+            "id": 20,
+            "name": "versements",
+            "title": "Versements",
+            "icon": "body",
+            "fields": [
+                {
+                    "group": "Versement initial",
+                    "model": "vers_initial_mt",
+                    "title": "Montant",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "number",
+                    "enum": [
+                        1000,
+                        10000
+                    ]
+                },
+                {
+                    "group": "Versement initial",
+                    "model": "vers_initial_date",
+                    "title": "Date",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "date"
+                },
+                {
+                    "group": "Versement initial",
+                    "model": "vers_initial_mode_paiement",
+                    "title": "Mode de paiement",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "enum",
+                    "enum": {
+                        "v1": "Chèque",
+                        "v2": "Prélévement",
+                        "v3": "Virement"
+                    }
+                },
+                {
+                    "group": "Versement programmé",
+                    "model": "vers_prog_mt",
+                    "title": "Montant",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "number",
+                    "enum": [
+                        1000,
+                        10000
+                    ]
+                },
+                {
+                    "group": "Versement programmé",
+                    "model": "vers_prog_date",
+                    "title": "Début des versements",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "date"
+                },
+                {
+                    "group": "Versement programmé",
+                    "model": "vers_prog_periodicite",
+                    "title": "Périodicité",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "enum",
+                    "enum": {
+                        "M": "Mensuelle",
+                        "T": "Trimestrielle",
+                        "S": "Semestrielle",
+                        "A": "Annuelle"
+                    }
+                },
+                {
+                    "group": "Mandat SEPA",
+                    "model": "vers_iban",
+                    "title": "IBAN",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "text"
+                },
+                {
+                    "group": "Mandat SEPA",
+                    "model": "vers_bic",
+                    "title": "BIC",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "text"
+                }
+            ]
+        },
+        {
+            "id": 21,
+            "name": "conditions",
+            "title": "Conditions particulières",
+            "icon": "body",
+            "fields": [
+                {
+                    "group": "Confidentiel",
+                    "model": "derog_com",
+                    "title": "Dérogation Commercial",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "number",
+                    "enum": [
+                        1000,
+                        10000
+                    ]
+                },
+                {
+                    "group": "Confidentiel",
+                    "model": "derog_com_unite",
+                    "title": "Unité",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "radio",
+                    "enum": {
+                        "E": "€uro",
+                        "P": "%"
+                    }
+                },
+                {
+                    "group": "Confidentiel",
+                    "model": "collab_sma",
+                    "title": "Collaborateur SMA",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "boolean"
+                },
+                {
+                    "group": "Animation réseau",
+                    "model": "campagne_com",
+                    "title": "Campagne Commerciale",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "text"
+                },
+                {
+                    "group": "Animation réseau",
+                    "model": "offre_parrainage",
+                    "title": "Offre de parrainage",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "text"
+                }
+            ]
+        },
+                {
+            "id": 25,
+            "name": "beneficaire",
+            "title": "Bénéficiaire",
+            "icon": "body",
+            "fields": [
+                {
+                    "group": "",
+                    "model": "bene_civilite",
+                    "title": "Civilité",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "enum",
+                    "enum": {"v1":"Monsieur","v2":"Madame"}
+                },
+                {
+                    "group": "",
+                    "model": "bene_nom",
+                    "title": "Nom",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "text"
+                },
+                {
+                    "group": "",
+                    "model": "bene_prenom",
+                    "title": "Prénom",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "text"
+                },
+                {
+                    "group": "",
+                    "model": "bene_dateNaissance",
+                    "title": "Date de naissance",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "date"
+                },
+                {
+                    "group": "",
+                    "model": "bene_lieuNaissance",
+                    "title": "Lieu de naissance",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "text"
+                }
+            ]
+        },
+        {
+            "id": 30,
+            "name": "diag_info",
+            "title": "Connaissance Client nécéssaire au Diagnostic conseil",
+            "icon": "body",
+            "fields": [
+                {
+                    "group": "Identification",
+                    "model": "nom",
+                    "title": "Nom",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "true",
+                    "error": "Veuillez vérifier la zone : 'Nom'",
+                    "type": "text"
+                },
+                {
+                    "group": "Identification",
+                    "model": "prenom",
+                    "title": "Prénom",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "true",
+                    "error": "Veuillez vérifier la zone : 'Prénom'",
+                    "type": "text"
+                },
+                {
+                    "group": "Identification",
+                    "model": "naiss_nom",
+                    "title": "Nom de naissance",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Nom de naissance'",
+                    "type": "text"
+                },
+                {
+                    "group": "Identification",
+                    "model": "naiss_date",
+                    "title": "Date de naissance",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone : 'Date de naissance'",
+                    "type": "date"
+                }
+            ]
+        },
+        {
+            "id": 31,
+            "name": "diag_reco",
+            "title": "La SMAvie vous recommande les produits suivants",
+            "icon": "body",
+            "fields": [
+                {
+                    "group": "Contrat préconisé",
+                    "model": "preco_contrat",
+                    "title": "Contrat",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone",
+                    "type": "text"
+                },
+                {
+                    "group": "Contrat préconisé",
+                    "model": "preco_partEuro",
+                    "title": "Part Euros préconisée",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "true",
+                    "error": "Veuillez vérifier la zone",
+                    "type": "text"
+                },
+                {
+                    "group": "Option arbritrage préconisée",
+                    "model": "preco_option",
+                    "title": "Contrat",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "false",
+                    "error": "Veuillez vérifier la zone",
+                    "type": "text"
+                },
+                {
+                    "group": "Option arbritrage préconisée",
+                    "model": "preco_partUC",
+                    "title": "Part UC préconisée",
+                    "default": "",
+                    "required": "true",
+                    "readOnly": "true",
+                    "error": "Veuillez vérifier la zone",
+                    "type": "text"
+                }
+            ]
+        },
+        {
+            "id": 32,
+            "name": "profilrisque",
+            "title": "Questionnaire pour définir le profil de risque",
+            "icon": "body",
+            "fields": [
+                {
+                    "group": "Votre projet",
+                    "model": "part_versement",
+                    "title": "Part du versement envisagé par rapport à votre patrimoine financier ?",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "radio",
+                    "enum": {
+                        "v1": "Moins de 10%",
+                        "v2": "Entre 10 et 50%",
+                        "v3": "Superieur à 50%"
+                    }
+                },
+                {
+                    "group": "Votre projet",
+                    "model": "objectif_operation",
+                    "title": "Votre objectif pour cette opération ?",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "radio",
+                    "enum": {
+                        "v1": "Epargner en vue d'un projet",
+                        "v2": "Valoriser un capital",
+                        "v3": "Transmettre un capital",
+                        "v4": "Rechercher un complement de revenus",
+                        "v5": "Préparer la retraite"
+                    }
+                },
+                {
+                    "group": "Votre projet",
+                    "model": "horizon_placement",
+                    "title": "Quel est votre horizon de placement ?",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "radio",
+                    "enum": {
+                        "v1": "Au-delàs de 5 ans",
+                        "v2": "2 à 5 ans",
+                        "v3": "Inférieur à 2 ans"
+                    }
+                },
+                {
+                    "group": "Vos connaissances en matière financière ?",
+                    "model": "connaissance_sicav",
+                    "title": "Connaissance du mecanisme des SICAV, FCP, Unité de Compte(actions) et les risques associés",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "radio",
+                    "enum": {
+                        "oui": "Oui",
+                        "non": "Non"
+                    }
+                },
+                {
+                    "group": "Vos connaissances en matière financière ?",
+                    "model": "connaissance_support",
+                    "title": "Connaissance du support euros des contrats d'assurance vie",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "radio",
+                    "enum": {
+                        "oui": "Oui",
+                        "non": "Non"
+                    }
+                },
+                {
+                    "group": "Vos connaissances en matière financière ?",
+                    "model": "connaissance_livretA",
+                    "title": "Connaissance des produits réglementés (livret A, CEL, ...)",
+                    "default": "",
+                    "required": "false",
+                    "readOnly": "false",
+                    "error": "",
+                    "type": "radio",
+                    "enum": {
+                        "oui": "Oui",
+                        "non": "Non"
+                    }
+                }
+            ]
+        }
+    ],
+    "dataToForm": [
+        {
+            "dataSource": "NOM",
+            "field": "nom"
+        },
+        {
+            "dataSource": "PRENOM",
+            "field": "prenom"
+        },
+        {
+            "dataSource": "ADRESSE",
+            "field": "adr_vie"
+        },
+        {
+            "dataSource": "CODEPOSTAL",
+            "field": "adr_cp_vie"
+        },
+        {
+            "dataSource": "VILLE",
+            "field": "adr_ville_vie"
+        },
+        {
+            "dataSource": "",
+            "field": "situation"
+        },
+        {
+            "dataSource": "",
+            "field": "test1"
+        },
+        {
+            "dataSource": "EMAIL",
+            "field": "email_prof"
+        },
+        {
+            "dataSource": "TELEPHONE",
+            "field": "tel_prof"
+        },
+        {
+            "dataSource": "DATECREATIONENT",
+            "field": "dateCreation"
+        }
+    ]
+}

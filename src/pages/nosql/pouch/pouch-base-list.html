@@ -1,0 +1,7 @@
+<ion-list radio-group [(ngModel)]="base" (ionChange)="changeBase()">
+    <ion-list-header>Bases disponibles</ion-list-header>
+    <ion-item *ngFor="let b of lstBases">
+        <ion-label>{{b}}</ion-label>
+        <ion-radio [value]=b></ion-radio>
+    </ion-item>
+</ion-list>

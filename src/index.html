@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+
+<head>
+	<meta charset="UTF-8">
+	<title>POC Tools</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta http-equiv="Content-Security-Policy" content="default-src *; font-src * data:; connect-src * blob:;img-src * data:; style-src * data: 'unsafe-inline' blob: 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+	<meta name="format-detection" content="telephone=no">
+	<meta name="msapplication-tap-highlight" content="yes">
+
+	<link rel="icon" type="image/x-icon" href="assets/icon/favicon.ico">
+	<link rel="manifest" href="manifest.json">
+	<meta name="theme-color" content="#4e8ef7">
+
+	<!-- cordova.js required for cordova apps -->
+	<script src="cordova.js"></script>
+	<!-- un-comment this code to enable service worker
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(() => console.log('service worker installed'))
+        .catch(err => console.log('Error', err));
+    }
+  </script>-->
+	<link href="build/main.css" rel="stylesheet">
+	<style>img {display: block;margin-left:auto;margin-right:auto} p {text-align: center}</style>
+
+</head>
+
+<body>
+
+	<!-- Ionic's root component and where the app will load -->
+	<ion-app></ion-app>
+
+	<!-- The polyfills js is generated during the build process 
+	<script src="build/polyfills.js"></script>
+	-->
+	<!-- The bundle js is generated during the build process 
+	<script src="build/main.js"></script>
+	<script src="build/json-formatter.js"></script>
+	<script src="build/chance.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="build/Chart.bundle.js" type="text/javascript" charset="utf-8"></script>
+	<script src="build/pouchdb.min.js"></script>
+
+	<script src="assets/libs/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script src="assets/libs/pdf/jspdf.debug.js" type="text/javascript" charset="utf-8"></script>
+	<script src="assets/libs/pdf/html2pdf.js" type="text/javascript" charset="utf-8"></script>
+	<script src="assets/libs/pdf/pdfMake/pdfmake.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="assets/libs/pdf/pdfMake/vfs_fonts.js" type="text/javascript" charset="utf-8"></script>
+
+	<script type="text/javascript" src="assets/mfp/lib/analytics/ibmmfpfanalytics.js"></script>
+	<script type="text/javascript" src="assets/mfp/ibmmfpf.js"></script>
+	-->
+	<script type="text/javascript">
+		function downloadJSAtOnload() {
+			let lstScript = [
+				{ "id": "polyfills", "src": "build/polyfills.js" },
+				{ "id": "main", "src": "build/main.js" },
+				{ "id": "js1", "src": "build/json-formatter.js" },
+				{ "id": "js2", "src": "build/chance.min.js" },
+				{ "id": "js3", "src": "build/Chart.bundle.js" },
+				{ "id": "js4", "src": "build/pouchdb.min.js" },
+				{ "id": "js5", "src": "assets/libs/ace/ace.js" },
+				{ "id": "js6", "src": "assets/libs/pdf/jspdf.debug.js" },
+				{ "id": "js7", "src": "assets/libs/pdf/html2pdf.js" },
+				{ "id": "js8", "src": "assets/libs/pdf/pdfMake/pdfmake.min.js" },
+				{ "id": "js9", "src": "assets/libs/pdf/pdfMake/vfs_fonts.js" }
+			];
+			lstScript.forEach(sc => {
+				let script = document.createElement("script");
+				script.id = sc.id;
+				script.src = sc.src;
+				document.body.appendChild(script);
+			});
+		}
+		if (window.addEventListener)
+			window.addEventListener("load", downloadJSAtOnload, false);
+		else if (window.attachEvent)
+			window.attachEvent("onload", downloadJSAtOnload);
+		else window.onload = downloadJSAtOnload;
+	</script>
+</body>
+<div class="loading-spinner">
+	<img src="assets/img/loading.gif" />
+	<p>Chargement en cours, veuillez patienter...</p>
+	<p>© SMA-DSI/ARC Fev 2017 - DSI LAB - Recherches et Développements</p>
+</div>
+
+</html>

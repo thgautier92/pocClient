@@ -1,0 +1,24 @@
+{
+  "name": "pocClient",
+  "app_id": "pocClient",
+  "v2": true,
+  "typescript": true,
+  "proxies": [
+    {
+      "path": "/docuSign",
+      "proxyUrl": "https://demo.docusign.net"
+    },
+    {
+      "path": "/Contralia",
+      "proxyUrl": "https://test.contralia.fr/Contralia"
+    },
+    {
+      "path": "/eDoc",
+      "proxyUrl": "https://test.contralia.fr/eDoc"
+    },
+    {
+      "path": "/sellandsign",
+      "proxyUrl": "http://2.int.dev.calindasoftware.com"
+    }
+  ]
+}

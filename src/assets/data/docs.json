@@ -1,0 +1,64 @@
+{
+    "docs": [
+        {
+            "code": "D1",
+            "lib": "Notice d’information Batiretraite Multicompte",
+            "file":"batiretraite_iv0590f_transformationfourgous.pdf",
+            "dateMaj":"01/01/2016"
+        },
+        {
+            "code": "D1",
+            "lib": "Notice d’information Batiprojet",
+            "file":"",
+            "dateMaj":"01/01/2016"
+        },
+        {
+            "code": "D1",
+            "lib": "Notice d’information Batiretraite PERP",
+            "file":"",
+            "dateMaj":"01/01/2016"
+        },
+        {
+            "code": "D1",
+            "lib": "Notice d’information Batiplacement Multicompte",
+            "file":"",
+            "dateMaj":"01/01/2016"
+        },
+        {
+            "code": "D1",
+            "lib": "Notice fiscale Batiretraite Multicompte",
+            "file":"",
+            "dateMaj":"01/01/2016"
+        },
+        {
+            "code": "D1",
+            "lib": "Notice fiscale Batiprojet",
+            "file":"",
+            "dateMaj":"01/01/2016"
+        },
+        {
+            "code": "D1",
+            "lib": "Notice fiscale Batiretraite PERP",
+            "file":"",
+            "dateMaj":"01/01/2016"
+        },
+        {
+            "code": "D1",
+            "lib": "Notice fiscale Batiplacement Multicompte",
+            "file":"",
+            "dateMaj":"01/01/2016"
+        },
+        {
+            "code": "D1",
+            "lib": "DICI / KID",
+            "file":"",
+            "dateMaj":"01/01/2016"
+        },
+        {
+            "code": "D1",
+            "lib": "Caractéristiques des UC",
+            "file":"",
+            "dateMaj":"01/01/2016"
+        }
+    ]
+}

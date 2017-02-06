@@ -1,0 +1,44 @@
+<!--
+  Generated template for the CouchStats page.
+
+  See http://ionicframework.com/docs/v2/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-buttons start>
+      <button ion-button *ngIf="params" (click)="gotoParams()">{{params.srv}}</button>
+    </ion-buttons>
+    <ion-title>Statistiques COUCHDB</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only clear item-right icon-left (click)="doRefresh()"><ion-icon name="refresh"></ion-icon></button>
+    </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content pullingText="Tirer pour actualiser" refreshingSpinner="circles" refreshingText="Opération en cours..."></ion-refresher-content>
+  </ion-refresher>
+  <ion-row *ngIf="generateGraph" wrap>
+    <ion-col width-50 *ngFor="let item of generateGraph">
+      <ion-card>
+        <ion-card-header>
+          {{item.title}} <small>{{item.id}}</small>
+        </ion-card-header>
+        <ion-card-content>
+          <canvas id="canvas_{{item.id}}" height="400" width="600"></canvas>
+          <ul class="list-unstyled" ng-if="displayExplain">
+            <li *ngFor="let des of item.explain">
+              <footer><small><b>{{des.code}}</b>: {{des.lib}}</small></footer>
+            </li>
+          </ul>
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+  </ion-row>
+  <record *ngIf="stats" [dataRecord]='stats' [displaySelector]='displaySelector'></record>
+</ion-content>

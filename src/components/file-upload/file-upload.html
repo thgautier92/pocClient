@@ -1,0 +1,19 @@
+<!--
+  Generated template for the FileUpload component.
+
+  See https://angular.io/docs/ts/latest/api/core/index/ComponentMetadata-class.html
+  for more info on Angular 2 Components.
+-->
+<ion-list no-lines>
+  <ion-item>
+    <input type="file" accept="image/*" (change)="changeListener($event)">
+  </ion-item>
+  <ion-item *ngIf="imageSrc">
+    <ion-thumbnail item-left>
+      <img [src]="imageSrc" />
+    </ion-thumbnail>
+    <h3>{{file.name}}</h3>
+    <p>{{file.lastModifiedDate}}</p>
+    <p>{{file.size/1024}}Ko - {{file.type}}</p>
+  </ion-item>
+</ion-list>

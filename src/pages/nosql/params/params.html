@@ -1,0 +1,41 @@
+<!--
+  Generated template for the Params page.
+
+  See http://ionicframework.com/docs/v2/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar>
+    <ion-title>Paramètres de connexion</ion-title>
+    <ion-buttons start>
+      <button ion-button color="primary" (click)="cancelParams()">Annuler</button>
+    </ion-buttons>
+    <ion-buttons end>
+      <button *ngIf="okTest" ion-button style="font-size: 25px;" color="primary" (click)="saveParams()">
+<ion-icon name="cloud-upload"></ion-icon>
+</button>
+</ion-buttons>
+</ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <ion-list>
+    <ion-item>
+      <ion-label floating>Serveur (url:port)</ion-label>
+      <ion-input [(ngModel)]="params['srv']" type="text"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label floating>User</ion-label>
+      <ion-input [(ngModel)]="params['user']" type="text"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label floating>Password</ion-label>
+      <ion-input [(ngModel)]="params['password']" type="password"></ion-input>
+    </ion-item>
+  </ion-list>
+  <button ion-button color="primary" (click)="testParams()">Tester la disponibilité du serveur</button>
+  <button ion-button color="danger" (click)="resetParams()">Reset</button>
+  <ion-title text-wrap>{{msg}}</ion-title>
+</ion-content>

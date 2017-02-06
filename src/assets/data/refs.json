@@ -1,0 +1,85 @@
+[
+    {
+        "id": "produits",
+        "data": [
+            {
+                "code": "BPM",
+                "produit": "Batiplacement Multicompte",
+                "docUrl": "",
+                "options": [
+                    {
+                        "code": "HPEA",
+                        "lib": "Fiscalité Hors PEA"
+                    },
+                    {
+                        "code": "PEA",
+                        "lib": "Fiscalité PEA"
+                    }
+                ]
+            },
+            {
+                "code": "BRM",
+                "produit": "Batiretraite Multicompte",
+                "docUrl": "",
+                "options": [
+                    {
+                        "code": "HPEA",
+                        "lib": "Fiscalité Hors PEA"
+                    },
+                    {
+                        "code": "PEA",
+                        "lib": "Fiscalité PEA"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "supports",
+        "data": [
+            {
+                "code": "ACF",
+                "lib": "ACF"
+            },
+            {
+                "code": "BAA",
+                "lib": "Intitulé BAA..."
+            },
+            {
+                "code": "BAI",
+                "lib": "Intitulé BAI..."
+            },
+            {
+                "code": "BAP",
+                "lib": "Intitulé BAP..."
+            },
+            {
+                "code": "BEA",
+                "lib": "Intitulé BEA..."
+            },
+            {
+                "code": "BEE",
+                "lib": "Intitulé BEE..."
+            }
+        ]
+    },
+    {"id":"periodicite","data":[
+      { "code": "M", "lib": "Mensuelle" },
+      { "code": "T", "lib": "Trimestrielle" },
+      { "code": "S", "lib": "Semestrielle" },
+      { "code": "A", "lib": "Annuelle" }
+    ]},
+    {"id":"clauses","data":[
+      { "code": "1", "lib": "Le conjoint ou partenanire de PACS de l'assuré","form":"" },
+      { "code": "2", "lib": "Le conjoint de l'assuré, non séparé de corps","form":"25" },
+      { "code": "3", "lib": "Le partenanire de PACS de l'assuré","form":"" },
+      { "code": "4", "lib": "Les enfants de l'assuré nés ou à naître","form":"" },
+      { "code": "5", "lib": "Les héritiers légaux de l'assuré","form":"" },
+      { "code": "6", "lib": "Désignation personne moral","form":"" },
+      { "code": "7", "lib": "Bénéficiaires spécifiques par part égales","form":"" },
+      { "code": "8", "lib": "Bénéficiaires spécifique par parts inégales","form":"" },
+      { "code": "9", "lib": "Désignation par testament","form":"" },
+      { "code": "10", "lib": "Désignation auprés de votre notaire","form":"" },
+      { "code": "11", "lib": "Clause libre","form":"" }
+    ]}
+]
