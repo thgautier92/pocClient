@@ -60,8 +60,8 @@ export class Home {
       if (refresher) refresher.complete();
     }, error => {
       let toast = this.toastCtrl.create({
-        message: 'Erreur de comptage des cas de test',
-        duration: 3000
+        message: 'Erreur de comptage des cas de test : ' + error['reason'],
+        duration: 5000
       });
       toast.present();
     })

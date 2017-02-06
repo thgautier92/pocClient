@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Platform, NavController, NavParams, Events, AlertController, LoadingController, ActionSheetController } from 'ionic-angular';
 import { DocuSignServices } from '../../../providers/sign/docuSign';
 import { CouchDbServices } from '../../../providers/couch/couch';
-import { WinExternal } from '../../../providers/win-external';
+//import { WinExternal } from '../../../providers/win-external';
 
 /*
   Generated class for the Docusign page.
@@ -107,52 +107,6 @@ export class DocuSignModel {
     }, error => {
       console.error(error);
       loader.dismiss();
-    });
-  };
-  generateModelFields() {
-    console.log(this.signModel);
-    let templateId = this.signModel['docModel'];
-    let roles = this.signModel['useCase']['value']['dataUseCase']['roles'];
-    let map = this.signModel['useCase']['value']['dataUseCase']['mapping'];
-    roles.forEach(r => {
-      console.log("Generate fields for role", r);
-      // Create tabs
-      let textTabs = [];
-      let listTabs = [];
-      let checkTabs = [];
-      let noteTabs = [];
-      for (var userKey in map) {
-        let tbs = {
-          "font": "calibri",
-          "bold": "false",
-          "italic": "false",
-          "underline": "false",
-          "fontColor": "black",
-          "fontSize": "size8",
-          "value": ""
-        };
-        switch (map[userKey]) {
-          case 'text':
-            tbs['tabLabel'] = "text_" + userKey;
-            textTabs.push(tbs);
-            break;
-          case 'list':
-            tbs['tabLabel'] = "list_" + userKey;
-            listTabs.push(tbs);
-            break;
-          case 'check':
-            tbs['tabLabel'] = "check_" + userKey;
-            tbs['selected'] = false;
-            checkTabs.push(tbs);
-            break;
-          case 'note':
-            tbs['tabLabel'] = "note_" + userKey;
-            noteTabs.push(tbs);
-            break;
-          default:
-        }
-      }
-      let tabs = { "textTabs": textTabs, "listTabs": listTabs, "checkboxTabs": checkTabs, "noteTabs": noteTabs };
     });
   };
   generateModelData() {

@@ -3,7 +3,7 @@ import { Http, Request, RequestMethod, Headers, ResponseContentType } from '@ang
 import { Storage } from '@ionic/storage';
 import 'rxjs/add/operator/map';
 const storageVar: any = "couch_params";
-const defaultParams = { "srv": "cdb.gautiersa.fr", "user": "gsaexp", "password": "gsaexp", "base": "demo" };
+const defaultParams = { "srv": "localhost:5984", "user": "admin", "password": "admin", "base": "demo" };
 
 /*
   Generated class for the CouchDb provider.

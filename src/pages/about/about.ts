@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { NavController, ModalController, Slides, Platform } from 'ionic-angular';
 import { RestServices } from '../../providers/rest';
 import { FilesOperation } from '../../providers/files-operation';
