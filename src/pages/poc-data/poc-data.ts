@@ -14,6 +14,7 @@ import { PocDataDetail } from '../poc-data-detail/poc-data-detail';
   templateUrl: 'poc-data.html'
 })
 export class PocData {
+  params: any;
   lstUseCase: any = [];
   displayData: boolean = false;
   constructor(public navCtrl: NavController, public toastCtrl: ToastController, public events: Events, public couch: CouchDbServices) {
@@ -25,11 +26,19 @@ export class PocData {
   ionViewDidLoad() {
     console.log('Hello PocData Page');
   }
+
   ngOnInit() {
-    this.getUseCases();
+    this.couch.getParams().then(data => {
+      console.log("Params", data);
+      this.params = data;
+      this.getUseCases();
+    }).catch(error => {
+      this.params = null;
+      this.getUseCases();
+    })
   }
   getUseCases() {
-    this.couch.getDbViewDocs('poc_data', 'allDocs', null, 100, 0).then(response => {
+    this.couch.getDbViewDocs('poc_data', 'allDocs', null, 500, 0, this.params).then(response => {
       console.log(response);
       this.lstUseCase = response['rows'];
     }, error => {
@@ -46,10 +55,10 @@ export class PocData {
     this.navCtrl.push(PocDataDetail, us.value);
   }
   addUseCase() {
-    this.navCtrl.push(PocDataDetail, null);
+    this.navCtrl.push(PocDataDetail, this.params);
   }
   removeUseCase(us, idx) {
-    this.couch.deleteDoc('poc_data', us['value']['_rev'], us).then(response => {
+    this.couch.deleteDoc('poc_data', us['value']['_rev'], us, this.params).then(response => {
       this.lstUseCase.splice(idx, 1);
       let toast = this.toastCtrl.create({
         message: 'Cas supprimé.',

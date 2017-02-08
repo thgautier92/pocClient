@@ -28,17 +28,21 @@ export class PocDataDetail {
     text: string = "";
     aceEditor: any;
     okDetail: boolean = false;
-    constructor(public navCtrl: NavController, public navParams: NavParams, public toastCtrl: ToastController, public events: Events, public couch: CouchDbServices) {
+    params: any;
+    constructor(public navCtrl: NavController, public navParams: NavParams,
+        public toastCtrl: ToastController, public events: Events,
+        public couch: CouchDbServices) {
         //console.log("Params", this.navParams);
         //console.log(this.navParams['data']);
-        this.couch.getDbViewCount('poc_data', 'countByType').then(response => {
-            this.lstType = response['rows'];
-        }, error => {
-            console.error(error);
+        this.couch.getParams().then(data => {
+            this.params = data;
+            this.loadUseCaseType();
+        }).catch(error => {
+            this.params = null;
+            this.loadUseCaseType();
         })
     }
     ngAfterViewInit() {
-
     }
     ngOnChanges(changes: any) {
         console.log("CHANGES", changes);
@@ -60,6 +64,13 @@ export class PocDataDetail {
         this.text = JSON.stringify(this.useCaseDetail['dataUseCase'], null, '\t');
         this.loadEditor(this.text, "editor", "json");
         this.okDetail = true;
+    }
+    loadUseCaseType() {
+        this.couch.getDbViewCount('poc_data', 'countByType', this.params).then(response => {
+            this.lstType = response['rows'];
+        }, error => {
+            console.error(error);
+        })
     }
     loadEditor(text, field, mode) {
         this.aceEditor = ace.edit(field);

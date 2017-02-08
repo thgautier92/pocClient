@@ -5,7 +5,7 @@
     	</button>
 		<ion-title>Boite à outils POCs</ion-title>
 		<ion-buttons end>
-			<button ion-button *ngIf="params">{{params.srv}}</button>
+			<button ion-button *ngIf="params" (click)="gotoParams()">{{params.srv}}</button>
 		</ion-buttons>
 	</ion-navbar>
 </ion-header>

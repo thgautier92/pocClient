@@ -15,6 +15,7 @@ import { CouchDbServices } from '../../../providers/couch/couch';
   templateUrl: 'docusignmodel.html'
 })
 export class DocuSignModel {
+  params: any;
   accountInfo: any;
   lstApi: any;
   signModel: any;
@@ -48,8 +49,15 @@ export class DocuSignModel {
       "doc": null,
       "docModelFields": ""
     }
+    this.couch.getParams().then(data => {
+      console.log("Params", data);
+      this.params = data;
+      this.getUseCaseModel();
+    }).catch(error => {
+      this.params = null;
+      this.getUseCaseModel();
+    })
     this.getLstModel();
-    this.getUseCaseModel();
     this.dataDoc = { "documents": null, "signProcess": null, "fieldsByRole": null };
   };
   ionViewDidLoad() {
@@ -64,7 +72,7 @@ export class DocuSignModel {
     });
   };
   getUseCaseModel() {
-    this.couch.getDbViewDocs('poc_data', 'byType', 'signModel', 100, 0).then(response => {
+    this.couch.getDbViewDocs('poc_data', 'byType', 'signModel', 100, 0, this.params).then(response => {
       console.log("Use case model", response);
       this.lstUseCaseModel = response['rows'];
     }, error => {

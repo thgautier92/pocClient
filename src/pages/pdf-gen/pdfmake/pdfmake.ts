@@ -13,6 +13,7 @@ declare var pdfMake: any;
   templateUrl: 'pdfmake.html'
 })
 export class Pdfmake {
+  params: any;
   lstApi: any = [];
   lstUseCase: any = [];
   currentUseCase: any = {};
@@ -27,13 +28,21 @@ export class Pdfmake {
   }
 
   ngOnInit() {
+    this.couch.getParams().then(data => {
+      console.log("Params", data);
+      this.params = data;
+      this.getUseCase();
+    }).catch(error => {
+      this.params = null;
+      this.getUseCase();
+    })
     this.getUseCase();
   }
   ionViewDidLoad() {
     console.log('Hello Pdfmake Page');
   }
   getUseCase() {
-    this.couch.getDbViewDocs('poc_data', 'byType', 'pdf', 100, 0).then(response => {
+    this.couch.getDbViewDocs('poc_data', 'byType', 'pdf', 100, 0, this.params).then(response => {
       console.log(response);
       this.lstUseCase = response['rows'];
     }, error => {

@@ -225,7 +225,7 @@ export class CouchDbServices {
           resolve(data);
         }, error => {
           console.log("Request error", error);
-          reject(JSON.parse(error._body));
+          reject(error);
         });
     });
   }
@@ -267,6 +267,8 @@ export class CouchDbServices {
     return new Promise((resolve, reject) => {
       if (!params) params = defaultParams;
       var rootUrl = 'http://' + params.srv + '/' + base + '/_all_docs?include_docs=true&limit=' + range + '&skip=' + skip;
+      this.credHeaders.delete('Authorization');
+      this.credHeaders.append('Authorization', 'Basic ' + window.btoa(params.user + ':' + params.password))
       //console.log("Get server info : " + rootUrl);
       var options = new Request({
         method: RequestMethod.Get,
@@ -296,6 +298,8 @@ export class CouchDbServices {
       if (filter) {
         rootUrl = rootUrl + '&key="' + filter + '"';
       }
+      this.credHeaders.delete('Authorization');
+      this.credHeaders.append('Authorization', 'Basic ' + window.btoa(params.user + ':' + params.password))
       var options = new Request({
         method: RequestMethod.Get,
         headers: this.credHeaders,
@@ -307,7 +311,7 @@ export class CouchDbServices {
         .map(res => res.json())
         .subscribe(
         data => {
-          //console.log(data);
+          console.log(rootUrl, data);
           resolve(data);
         }, error => {
           console.log("Request error");
@@ -319,6 +323,8 @@ export class CouchDbServices {
     return new Promise((resolve, reject) => {
       if (!params) params = defaultParams;
       let rootUrl = 'http://' + params.srv + '/' + base + '/_design/filter/_view/' + view + '?group=true';
+      this.credHeaders.delete('Authorization');
+      this.credHeaders.append('Authorization', 'Basic ' + window.btoa(params.user + ':' + params.password))
       var options = new Request({
         method: RequestMethod.Get,
         headers: this.credHeaders,
@@ -344,6 +350,8 @@ export class CouchDbServices {
     return new Promise((resolve, reject) => {
       if (!params) params = defaultParams;
       var rootUrl = 'http://' + params.srv + '/' + base + '/' + id;
+      this.credHeaders.delete('Authorization');
+      this.credHeaders.append('Authorization', 'Basic ' + window.btoa(params.user + ':' + params.password))
       //console.log("Get server info : " + rootUrl);
       var options = new Request({
         method: RequestMethod.Get,

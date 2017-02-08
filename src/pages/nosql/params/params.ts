@@ -36,10 +36,11 @@ export class ParamsPage {
       this.params = data;
       //console.log("Params ok");
     }).catch(err => {
-      this.params.srv = "localhost:5984";
-      this.params.user = "admin";
-      this.params.password = "";
+      this.params.srv = defaultParams['srv'];
+      this.params.user = defaultParams['user'];
+      this.params.password = defaultParams['password'];
     })
+    console.log(this.storage);
   }
   cancelParams() {
     this.navCtrl.pop();

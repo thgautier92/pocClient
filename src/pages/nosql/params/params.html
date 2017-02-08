@@ -14,8 +14,8 @@
       <button *ngIf="okTest" ion-button style="font-size: 25px;" color="primary" (click)="saveParams()">
 <ion-icon name="cloud-upload"></ion-icon>
 </button>
-</ion-buttons>
-</ion-navbar>
+    </ion-buttons>
+  </ion-navbar>
 
 </ion-header>
 
@@ -24,15 +24,15 @@
   <ion-list>
     <ion-item>
       <ion-label floating>Serveur (url:port)</ion-label>
-      <ion-input [(ngModel)]="params['srv']" type="text"></ion-input>
+      <ion-input [(ngModel)]="params['srv']" type="text" clearInput=true></ion-input>
     </ion-item>
     <ion-item>
       <ion-label floating>User</ion-label>
-      <ion-input [(ngModel)]="params['user']" type="text"></ion-input>
+      <ion-input [(ngModel)]="params['user']" type="text" clearInput=true></ion-input>
     </ion-item>
     <ion-item>
       <ion-label floating>Password</ion-label>
-      <ion-input [(ngModel)]="params['password']" type="password"></ion-input>
+      <ion-input [(ngModel)]="params['password']" type="password" clearInput=true></ion-input>
     </ion-item>
   </ion-list>
   <button ion-button color="primary" (click)="testParams()">Tester la disponibilité du serveur</button>

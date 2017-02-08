@@ -24,8 +24,8 @@
 					ID : {{useCaseDetail['_id']}}
 				</ion-item>
 				<ion-item no-padding>
-					<ion-label floating>Type de cas<br>
-						<span *ngFor="let t of lstType">{{t.key}}:{{t.value}},</span>
+					<ion-label floating text-wrap>Type de cas&nbsp;
+						<ion-icon name="help-circle"></ion-icon>
 					</ion-label>
 					<ion-input [(ngModel)]="useCaseDetail['type']" type="text"></ion-input>
 				</ion-item>
@@ -41,6 +41,15 @@
 					<ion-label floating>Description Fonctionnelle</ion-label>
 					<ion-textarea [(ngModel)]="useCaseDetail['description']" type="text"></ion-textarea>
 				</ion-item>
+				<hr>
+				<ion-card>
+					<h5>
+						<ion-icon name="help-circle"></ion-icon> &nbsp;Nombre de cas par type</h5>
+					<ul>
+						<li *ngFor="let t of lstType">"{{t.key}}":{{t.value}}</li>
+					</ul>
+				</ion-card>
+
 			</div>
 		</ion-col>
 		<ion-col width-80>

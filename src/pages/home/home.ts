@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController, ToastController, Events } from 'ionic-angular';
 //import { PocData } from '../poc-data/poc-data';
+import { ParamsPage } from '../nosql/params/params';
 import { PdfGen } from '../pdf-gen/pdf-gen';
 import { Sign } from '../sign/sign';
 import { Simu } from '../simu/simu';
@@ -105,5 +106,8 @@ export class Home {
   }
   openPage(page) {
     this.navCtrl.push(page.component);
+  }
+  gotoParams() {
+    this.navCtrl.push(ParamsPage);
   }
 }

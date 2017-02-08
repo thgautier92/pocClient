@@ -18,6 +18,7 @@ declare var Chance: any;
   templateUrl: 'docusign.html'
 })
 export class Docusign {
+  params: any;
   accountInfo: any;
   lstApi: any;
   signSend: any;
@@ -125,7 +126,14 @@ export class Docusign {
       "docModel": "",
       "docModelFields": "",
     };
-    this.getUseCase();
+    this.couch.getParams().then(data => {
+      console.log("Params", data);
+      this.params = data;
+      this.getUseCase();
+    }).catch(error => {
+      this.params = null;
+      this.getUseCase();
+    })
     this.getLstModel();
     this.dataDoc = { "default": true };
   }
@@ -178,7 +186,7 @@ export class Docusign {
   }
   // ===== Demo only =================================
   getUseCase() {
-    this.couch.getDbViewDocs('poc_data', 'byType', 'sign', 100, 0).then(response => {
+    this.couch.getDbViewDocs('poc_data', 'byType', 'sign', 100, 0, this.params).then(response => {
       //console.log(response);
       this.lstUseCase = response['rows'];
     }, error => {
