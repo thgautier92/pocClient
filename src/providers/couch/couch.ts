@@ -167,7 +167,7 @@ export class CouchDbServices {
         method: RequestMethod.Put,
         headers: this.credHeaders,
         responseType: ResponseContentType.Json,
-        withCredentials: true,
+        withCredentials: false,
         body: {},
         url: rootUrl
       });
@@ -214,7 +214,7 @@ export class CouchDbServices {
         method: RequestMethod.Put,
         headers: this.credHeaders,
         responseType: ResponseContentType.Json,
-        withCredentials: true,
+        withCredentials: false,
         url: rootUrl
       });
       options['_body'] = JSON.stringify(jsonCode);
@@ -242,7 +242,7 @@ export class CouchDbServices {
         method: RequestMethod.Get,
         headers: this.credHeaders,
         responseType: ResponseContentType.Json,
-        withCredentials: true,
+        withCredentials: false,
         body: {},
         url: rootUrl
       });
@@ -274,7 +274,7 @@ export class CouchDbServices {
         method: RequestMethod.Get,
         headers: this.credHeaders,
         responseType: ResponseContentType.Json,
-        withCredentials: true,
+        withCredentials: false,
         body: {},
         url: rootUrl
       });
@@ -329,7 +329,7 @@ export class CouchDbServices {
         method: RequestMethod.Get,
         headers: this.credHeaders,
         responseType: ResponseContentType.Json,
-        withCredentials: true,
+        withCredentials: false,
         body: {},
         url: rootUrl
       });
@@ -357,7 +357,7 @@ export class CouchDbServices {
         method: RequestMethod.Get,
         headers: this.credHeaders,
         responseType: ResponseContentType.Json,
-        withCredentials: true,
+        withCredentials: false,
         body: {},
         url: rootUrl
       });
