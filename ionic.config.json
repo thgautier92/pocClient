@@ -1,6 +1,6 @@
 {
   "name": "pocClient",
-  "app_id": "pocClient",
+  "app_id": "fr.smabtp.pocClient",
   "v2": true,
   "typescript": true,
   "proxies": [
@@ -19,6 +19,10 @@
     {
       "path": "/sellandsign",
       "proxyUrl": "http://2.int.dev.calindasoftware.com"
+    },
+    {
+      "path": "/mfp",
+      "proxyUrl": "http://gautiersa.fr:8080/mfp"
     }
   ]
 }

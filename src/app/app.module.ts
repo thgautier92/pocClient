@@ -42,6 +42,11 @@ import { PouchPage, dbPopoverPouchPage } from '../pages/nosql/pouch/pouch';
 import { MfpPage } from '../pages/mfp/mfp';
 import { MfpTracePage } from '../pages/mfp/mfp-trace/mfp-trace';
 import { MfpApiPage } from '../pages/mfp/mfp-api/mfp-api';
+import { MfpInfoPage } from '../pages/mfp/mfp-info/mfp-info';
+
+// openData pages
+import { OpendataPage } from '../pages/opendata/opendata';
+import { RatpPage } from '../pages/opendata/ratp/ratp';
 
 // components
 import { Record } from '../components/record/record';
@@ -69,7 +74,8 @@ import { FilesOperation } from '../providers/files-operation';
         Simu, Harvest, Epicaste,
         NosqlPage, ParamsPage, CouchBasePage, dbPopoverPage, CouchStatsPage,
         PouchPage, dbPopoverPouchPage,
-        MfpPage, MfpTracePage, MfpApiPage,
+        MfpPage, MfpTracePage, MfpApiPage, MfpInfoPage,
+        OpendataPage, RatpPage,
         Record, FileUploadComponent, PdfViewerComponent, PdfComponent,
         CouchCrudComponent, dbEditDataPage,
         PouchCrudComponent, dbEditLocalDataPage
@@ -91,7 +97,8 @@ import { FilesOperation } from '../providers/files-operation';
         Simu, Harvest, Epicaste,
         NosqlPage, ParamsPage, CouchBasePage, dbPopoverPage, CouchStatsPage,
         PouchPage, dbPopoverPouchPage,
-        MfpPage, MfpTracePage, MfpApiPage,
+        MfpPage, MfpTracePage, MfpApiPage, MfpInfoPage,
+        OpendataPage, RatpPage,
         Record, FileUploadComponent, PdfViewerComponent, PdfComponent,
         CouchCrudComponent, dbEditDataPage,
         PouchCrudComponent, dbEditLocalDataPage

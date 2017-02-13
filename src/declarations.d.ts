@@ -12,3 +12,4 @@
   https://www.typescriptlang.org/docs/handbook/declaration-files/introduction.html
 */
 declare module '*';
+/// <reference path="../node_modules/ibm-mfp-web-sdk/lib/typings/ibmmfpf.d.ts" />

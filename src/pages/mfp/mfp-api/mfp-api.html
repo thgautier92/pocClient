@@ -7,12 +7,27 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>mfpApi</ion-title>
+    <ion-title>Tests d'API</ion-title>
   </ion-navbar>
-
 </ion-header>
-
-
-<ion-content padding>
-
+<ion-content no-padding>
+  <ion-row wrap>
+    <ion-col text-wrap width-33>
+      <ion-list>
+        <ion-item detail-push *ngFor="let item of lstApi" (click)="getAdapter(item)">
+          {{item.name}}-{{item.des}}
+        </ion-item>
+      </ion-list>
+    </ion-col>
+    <ion-col>
+      <ion-card>
+        <ion-card-header>
+          Résulats de l'API
+        </ion-card-header>
+        <ion-card-content>
+          <record [dataRecord]='adapterReturn' [displaySelector]='displaySelector'></record>
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+  </ion-row>
 </ion-content>

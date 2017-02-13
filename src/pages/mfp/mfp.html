@@ -7,11 +7,22 @@
 <ion-header>
   <ion-navbar color="primary">
     <ion-title>Mobile First Plateform</ion-title>
+    <ion-buttons end>
+      <button ion-button [color]="(mfpReady['ready']) ? 'secondary' : 'danger'">
+        <ion-icon *ngIf="mfpReady['ready']" name="checkmark-circle-outline"></ion-icon>
+        &nbsp;Api
+      </button>
+      <button ion-button [color]="(mfpReady['connect']) ? 'secondary' : 'danger'">
+        <ion-icon *ngIf="mfpReady['connect']" name="checkmark-circle-outline"></ion-icon>
+        &nbsp;Connect
+      </button>
+    </ion-buttons>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
   <ion-tabs>
+    <ion-tab tabIcon="information-circle" tabTitle="Infos MFP" [root]="tab3"></ion-tab>
     <ion-tab tabIcon="finger-print" tabTitle="Activités" [root]="tab1"></ion-tab>
     <ion-tab tabIcon="logo-nodejs" tabTitle="Api MFP" [root]="tab2"></ion-tab>
   </ion-tabs>

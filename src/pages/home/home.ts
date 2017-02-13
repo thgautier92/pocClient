@@ -7,6 +7,7 @@ import { Sign } from '../sign/sign';
 import { Simu } from '../simu/simu';
 import { NosqlPage } from '../nosql/nosql';
 import { MfpPage } from '../mfp/mfp';
+import { OpendataPage } from '../opendata/opendata';
 import { CouchDbServices } from '../../providers/couch/couch';
 
 @Component({
@@ -25,7 +26,8 @@ export class Home {
       { title: 'Simulateurs', component: Simu, icon: "people", img: this.imgPath + "billets-euros.large.jpg", color: "primary", "dataKey": "simu", "useCaseNum": 0 },
       { title: 'Generateur PDF', component: PdfGen, icon: "docs", img: this.imgPath + "pdfDoc.png", color: "primary", "dataKey": "pdf", "useCaseNum": 0 },
       { title: 'Base NOSQL', component: NosqlPage, icon: "docs", img: this.imgPath + "nosql-net_logo_transparent.png", color: "primary", "dataKey": "nosql", "useCaseNum": 0 },
-      { title: 'Mobile First', component: MfpPage, icon: "docs", img: this.imgPath + "MobileFirst-Logo.jpg", color: "primary", "dataKey": "mfp", "useCaseNum": 0 }
+      { title: 'Mobile First', component: MfpPage, icon: "docs", img: this.imgPath + "MobileFirst-Logo.jpg", color: "primary", "dataKey": "mfp", "useCaseNum": 0 },
+      { title: 'Open Data', component: OpendataPage, icon: "docs", img: this.imgPath + "opendata.jpeg", color: "primary", "dataKey": "opendata", "useCaseNum": 0 }
     ];
     this.events.subscribe("ParamsChanged", data => {
       let toast = this.toastCtrl.create({
