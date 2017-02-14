@@ -18,7 +18,7 @@ export class MfpInfoPage {
     this.infos = [];
     this.events.subscribe("mfpAccess", data => {
       //console.log(data);
-      this.infos.push({ "name": 'accessToken', "des": "Clé d'accés", "data": JSON.stringify(data) });
+      this.infos.push({ "name": 'accessToken', "des": "Clé d'accés", "data": JSON.stringify(data, null, 2) });
     })
   }
 

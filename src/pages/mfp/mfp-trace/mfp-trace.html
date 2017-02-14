@@ -20,6 +20,7 @@
       <button ion-fab (click)="detailActions=!detailActions" color="primary"><ion-icon name="eye"></ion-icon></button>
       <button ion-fab (click)="resetLog()" color="danger"><ion-icon name="trash"></ion-icon></button>
       <button ion-fab (click)="sendLog()" color="secondary"><ion-icon name="send"></ion-icon></button>
+      <button ion-fab (click)="analyticLog()" color="secondary"><ion-icon name="analytics"></ion-icon></button>
       <button ion-fab (click)="scrollToTop()"><ion-icon color="danger" name="arrow-up"></ion-icon></button>
     </ion-fab-list>
   </ion-fab>
@@ -60,6 +61,9 @@
         </li>
       </ul>
     </ion-col>
+  </ion-row>
+  <ion-row *ngIf="dataAnalytics">
+    <record [dataRecord]='dataAnalytics' displaySelector=true></record>
   </ion-row>
 
 </ion-content>

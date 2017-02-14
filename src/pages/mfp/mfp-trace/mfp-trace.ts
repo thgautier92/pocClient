@@ -1,6 +1,8 @@
 import { Component, ViewChild } from '@angular/core';
 import { NavController, NavParams, Content } from 'ionic-angular';
-declare var WL: any;
+import { IbmAnalytics } from '../../../providers/ibm-analytics';
+//declare var WL: any;
+declare var ibmmfpfanalytics: any;
 
 /*
   Generated class for the MfpTrace page.
@@ -23,7 +25,9 @@ export class MfpTracePage {
   fnDispo: boolean = false;
   log: any;
   status: any;
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  dataAnalytics: any = null;
+  constructor(public navCtrl: NavController, public navParams: NavParams,
+    public ibm: IbmAnalytics) {
     this.status = null;
   }
 
@@ -36,33 +40,44 @@ export class MfpTracePage {
   pressEvent(e) {
     console.log(e);
     this.press++;
-    this.logActions.push({ "ts": e.timeStamp, "action": "press", "data": e });
+    this.logActions.push({ "ts": e.timeStamp, "trace": "gestes", "action": "press", "data": e });
   }
   panEvent(e) {
     this.pan++;
-    this.logActions.push({ "ts": e.timeStamp, "action": "pan", "data": e });
+    this.logActions.push({ "ts": e.timeStamp, "trace": "gestes", "action": "pan", "data": e });
   }
   swipeEvent(e) {
     this.swipe++;
-    this.logActions.push({ "ts": e.timeStamp, "action": "swipe", "data": e });
+    this.logActions.push({ "ts": e.timeStamp, "trace": "gestes", "action": "swipe", "data": e });
   }
   tapEvent(e) {
     this.tap++;
-    this.logActions.push({ "ts": e.timeStamp, "action": "tap", "data": e });
+    this.logActions.push({ "ts": e.timeStamp, "trace": "gestes", "action": "tap", "data": e });
   }
   resetLog() {
     this.logActions = [];
   }
   sendLog() {
-
+    console.log(ibmmfpfanalytics);
+    let logger = ibmmfpfanalytics.logger;
+    logger.enable(true);
+    logger.info(this.logActions);
+    ibmmfpfanalytics.send();
+    logger.enable(false);
+    this.logActions = [];
   }
   stopLog() {
-    WL.Logger.config({ capture: false });
+
   }
   statusLog() {
 
   }
   analyticLog() {
-
+    this.ibm.getCustomChart().then(data => {
+      console.debug("-- ANALYTICS", data);
+      this.dataAnalytics = data;
+    }, error => {
+      console.error(error);
+    })
   }
 }

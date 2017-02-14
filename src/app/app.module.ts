@@ -57,6 +57,7 @@ import { PouchCrudComponent, dbEditLocalDataPage } from '../components/pouch-cru
 
 // Common providers
 import { CouchDbServices } from '../providers/couch/couch';
+import { IbmAnalytics } from '../providers/ibm-analytics';
 import { RestServices } from '../providers/rest';
 import { UploadService } from '../providers/upload';
 import { WinExternal } from '../providers/win-external';
@@ -107,7 +108,8 @@ import { FilesOperation } from '../providers/files-operation';
         { provide: ErrorHandler, useClass: IonicErrorHandler },
         Storage,
         RestServices, UploadService, CouchDbServices, WinExternal, FilesOperation,
-        DocuSignServices
+        DocuSignServices,
+        IbmAnalytics
     ]
 })
 export class AppModule { }

@@ -20,11 +20,16 @@ export class MfpPage {
   tab2: any;
   tab3: any;
   mfpReady: any;
+  lstScript: any;
   constructor(public navCtrl: NavController, public navParams: NavParams, public events: Events) {
     this.tab1 = MfpTracePage;
     this.tab2 = MfpApiPage;
     this.tab3 = MfpInfoPage;
     this.mfpReady = { "ready": false, "connect": false };
+    this.lstScript = [
+      { "id": "mfpAnalyticsInit", "src": "assets/mfp/lib/analytics/ibmmfpfanalytics.js", "delay": 9000 },
+      { "id": "mfpInit", "src": "assets/mfp/ibmmfpf.js", "delay": 2000 }
+    ];
     this.events.subscribe("mfpJsLoaded", data => {
       setTimeout(() => {
         this.mfpInit();
@@ -38,23 +43,33 @@ export class MfpPage {
   ngOnInit() {
     if (typeof WL == "undefined" || typeof WL.logger == "undefined") {
       console.log("Mobile First JavaScript needs to be loaded.");
-      let lstScript = [
-        { "id": "mfpAnalyticsInit", "src": "assets/mfp/lib/analytics/ibmmfpfanalytics.js" },
-        { "id": "mfpInit", "src": "assets/mfp/ibmmfpf.js" }
-      ];
-      lstScript.forEach(sc => {
-        let script = document.createElement("script");
-        script.id = sc.id;
-        script.src = sc.src;
-        document.body.appendChild(script);
+      this.loadScript(0).then(resp0 => {
+        this.loadScript(1).then(resp1 => {
+          this.events.publish("mfpJsLoaded", null);
+          this.mfpReady['ready'] = true;
+        });
       });
-      this.events.publish("mfpJsLoaded", null);
-      this.mfpReady['ready'] = true;
     } else {
       console.log("Mobile First Cordova Module is loaded", WL);
       this.mfpReady['ready'] = true;
     }
-
+  }
+  loadScript(idx) {
+    return new Promise((resolve, reject) => {
+      let sc = this.lstScript[idx];
+      console.debug("-- Load ", sc.id);
+      let me = this;
+      let script = document.createElement("script");
+      script.id = sc.id;
+      script.src = sc.src;
+      script.async = true;
+      script.defer = true;
+      script.onload = function () {
+        console.debug("-- ", sc.id, "loaded");
+        resolve(true);
+      }
+      document.body.appendChild(script);
+    });
   }
   mfpInit() {
     let me = this;
@@ -77,5 +92,13 @@ export class MfpPage {
           me.mfpReady['connect'] = false;
         });
       });
+  }
+}
+// JavaScript
+function wait(ms) {
+  var start = new Date().getTime();
+  var end = start;
+  while (end < start + ms) {
+    end = new Date().getTime();
   }
 }

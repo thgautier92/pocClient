@@ -16,8 +16,8 @@
 <ion-content padding>
   <ion-list>
     <ion-item text-wrap *ngFor="let item of infos">
-      <ion-label>{{item.des}}</ion-label>
-      <ion-textarea class="small" [(ngModel)]="item.data" type="text"></ion-textarea>
+      <ion-label stacked>{{item.name}} -> {{item.des}}</ion-label>
+      <ion-textarea class="small" rows="5" [(ngModel)]="item.data" type="text"></ion-textarea>
     </ion-item>
   </ion-list>
   {{infoAccess|json}}
