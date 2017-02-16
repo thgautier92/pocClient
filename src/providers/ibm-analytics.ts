@@ -27,15 +27,17 @@ export class IbmAnalytics {
         body: {},
         url: rootUrl
       });
-      this.http.request(options)
-        .map(res => res.json())
-        .subscribe(
-        data => {
-          resolve(data);
-        }, error => {
-          console.log("IBM Analytic Server : request error", error);
-          reject(error);
-        });
+      this.http.request(options).subscribe((response) => {
+        var mediaType = 'application/json';
+        var blob = new Blob([response['_body']], { type: mediaType });
+        var filename = 'export.json';
+        var url = window.URL.createObjectURL(blob);
+        window.open(url);
+        resolve(blob);
+      }, error => {
+        console.log("IBM Analytic Server : request error", error);
+        reject(error);
+      });
     });
-  };
+  }
 }

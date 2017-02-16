@@ -12,7 +12,7 @@
         <ion-icon *ngIf="mfpReady['ready']" name="checkmark-circle-outline"></ion-icon>
         &nbsp;Api
       </button>
-      <button ion-button [color]="(mfpReady['connect']) ? 'secondary' : 'danger'">
+      <button ion-button [color]="(mfpReady['connect']) ? 'secondary' : 'danger'" (click)="ngOnInit()">
         <ion-icon *ngIf="mfpReady['connect']" name="checkmark-circle-outline"></ion-icon>
         &nbsp;Connect
       </button>

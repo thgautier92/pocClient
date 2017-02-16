@@ -1,5 +1,5 @@
 import { Component, Renderer } from '@angular/core';
-import { NavController, NavParams, AlertController } from 'ionic-angular';
+import { NavController, NavParams, AlertController, LoadingController } from 'ionic-angular';
 declare var WLResourceRequest;
 declare var WL;
 
@@ -19,56 +19,26 @@ export class MfpApiPage {
   adapterReturn: any = null;
   AuthHandler: any;
   constructor(public navCtrl: NavController, public navParams: NavParams, public alertCtrl: AlertController,
-    public renderer: Renderer) {
+    public renderer: Renderer,
+    public loadingCtrl: LoadingController) {
     this.displaySelector = false;
-    this.lstApi = [{ group: "Adapters", name: "Server Check", des: "Check if the server is alive", url: "serverCheck", protected: false }]
+    this.lstApi = [
+      { group: "Adapters", name: "Server Check", des: "Vérification du serveur", url: "serverCheck", protected: false },
+      { group: "Adapters", name: "Balance", des: "Calcul d'un nombre", url: "ResourceAdapter/balance", protected: true }
+    ]
     renderer.listenGlobal('document', 'mfpjsloaded', () => {
-      this.AuthInit();
     })
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad MfpApiPage');
-    this.AuthInit();
-  }
-
-  AuthInit() {
-    console.log("Init Authentification", WL);
-    this.AuthHandler = WL.Client.createSecurityCheckChallengeHandler("UserLogin");
-    this.AuthHandler.handleChallenge((response) => {
-      console.log("Auth response", response);
-      if (response.errorMsg) {
-        var msg = response.errorMsg + '<br>';
-        msg += 'Remaining attempts: ' + response.remainingAttempts;
-        WL.Logger.error("Auth error: " + response.errorMsg);
-        WL.Logger.send();
-      } else {
-        this.DisplayLogin();
-      }
-    });
-  }
-  DisplayLogin() {
-    let prompt = this.alertCtrl.create({
-      title: 'Login',
-      message: "Enter your username and password",
-      inputs: [
-        { name: 'username', placeholder: 'Username' },
-        { name: 'password', placeholder: 'Password', type: 'password' },
-      ],
-      buttons: [
-        {
-          text: 'Login',
-          handler: data => {
-            console.log('---> Trying to auth with user', data);
-            this.AuthHandler.submitChallengeAnswer(data);
-          }
-        }
-      ]
-    });
-    prompt.present();
   }
 
   getAdapter(item) {
+    let loader = this.loadingCtrl.create({
+      content: "Accès à l'adapter Mobile First...",
+    });
+    loader.present();
     let url = "/adapters/" + item.url;
     if (!item.protected) {
       url = url + "/unprotected"
@@ -78,11 +48,11 @@ export class MfpApiPage {
       this.adapterReturn = response;
       console.log(this.adapterReturn);
       this.displaySelector = true;
+      loader.dismiss();
     },
       function (error) {
         console.log(error);
+        loader.dismiss();
       });
   }
-
-
 }
