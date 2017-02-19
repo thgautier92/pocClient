@@ -28,6 +28,7 @@ export class Docusign {
   lstUseCaseModel: any = [];
   saveModel: any;
   docsModel: any = null;
+  docsEnvelope: any = null;
   option: any = "lstSign";
   lstEnvelopes: any = [];
   statusCode: any;
@@ -115,6 +116,8 @@ export class Docusign {
     }
   }
   ngOnInit() {
+    this.docsModel = null;
+    this.docsEnvelope = null;
     this.signSend = {
       "useCase": "",
       "data": "",
@@ -423,6 +426,7 @@ export class Docusign {
         //console.log(response);
         this.dataEnv = response;
         this.signSend['envId'] = response['envelopeId'];
+        this.getEnvelopeData(response['envelopeId']);
         //console.log("Context data", this.signSend);
       }, function (reason) {
         console.log("Create Envelope error", reason);
@@ -438,20 +442,48 @@ export class Docusign {
       alert.present();
     }
   };
+  // Update envelope
   signDocUpdate(envelopeId) {
     console.log("Modification des documents de l'enveloppe ", envelopeId);
-    this.docsModel.forEach((element, index) => {
+    this.docsEnvelope.forEach((element, index) => {
       //console.log("Supression du document ", element, index);
       if (element['order'] !== "1") {
         if (!element['select']) {
           // Supress the document from the enveloppe
           this.docuSign.removeDocFormEnv(envelopeId, index + 1).then(response => {
             //console.log(response);
+            this.getEnvelopeData(envelopeId);
           }, reason => {
             console.log(reason);
           });
         }
       }
+    });
+  }
+  signPageDocUpdate(envelopeId, docId, pageNumber) {
+    console.log("Modification des documents de l'enveloppe ", envelopeId, docId, pageNumber);
+    this.docuSign.removePageFormDocEnv(envelopeId, docId, pageNumber).then(response => {
+      //console.log(response);
+      this.getEnvelopeData(envelopeId);
+    }, reason => {
+      console.log(reason);
+    });
+  }
+  getEnvelopeData(envelopeId) {
+    let loader = this.loadingCtrl.create({
+      content: "Lecture de l'enveloppe...",
+    });
+    loader.present();
+    this.docuSign.getEnvelopeData(envelopeId).then(response => {
+      //console.log(response);
+      this.docsEnvelope = response['envelopeDocuments'];
+      this.docsEnvelope.forEach(element => {
+        element['pageSuppr'] = 0;
+      });
+      loader.dismiss();
+    }, reason => {
+      console.log(reason);
+      loader.dismiss();
     });
   }
   signSender(item) {

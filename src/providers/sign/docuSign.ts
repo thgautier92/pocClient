@@ -83,8 +83,8 @@ export class DocuSignServices {
     };
     getBilling() {
         return new Promise((resolve, reject) => {
-            var api = "accounts/#account#/billing_plan";
-            api = api.replace("#account#", this.account);
+            var api = "accounts/{account}/billing_plan";
+            api = api.replace("{account}", this.account);
             let url = this.rootApi + "/" + api;
             this.options.method = RequestMethod.Get;
             this.options.responseType = ResponseContentType.Json;
@@ -104,8 +104,8 @@ export class DocuSignServices {
             var dateView = monthView + "/01/" + yearView;
             var lstFolder = ["all", "drafts", "awaiting_my_signature", "completed", "out_for_signature", "sentitems"]
             var folder = lstFolder[numFolder];
-            var api = "accounts/#account#/search_folders/" + folder + "?from_date=" + dateView + "&to_date=&start_position=&count=&order=DESC&order_by=sent&include_recipients=true"
-            api = api.replace("#account#", this.account);
+            var api = "accounts/{account}/search_folders/" + folder + "?from_date=" + dateView + "&to_date=&start_position=&count=&order=DESC&order_by=sent&include_recipients=true"
+            api = api.replace("{account}", this.account);
             let url = this.rootApi + "/" + api;
             this.options.method = RequestMethod.Get;
             this.options.responseType = ResponseContentType.Json;
@@ -123,8 +123,8 @@ export class DocuSignServices {
         return new Promise((resolve, reject) => {
             var lstFolder = ["inbox", "draft", "sentitems", "recyclebin"];
             var folder = lstFolder[numFolder];
-            var api = "accounts/#account#/folders/" + folder
-            api = api.replace("#account#", this.account);
+            var api = "accounts/{account}/folders/" + folder
+            api = api.replace("{account}", this.account);
             let url = this.rootApi + "/" + api;
             this.options.method = RequestMethod.Get;
             this.options.responseType = ResponseContentType.Json;
@@ -141,8 +141,8 @@ export class DocuSignServices {
     // ===== SIGN API =====
     sendSignEnv(dataSend) {
         return new Promise((resolve, reject) => {
-            var api = "accounts/#account#/envelopes"
-            api = api.replace("#account#", this.account);
+            var api = "accounts/{account}/envelopes"
+            api = api.replace("{account}", this.account);
             let url = this.rootApi + "/" + api;
             this.options.method = RequestMethod.Post;
             this.options.responseType = ResponseContentType.Json;
@@ -159,9 +159,9 @@ export class DocuSignServices {
     };
     destSignEnv(envelopeId, dataSend) {
         return new Promise((resolve, reject) => {
-            var api = "accounts/#account#/envelopes/#envelopeId#/views/recipient"
-            api = api.replace("#account#", this.account);
-            api = api.replace("#envelopeId#", envelopeId);
+            var api = "accounts/{account}/envelopes/{envelopeId}/views/recipient"
+            api = api.replace("{account}", this.account);
+            api = api.replace("{envelopeId}", envelopeId);
             let url = this.rootApi + "/" + api;
             this.options.method = RequestMethod.Post;
             this.options.responseType = ResponseContentType.Json;
@@ -178,9 +178,9 @@ export class DocuSignServices {
     };
     senderSignEnv(envelopeId, dataSend) {
         return new Promise((resolve, reject) => {
-            var api = "accounts/#account#/envelopes/#envelopeId#/views/sender"
-            api = api.replace("#account#", this.account);
-            api = api.replace("#envelopeId#", envelopeId);
+            var api = "accounts/{account}/envelopes/{envelopeId}/views/sender"
+            api = api.replace("{account}", this.account);
+            api = api.replace("{envelopeId}", envelopeId);
             let url = this.rootApi + "/" + api;
             this.options.method = RequestMethod.Post;
             this.options.responseType = ResponseContentType.Json;
@@ -198,9 +198,9 @@ export class DocuSignServices {
     removeDocFormEnv(envelopeId, refDoc) {
         // DELETE /v2/accounts/{accountId}/envelopes/{envelopeId}/documents
         return new Promise((resolve, reject) => {
-            var api = "accounts/#account#/envelopes/#envelopeId#/documents"
-            api = api.replace("#account#", this.account);
-            api = api.replace("#envelopeId#", envelopeId);
+            var api = "accounts/{account}/envelopes/{envelopeId}/documents"
+            api = api.replace("{account}", this.account);
+            api = api.replace("{envelopeId}", envelopeId);
             let dataSend = { "documents": [{ "documentId": refDoc }] };
             let url = this.rootApi + "/" + api;
             this.options.method = RequestMethod.Delete;
@@ -216,12 +216,56 @@ export class DocuSignServices {
                 });
         });
     }
+    removePageFormDocEnv(envelopeId, documentId, pageNumber) {
+        // DELETE v2/accounts/{accountId}/envelopes/{envelopeId}/documents/{documentId}/pages/{pageNumber}
+        return new Promise((resolve, reject) => {
+            var api = "accounts/{accountId}/envelopes/{envelopeId}/documents/{documentId}/pages/{pageNumber}";
+            api = api.replace("{accountId}", this.account);
+            api = api.replace("{envelopeId}", envelopeId);
+            api = api.replace("{documentId}", documentId);
+            api = api.replace("{pageNumber}", pageNumber);
+            let url = this.rootApi + "/" + api;
+            this.options.method = RequestMethod.Delete;
+            this.options.responseType = ResponseContentType.Text;
+            this.options.body = {};
+            this.http.request(url, this.options)
+                .map(res => {
+                    console.log(res);
+                    //res.json()
+                })
+                .subscribe(data => {
+                    console.log(data);
+                    resolve(true);
+                }, error => {
+                    console.log("DELETE DOC error", error);
+                    reject(error);
+                });
+        });
+    }
     // ===== DOC SIGNED =====
+    getEnvelopeData(envelopeId) {
+        return new Promise((resolve, reject) => {
+            var api = "accounts/{account}/envelopes/{envelopeId}/documents"
+            api = api.replace("{account}", this.account);
+            api = api.replace("{envelopeId}", envelopeId);
+            let url = this.rootApi + "/" + api;
+            this.options.method = RequestMethod.Get;
+            this.options.responseType = ResponseContentType.Json;
+            this.http.request(url, this.options)
+                .map(res => res.json())
+                .subscribe(data => {
+                    resolve(data);
+                }, error => {
+                    console.log("GET error", error);
+                    reject(error);
+                });
+        });
+    }
     getdocSigned(envelopeId) {
         return new Promise((resolve, reject) => {
-            var api = "accounts/#account#/envelopes/#envelopeId#/documents/combined?certificate=true&include_metadata=true&language=fr&show_changes=true"
-            api = api.replace("#account#", this.account);
-            api = api.replace("#envelopeId#", envelopeId);
+            var api = "accounts/{account}/envelopes/{envelopeId}/documents/combined?certificate=true&include_metadata=true&language=fr&show_changes=true"
+            api = api.replace("{account}", this.account);
+            api = api.replace("{envelopeId}", envelopeId);
             let url = this.rootApi + "/" + api;
             this.options.method = RequestMethod.Get;
             this.options.responseType = ResponseContentType.Blob;
@@ -240,9 +284,9 @@ export class DocuSignServices {
     }
     getdocSignedData(envelopeId) {
         return new Promise((resolve, reject) => {
-            var api = "accounts/#account#/envelopes/#envelopeId#/recipients?include_tabs=true"
-            api = api.replace("#account#", this.account);
-            api = api.replace("#envelopeId#", envelopeId);
+            var api = "accounts/{account}/envelopes/{envelopeId}/recipients?include_tabs=true"
+            api = api.replace("{account}", this.account);
+            api = api.replace("{envelopeId}", envelopeId);
             let url = this.rootApi + "/" + api;
             this.options.method = RequestMethod.Get;
             this.options.responseType = ResponseContentType.Json;
@@ -258,9 +302,9 @@ export class DocuSignServices {
     };
     getDocEvents(envelopeId) {
         return new Promise((resolve, reject) => {
-            var api = "accounts/#account#/envelopes/#envelopeId#/audit_events"
-            api = api.replace("#account#", this.account);
-            api = api.replace("#envelopeId#", envelopeId);
+            var api = "accounts/{account}/envelopes/{envelopeId}/audit_events"
+            api = api.replace("{account}", this.account);
+            api = api.replace("{envelopeId}", envelopeId);
             let url = this.rootApi + "/" + api;
             this.options.method = RequestMethod.Get;
             this.options.responseType = ResponseContentType.Json;
@@ -276,9 +320,9 @@ export class DocuSignServices {
     }
     getDocFromEnv(envelopeId) {
         return new Promise((resolve, reject) => {
-            var api = "accounts/#account#/envelopes/#envelopeId#/documents"
-            api = api.replace("#account#", this.account);
-            api = api.replace("#envelopeId#", envelopeId);
+            var api = "accounts/{account}/envelopes/{envelopeId}/documents"
+            api = api.replace("{account}", this.account);
+            api = api.replace("{envelopeId}", envelopeId);
             let url = this.rootApi + "/" + api;
             this.options.method = RequestMethod.Get;
             this.options.responseType = ResponseContentType.Json;
@@ -296,8 +340,8 @@ export class DocuSignServices {
     // ===== TEMPLATES =====
     getTemplates() {
         return new Promise((resolve, reject) => {
-            var api = "accounts/#account#/templates"
-            api = api.replace("#account#", this.account);
+            var api = "accounts/{account}/templates"
+            api = api.replace("{account}", this.account);
             let url = this.rootApi + "/" + api;
             this.options.method = RequestMethod.Get;
             this.options.responseType = ResponseContentType.Json;
@@ -313,8 +357,8 @@ export class DocuSignServices {
     };
     getModelProcess(template) {
         return new Promise((resolve, reject) => {
-            var api = "accounts/#account#/templates/#template#/recipients";
-            api = api.replace("#account#", this.account);
+            var api = "accounts/{account}/templates/#template#/recipients";
+            api = api.replace("{account}", this.account);
             api = api.replace("#template#", template);
             let url = this.rootApi + "/" + api;
             this.options.method = RequestMethod.Get;
@@ -331,8 +375,8 @@ export class DocuSignServices {
     };
     getModelFields(template, recipientId) {
         return new Promise((resolve, reject) => {
-            var api = "accounts/#account#/templates/#template#/recipients/" + recipientId + "/tabs";
-            api = api.replace("#account#", this.account);
+            var api = "accounts/{account}/templates/#template#/recipients/" + recipientId + "/tabs";
+            api = api.replace("{account}", this.account);
             api = api.replace("#template#", template);
             let url = this.rootApi + "/" + api;
             this.options.method = RequestMethod.Get;
@@ -349,8 +393,8 @@ export class DocuSignServices {
     };
     getModelDocument(template) {
         return new Promise((resolve, reject) => {
-            var api = "accounts/#account#/templates/#template#/documents";
-            api = api.replace("#account#", this.account);
+            var api = "accounts/{account}/templates/#template#/documents";
+            api = api.replace("{account}", this.account);
             api = api.replace("#template#", template);
             let url = this.rootApi + "/" + api;
             this.options.method = RequestMethod.Get;
@@ -368,8 +412,8 @@ export class DocuSignServices {
     createTemplate(dataTemplate) {
         // POST accounts/{accountId}/templates
         return new Promise((resolve, reject) => {
-            var api = "accounts/#account#/templates/#templateId#/recipients"
-            api = api.replace("#account#", this.account);
+            var api = "accounts/{account}/templates/#templateId#/recipients"
+            api = api.replace("{account}", this.account);
             let url = this.rootApi + "/" + api;
             this.options.method = RequestMethod.Post;
             this.options.responseType = ResponseContentType.Json;
@@ -388,8 +432,8 @@ export class DocuSignServices {
     createRole(templateId, role) {
         // POST /v2/accounts/{accountId}/templates/{templateId}/recipients
         return new Promise((resolve, reject) => {
-            var api = "accounts/#account#/templates/#templateId#/recipients"
-            api = api.replace("#account#", this.account);
+            var api = "accounts/{account}/templates/#templateId#/recipients"
+            api = api.replace("{account}", this.account);
             api = api.replace("#templateId#", templateId);
             let url = this.rootApi + "/" + api;
             this.options.method = RequestMethod.Post;
@@ -415,8 +459,8 @@ export class DocuSignServices {
         // Create tabs
         // POST accounts/{accountId}/templates/{templateId}/recipients/{recipientId}/tabs
         return new Promise((resolve, reject) => {
-            var api = "accounts/#account#/templates/#templateId#/recipients/#recipientId#/tabs"
-            api = api.replace("#account#", this.account);
+            var api = "accounts/{account}/templates/#templateId#/recipients/#recipientId#/tabs"
+            api = api.replace("{account}", this.account);
             api = api.replace("#templateId#", templateId);
             api = api.replace("#recipientId#", roleId);
             let url = this.rootApi + "/" + api;
