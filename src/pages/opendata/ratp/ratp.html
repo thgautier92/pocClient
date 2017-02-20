@@ -5,14 +5,34 @@
   Ionic pages and navigation.
 -->
 <ion-header>
-
   <ion-navbar>
-    <ion-title>ratp</ion-title>
+    <ion-title>Ratp OpenData</ion-title>
   </ion-navbar>
-
 </ion-header>
 
 
 <ion-content padding>
-
+  <ion-row wrap>
+    <ion-col text-wrap width-33 *ngIf="groupedApis">
+      <ion-card *ngFor="let key of groupedApis | keys">
+        <ion-card-header color="primary">{{key.key}}</ion-card-header>
+        <ion-list>
+          <ion-item *ngFor="let item of key.value" (click)="loadApi(item)">
+            <h2>{{item.name}}</h2>
+            <p>{{item.des}}</p>
+          </ion-item>
+        </ion-list>
+      </ion-card>
+    </ion-col>
+    <ion-col>
+      <ion-card>
+        <ion-card-header>
+          Résulats de l'API
+        </ion-card-header>
+        <ion-card-content>
+          <record [dataRecord]='apiReturn' [displaySelector]='displaySelector'></record>
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+  </ion-row>
 </ion-content>

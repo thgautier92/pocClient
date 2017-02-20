@@ -34,6 +34,10 @@ export class MfpTracePage {
   ionViewDidLoad() {
     console.log('ionViewDidLoad MfpTracePage');
   }
+  ngOnInit() {
+    this.dispoLog();
+  }
+
   scrollToTop() {
     this.content.scrollToTop();
   }
@@ -56,6 +60,13 @@ export class MfpTracePage {
   }
   resetLog() {
     this.logActions = [];
+  }
+  dispoLog() {
+    if (ibmmfpfanalytics) {
+      this.fnDispo = true;
+    } else {
+      this.fnDispo = false;
+    }
   }
   sendLog() {
     console.log(ibmmfpfanalytics);

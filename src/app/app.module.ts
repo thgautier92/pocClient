@@ -10,6 +10,10 @@ import { PocDataDetail } from '../pages/poc-data-detail/poc-data-detail';
 
 import { Page1 } from '../pages/page1/page1';
 import { Page2 } from '../pages/page2/page2';
+
+//Pipes
+import { groupBy, KeysPipe } from '../pipes/comon';
+
 // Générateur de fichier PDF
 import { PdfGen } from '../pages/pdf-gen/pdf-gen';
 import { Jspdf } from '../pages/pdf-gen/jspdf/jspdf';
@@ -79,7 +83,8 @@ import { FilesOperation } from '../providers/files-operation';
         OpendataPage, RatpPage,
         Record, FileUploadComponent, PdfViewerComponent, PdfComponent,
         CouchCrudComponent, dbEditDataPage,
-        PouchCrudComponent, dbEditLocalDataPage
+        PouchCrudComponent, dbEditLocalDataPage,
+        groupBy, KeysPipe
     ],
     imports: [
         IonicModule.forRoot(PocApp, {

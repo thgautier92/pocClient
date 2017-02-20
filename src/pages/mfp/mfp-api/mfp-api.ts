@@ -24,7 +24,8 @@ export class MfpApiPage {
     this.displaySelector = false;
     this.lstApi = [
       { group: "Adapters", name: "Server Check", des: "Vérification du serveur", url: "serverCheck", protected: false },
-      { group: "Adapters", name: "Balance", des: "Calcul d'un nombre", url: "ResourceAdapter/balance", protected: true }
+      { group: "Adapters", name: "Balance", des: "Calcul d'un nombre", url: "ResourceAdapter/balance", protected: true },
+      { group: "Adapters", name: "proxyWeb", des: "Proxy WEB", url: "proxyWeb", protected: false }
     ]
     renderer.listenGlobal('document', 'mfpjsloaded', () => {
     })

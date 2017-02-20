@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
+import { Http, Request, RequestMethod, Headers, ResponseContentType } from '@angular/http';
 import 'rxjs/add/operator/map';
 
 /*
@@ -8,9 +8,12 @@ import 'rxjs/add/operator/map';
 */
 @Injectable()
 export class RestServices {
-
+  credHeaders: Headers;
   constructor(public http: Http) {
     console.log('Hello Rest Provider');
+    this.credHeaders = new Headers();
+    //this.credHeaders.append('Content-Type', 'application/json');
+    this.credHeaders.append('Accept', 'application/json;charset=utf-8');
   }
   load() {
     return new Promise((resolve, reject) => {
@@ -26,5 +29,25 @@ export class RestServices {
         });
     });
   }
-
+  loadApi(url, method) {
+    // Method : 
+    // 0 : GET, 1 : POST
+    //
+    return new Promise((resolve, reject) => {
+      console.log("Rest call url", url, method);
+      var options = new Request({
+        method: method,
+        url: url
+      });
+      this.http.request(options)
+        .map(res => res.json())
+        .subscribe(
+        data => {
+          resolve(data);
+        }, error => {
+          console.log("API Error", error);
+          reject(error);
+        });
+    });
+  };
 }

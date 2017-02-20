@@ -180,7 +180,10 @@ export class PouchCrudComponent {
   }
   synchroStart() {
     var localDB = new PouchDB(this.noSqlLocalEnv['base']);
-    var remoteDB = new PouchDB("http://" + this.params['user'] + ":" + this.params['password'] + "@" + this.params['srv'] + '/' + this.noSqlLocalEnv['base']);
+    var remoteUrl = "http://" + this.params['user'] + ":" + this.params['password'] + "@" + this.params['srv'] + '/' + this.noSqlLocalEnv['base'];
+    var remoteDB = new PouchDB(remoteUrl, {
+      ajax: { withCredentials: false }
+    });
     console.info("Start synchro base", this.noSqlLocalEnv['base'], remoteDB);
     this.syncHandler = localDB.sync(remoteDB, {
       live: true,
