@@ -13,27 +13,46 @@
 </ion-header>
 <ion-content padding>
   <ion-row wrap>
-    <ion-col *ngFor="let p of products">
-      <ion-card (click)="openPage(p)">
-        <img [src]=p.logo/>
+    <ion-col text-wrap width-50 *ngIf="lstGroup">
+      <ion-card *ngFor="let key of lstGroup">
+        <ion-item>
+          <ion-avatar item-left>
+            <img [src]="key.logo" />
+          </ion-avatar>
+          <h2>{{key.name}}</h2>
+          <p>{{key.des}}</p>
+        </ion-item>
         <ion-card-content>
-          <ion-card-title>{{p.title}}</ion-card-title>
-          <p>{{p.description}}</p>
+          <ion-list>
+            <ion-item *ngFor="let item of (lstApi | filterBy:'group':key.group)" (click)="loadApi(item)">
+              <ion-card-title>{{item.name}}</ion-card-title>
+              <p>{{item.des}}</p>
+            </ion-item>
+          </ion-list>
         </ion-card-content>
+        <ion-row>
+          <ion-col>
+            <button ion-button icon-left clear small (click)="openUrl(key)">
+              <ion-icon name="link"></ion-icon>
+              <div>Site</div>
+            </button>
+          </ion-col>
+          <ion-col center text-center>
+            <ion-note>
+            </ion-note>
+          </ion-col>
+        </ion-row>
       </ion-card>
     </ion-col>
-  </ion-row>
-  <ion-row>
     <ion-col>
       <ion-card>
-        <img src="assets/img/logo-web.jpg" />
+        <ion-card-header>
+          Résulats de l'API
+        </ion-card-header>
         <ion-card-content>
-          <ion-card-title>Les liens utiles</ion-card-title>
-          <a href="https://data.ratp.fr/explore/?sort=modified" target="_blank">Le site RATP</a>
+          <record [dataRecord]='apiReturn' [displaySelector]='displaySelector'></record>
         </ion-card-content>
       </ion-card>
-    </ion-col>
-    <ion-col>
     </ion-col>
   </ion-row>
 </ion-content>
