@@ -24,16 +24,22 @@ export class useCase {
 export class PocDataDetail {
     @ViewChild('editor') editor;
     lstType: any = [];
+    params: any;
+    dataEdit: any;
     useCaseDetail: useCase;
     text: string = "";
     aceEditor: any;
     okDetail: boolean = false;
-    params: any;
+
     constructor(public navCtrl: NavController, public navParams: NavParams,
         public toastCtrl: ToastController, public events: Events,
         public couch: CouchDbServices) {
-        //console.log("Params", this.navParams);
-        //console.log(this.navParams['data']);
+        console.log("Params", this.navParams);
+        console.log(this.navParams['data']);
+        this.params = this.navParams['data']['params'];
+        this.dataEdit = this.navParams['data']['data'];
+        this.loadUseCaseType();
+        /*
         this.couch.getParams().then(data => {
             this.params = data;
             this.loadUseCaseType();
@@ -41,6 +47,7 @@ export class PocDataDetail {
             this.params = null;
             this.loadUseCaseType();
         })
+        */
     }
     ngAfterViewInit() {
     }
@@ -51,9 +58,10 @@ export class PocDataDetail {
         console.log('Hello PocDataDetail Page');
     }
     ngOnInit() {
-        if (Object.keys(this.navParams['data']).length > 0) {
-            this.useCaseDetail = this.navParams['data'];
+        if (this.dataEdit) {
+            this.useCaseDetail = this.dataEdit;
         } else {
+            console.log("Create a new use case");
             this.useCaseDetail = new useCase;
             this.useCaseDetail._id = this.couch.guid();
             this.useCaseDetail.name = "";
@@ -90,7 +98,7 @@ export class PocDataDetail {
             let t = JSON.parse(this.aceEditor.getSession().getValue());
             this.useCaseDetail['dataUseCase'] = t;
             //console.log(this.useCaseDetail);
-            this.couch.addDoc('poc_data', this.useCaseDetail).then(response => {
+            this.couch.addDoc('poc_data', this.useCaseDetail, this.params).then(response => {
                 //console.log(response, this.useCaseDetail);
                 this.useCaseDetail['_rev'] = response['rev'];
                 this.events.publish("usecase_saved");

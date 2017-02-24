@@ -47,22 +47,40 @@
             </ion-item>
         </ion-card-header>
         <ion-card-content>
-            <ion-list [hidden]="!display.generatorModel">
-                <ion-label>Document à charger dans le modèle</ion-label>
-                <ion-item>
-                    <file-upload></file-upload>
-                </ion-item>
-                <ion-item>
-                    <ion-label>Données de paramétrage du modèle</ion-label>
-                    <ion-select [(ngModel)]="signModel.useCase" okText="Choisir" cancelText="Annuler" (ionChange)="generateModelData()">
-                        <ion-option *ngFor="let cm of lstUseCaseModel" [value]="cm">{{cm.value.title}}</ion-option>
-                    </ion-select>
-                    <button ion-button clear item-right icon-left (click)="getUseCaseModel()"><ion-icon name="refresh"></ion-icon></button>
-                </ion-item>
-                <ion-item>
-                    <record [dataRecord]='signModel.useCase'></record>
-                </ion-item>
-            </ion-list>
+            <div [hidden]="!display.generatorModel">
+                <ion-row>
+                    <ion-col>
+                        <ion-label>Document à charger dans le modèle</ion-label>
+                        <ion-item>
+                            <file-upload></file-upload>
+                        </ion-item>
+                        <ion-item>
+                            <ion-label>Données de paramétrage du modèle</ion-label>
+                            <ion-select [(ngModel)]="signModel.useCase" okText="Choisir" cancelText="Annuler">
+                                <ion-option *ngFor="let cm of lstUseCaseModel" [value]="cm">{{cm.value.title}}</ion-option>
+                            </ion-select>
+                            <button ion-button clear item-right icon-left (click)="getUseCaseModel()"><ion-icon name="refresh"></ion-icon></button>
+                        </ion-item>
+                    </ion-col>
+                    <ion-col>
+                        <ion-item no-padding>
+                            <ion-label floating text-wrap>Nom du modèle</ion-label>
+                            <ion-input [(ngModel)]="signModel.name" type="text"></ion-input>
+                            <button ion-button clear item-right icon-left (click)="generateModelData()"><ion-icon name="build"></ion-icon>Générer le modèle</button>
+                        </ion-item>
+                    </ion-col>
+                </ion-row>
+                <ion-row>
+                    <ion-col>
+                        <h3 ion-text color="primary">Champs de fusion de documents</h3>
+                        <record [dataRecord]='signModel.useCase'></record>
+                    </ion-col>
+                    <ion-col>
+                        <h3 ion-text color="primary">Identifiant du modèle généré</h3>
+                        <record [dataRecord]='signModel.modelGenerate'></record>
+                    </ion-col>
+                </ion-row>
+            </div>
         </ion-card-content>
     </ion-card>
 </ion-content>

@@ -12,7 +12,7 @@ import { Page1 } from '../pages/page1/page1';
 import { Page2 } from '../pages/page2/page2';
 
 //Pipes
-import { groupBy, KeysPipe, filterByPipe } from '../pipes/comon';
+import { groupBy, KeysPipe, KeysAndFilterPipe, filterByPipe } from '../pipes/comon';
 
 // Générateur de fichier PDF
 import { PdfGen } from '../pages/pdf-gen/pdf-gen';
@@ -84,7 +84,7 @@ import { FilesOperation } from '../providers/files-operation';
         Record, FileUploadComponent, PdfViewerComponent, PdfComponent,
         CouchCrudComponent, dbEditDataPage,
         PouchCrudComponent, dbEditLocalDataPage,
-        groupBy, KeysPipe, filterByPipe
+        groupBy, KeysPipe, KeysAndFilterPipe, filterByPipe
     ],
     imports: [
         IonicModule.forRoot(PocApp, {

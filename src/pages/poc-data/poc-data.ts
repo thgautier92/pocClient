@@ -52,10 +52,10 @@ export class PocData {
   }
   selectUseCase(us) {
     console.log(us);
-    this.navCtrl.push(PocDataDetail, us.value);
+    this.navCtrl.push(PocDataDetail, { "params": this.params, "data": us.value });
   }
   addUseCase() {
-    this.navCtrl.push(PocDataDetail, this.params);
+    this.navCtrl.push(PocDataDetail, { "params": this.params, "data": null });
   }
   removeUseCase(us, idx) {
     this.couch.deleteDoc('poc_data', us['value']['_rev'], us, this.params).then(response => {

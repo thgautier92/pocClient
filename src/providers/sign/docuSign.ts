@@ -138,7 +138,7 @@ export class DocuSignServices {
                 });
         });
     }
-    // ===== SIGN API =====
+    // ===== SIGN API ========================
     sendSignEnv(dataSend) {
         return new Promise((resolve, reject) => {
             var api = "accounts/{account}/envelopes"
@@ -158,6 +158,7 @@ export class DocuSignServices {
         });
     };
     destSignEnv(envelopeId, dataSend) {
+        ///v2/accounts/{accountId}/envelopes/{envelopeId}/recipients
         return new Promise((resolve, reject) => {
             var api = "accounts/{account}/envelopes/{envelopeId}/views/recipient"
             api = api.replace("{account}", this.account);
@@ -195,6 +196,25 @@ export class DocuSignServices {
                 });
         });
     };
+    updateRecipients(envelopeId, dataSend) {
+        return new Promise((resolve, reject) => {
+            var api = "accounts/{account}/envelopes/{envelopeId}/recipients"
+            api = api.replace("{account}", this.account);
+            api = api.replace("{envelopeId}", envelopeId);
+            let url = this.rootApi + "/" + api;
+            this.options.method = RequestMethod.Put;
+            this.options.responseType = ResponseContentType.Json;
+            this.options.body = dataSend;
+            this.http.request(url, this.options)
+                .map(res => res.json())
+                .subscribe(data => {
+                    resolve(data);
+                }, error => {
+                    console.log("Update RECIPIENTS error", error);
+                    reject(error);
+                });
+        });
+    }
     removeDocFormEnv(envelopeId, refDoc) {
         // DELETE /v2/accounts/{accountId}/envelopes/{envelopeId}/documents
         return new Promise((resolve, reject) => {
@@ -229,21 +249,60 @@ export class DocuSignServices {
             this.options.responseType = ResponseContentType.Text;
             this.options.body = {};
             this.http.request(url, this.options)
-                .map(res => {
-                    console.log(res);
-                    //res.json()
-                })
                 .subscribe(data => {
-                    console.log(data);
-                    resolve(true);
+                    resolve(data);
+                }, error => {
+                    console.log(error);
+                    reject(error);
+                });
+        });
+    }
+    refuseDocEnv(envelopeId, reason?) {
+        //voidedDateTime
+        //accounts/{accountId}/envelopes/{envelopeId}
+        return new Promise((resolve, reject) => {
+            var api = "accounts/{accountId}/envelopes/{envelopeId}";
+            api = api.replace("{accountId}", this.account);
+            api = api.replace("{envelopeId}", envelopeId);
+            let url = this.rootApi + "/" + api;
+            if (!reason) reason = "Le client préfère une signature papier";
+            this.options.method = RequestMethod.Put;
+            this.options.responseType = ResponseContentType.Json;
+            this.options.body = { "status": "voided", "voidedReason": reason };
+            this.http.request(url, this.options)
+                .map(res => res.json())
+                .subscribe(data => {
+                    resolve(data);
                 }, error => {
                     console.log("DELETE DOC error", error);
                     reject(error);
                 });
         });
     }
+    voidDocEnv(envelopeId, reason?) {
+        //voidedDateTime
+        //accounts/{accountId}/envelopes/{envelopeId}
+        return new Promise((resolve, reject) => {
+            var api = "accounts/{accountId}/envelopes/{envelopeId}";
+            api = api.replace("{accountId}", this.account);
+            api = api.replace("{envelopeId}", envelopeId);
+            let url = this.rootApi + "/" + api;
+            if (!reason) reason = "Le conseiller a invalidé le document.";
+            this.options.method = RequestMethod.Put;
+            this.options.responseType = ResponseContentType.Json;
+            this.options.body = { "status": "voided", "voidedReason": reason };
+            this.http.request(url, this.options)
+                .map(res => res.json())
+                .subscribe(data => {
+                    resolve(data);
+                }, error => {
+                    reject(error);
+                });
+        });
+    }
     // ===== DOC SIGNED =====
-    getEnvelopeData(envelopeId) {
+
+    getEnvelopeDocuments(envelopeId) {
         return new Promise((resolve, reject) => {
             var api = "accounts/{account}/envelopes/{envelopeId}/documents"
             api = api.replace("{account}", this.account);
@@ -261,7 +320,25 @@ export class DocuSignServices {
                 });
         });
     }
-    getdocSigned(envelopeId) {
+    getEnvelopeRecipients(envelopeId) {
+        return new Promise((resolve, reject) => {
+            var api = "accounts/{account}/envelopes/{envelopeId}/recipients"
+            api = api.replace("{account}", this.account);
+            api = api.replace("{envelopeId}", envelopeId);
+            let url = this.rootApi + "/" + api;
+            this.options.method = RequestMethod.Get;
+            this.options.responseType = ResponseContentType.Json;
+            this.http.request(url, this.options)
+                .map(res => res.json())
+                .subscribe(data => {
+                    resolve(data);
+                }, error => {
+                    console.log("GET error", error);
+                    reject(error);
+                });
+        });
+    }
+    getDocSigned(envelopeId) {
         return new Promise((resolve, reject) => {
             var api = "accounts/{account}/envelopes/{envelopeId}/documents/combined?certificate=true&include_metadata=true&language=fr&show_changes=true"
             api = api.replace("{account}", this.account);
@@ -279,10 +356,10 @@ export class DocuSignServices {
                 });
         });
     };
-    getdocSignedUrl(envelopeId) {
+    getDocSignedUrl(envelopeId) {
         return new Promise((resolve, reject) => { });
     }
-    getdocSignedData(envelopeId) {
+    getDocSignedData(envelopeId) {
         return new Promise((resolve, reject) => {
             var api = "accounts/{account}/envelopes/{envelopeId}/recipients?include_tabs=true"
             api = api.replace("{account}", this.account);

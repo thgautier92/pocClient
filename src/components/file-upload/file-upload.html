@@ -6,11 +6,11 @@
 -->
 <ion-list no-lines>
   <ion-item>
-    <input type="file" accept="image/*" (change)="changeListener($event)">
+    <input type="file" accept="application/pdf, *" (change)="changeListener($event)">
   </ion-item>
   <ion-item *ngIf="imageSrc">
     <ion-thumbnail item-left>
-      <img [src]="imageSrc" />
+      <img src="assets/img/pdfDoc.png" />
     </ion-thumbnail>
     <h3>{{file.name}}</h3>
     <p>{{file.lastModifiedDate}}</p>

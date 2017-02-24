@@ -33,12 +33,14 @@ export class DocuSignModel {
     private docuSign: DocuSignServices, private couch: CouchDbServices) {
     this.signModel = {
       "useCase": "",
+      "name": "",
       "docModel": "",
       "doc": null,
-      "docModelFields": ""
+      "docModelFields": "",
+      "modelGenerate": null
     }
     this.events.subscribe('fileSelected', fileData => {
-      console.log("File", fileData);
+      //console.log("File", fileData);
       this.signModel['doc'] = fileData;
     })
   };
@@ -120,8 +122,8 @@ export class DocuSignModel {
   generateModelData() {
     let loader = this.loadingCtrl.create({
       content: "Appel à DOCUSIGN : création du modèle en cours...",
-      duration: 20000
     });
+    loader.present();
     let documentId = 1;
     let data = {
       "documents": [
@@ -131,10 +133,10 @@ export class DocuSignModel {
           "name": this.signModel['doc']['file']['name'],
         }
       ],
-      "emailSubject": "SMAVIE-Vous avez un document à signer electroniquement",
+      "emailSubject": "SMAVIEbtp - Vous avez un document à signer électroniquement. Merci de prendre connaissance de ce message",
       "envelopeTemplateDefinition": {
-        "description": "test",
-        "name": "TEST-Creation par API"
+        "description": "Description à completer...",
+        "name": this.signModel['name']
       },
       "recipients": {
         "inPersonSigners": []
@@ -212,6 +214,7 @@ export class DocuSignModel {
     });
     this.docuSign.createTemplate(data).then(response => {
       console.log(response)
+      this.signModel['modelGenerate'] = response;
       loader.dismiss();
     }, error => {
       console.error(error);

@@ -423,7 +423,7 @@ export class CouchDbServices {
           resolve(data);
         }, error => {
           console.log("Request error", error);
-          reject(JSON.parse(error._body));
+          reject(error);
         });
     })
   }

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef, Input } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 
 
@@ -13,7 +13,7 @@ import { NavController, NavParams } from 'ionic-angular';
   templateUrl: 'pdf.html'
 })
 export class PdfComponent {
-  pdfSrc: any;
+  @Input() pdfSrc: any;
   page: number = 1;
   totalPages: number = 0;
   zoom: number = 1.00;

@@ -75,6 +75,19 @@ export class KeysPipe implements PipeTransform {
     return keys;
   }
 }
+@Pipe({ name: 'keysAndFilter' })
+export class KeysAndFilterPipe implements PipeTransform {
+  // ARgs :array of key to exclude
+  transform(value, args: string): any {
+    let keys = [];
+    for (let key in value) {
+      if (!args.includes(key)) {
+        keys.push({ key: key, value: value[key] });
+      }
+    }
+    return keys;
+  }
+}
 @Pipe({ name: 'textToDate' })
 export class textToDate implements PipeTransform {
   transform(value): any {
