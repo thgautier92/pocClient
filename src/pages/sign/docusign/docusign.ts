@@ -263,8 +263,8 @@ export class Docusign {
       if (key == "inPersonSigners") {
         this.envelopeRecipients[k][i]['signerEmail'] = cli['email'];
         this.envelopeRecipients[k][i]['signerName'] = cli['cum_identite'];
-        //this.envelopeRecipients[k][i]['hostEmail'] = this.conseiller['name'];
-        //this.envelopeRecipients[k][i]['hostName'] = this.conseiller['email'];
+        this.envelopeRecipients[k][i]['hostEmail'] = this.conseiller['email'];
+        this.envelopeRecipients[k][i]['hostName'] = this.conseiller['name'];
       } else {
         this.envelopeRecipients[k][i]['email'] = cli['email'];
         this.envelopeRecipients[k][i]['name'] = cli['cum_identite'];
@@ -800,8 +800,8 @@ export class Docusign {
       //"clientUserId": data.userId,
       if (recipient == 'inPersonSigners') {
         dataSend = {
-          "email": data.signerEmail,
-          "userName": data.signerName,
+          "email": data['hostEmail'],
+          "userName": data['hostName'],
           "returnUrl": "http://gautiersa.fr/vie/docuSignReturn.php",
           "authenticationMethod": "password"
         }

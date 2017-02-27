@@ -56,10 +56,11 @@
 								<ion-list no-padding>
 									<div *ngFor="let s of (item.recipients | keysAndFilter:'recipientCount,currentRoutingOrder')">
 										<div *ngIf="s.value.length>0">
-											<ion-item *ngFor="let d of s.value">
+											<ion-item *ngFor="let d of s.value | sortBy:'routingOrder'">
 												<ion-row wrap>
-													<ion-col width-10>
-														<h3>{{d.recipientId}}</h3>
+													<ion-col width-20 text-center>
+														<h3>{{d.routingOrder}}</h3>
+														<ion-badge color="primary" item-right>{{statusCode[d.status]}}</ion-badge>
 													</ion-col>
 													<ion-col width-70 text-wrap>
 														<div *ngIf="s.key=='signers'">
@@ -73,7 +74,6 @@
 														<button *ngIf="item.status=='sent'" ion-button color="secondary" (click)="signByClient(item['envelopeId'],s.key,d);">Signer - Code d'accès : {{d.accessCode}}</button>
 														<button ion-button outline item-right icon-left (click)="refusedByClient(item['envelopeId'])">Signer le papier</button>
 													</ion-col>
-
 												</ion-row>
 											</ion-item>
 										</div>
@@ -81,6 +81,7 @@
 								</ion-list>
 							</ion-col>
 							<ion-col width-20 text-wrap>
+								<h3>Action attendue par le role N°{{item.recipients.currentRoutingOrder}}</h3>
 								<ion-badge color="danger" item-right>{{statusCode[item.status]}}</ion-badge>
 								<br>
 								<ion-note>{{item.signedDateTime}}</ion-note>
