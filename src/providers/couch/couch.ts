@@ -311,7 +311,6 @@ export class CouchDbServices {
         .map(res => res.json())
         .subscribe(
         data => {
-          console.log(rootUrl, data);
           resolve(data);
         }, error => {
           console.log("Request error");

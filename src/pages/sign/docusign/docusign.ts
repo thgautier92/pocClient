@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { Platform, NavController, NavParams, Events, AlertController, LoadingController, ActionSheetController, Slides } from 'ionic-angular';
+import { Platform, NavController, NavParams, Events, AlertController, LoadingController, ActionSheetController, Slides, PopoverController, ViewController, ToastController } from 'ionic-angular';
 import { DocuSignModel } from './docusignmodel';
 import { DocuSignServices } from '../../../providers/sign/docuSign';
 import { CouchDbServices } from '../../../providers/couch/couch';
@@ -31,7 +31,11 @@ export class Docusign {
   docsModel: any = null;
   envelopeDocuments: any = null;
   envelopeRecipients: any = null;
+  envelopeRecipientsToDelete: any = null;
+  adhesion: any = null;
   clients: any = null;
+  conseiller: any = null;
+  selClient: any = null;
   option: any = "lstSign";
   lstEnvelopes: any = [];
   statusCode: any;
@@ -48,6 +52,8 @@ export class Docusign {
     public loadingCtrl: LoadingController,
     public winCtrl: WinExternal,
     public fileOpe: FilesOperation,
+    public popoverCtrl: PopoverController,
+    public toastCtrl: ToastController,
     private docuSign: DocuSignServices, private couch: CouchDbServices) {
 
     this.saveModel = this.navParams.get('onSave');
@@ -126,7 +132,8 @@ export class Docusign {
       "useCase": "",
       "data": "",
       "docModel": "",
-      "envId": ""
+      "envId": "",
+      "envData": null
     };
     this.signModel = {
       "useCase": "",
@@ -134,7 +141,7 @@ export class Docusign {
       "docModelFields": "",
     };
     this.couch.getParams().then(data => {
-      console.log("Params", data);
+      //console.log("Params", data);
       this.params = data;
       this.getUseCase();
     }).catch(error => {
@@ -143,6 +150,14 @@ export class Docusign {
     })
     this.getLstModel();
     this.dataDoc = { "default": true };
+    this.docsModel = null;
+    this.envelopeDocuments = null;
+    this.envelopeRecipients = null;
+    this.adhesion = null;
+    this.clients = null;
+    this.conseiller = null;
+    this.selClient = null;
+    this.envelopeRecipientsToDelete = null;
   }
   ionViewDidLoad() {
     console.log('Hello DocuSign Page');
@@ -220,7 +235,9 @@ export class Docusign {
     if (this.signSend['useCase']) {
       let u = this.lstUseCase.filter(item => item['value']['name'] == this.signSend['useCase']);
       let usecase = u[0]['value']['dataUseCase'];
+      this.conseiller = usecase['conseiller'];
       this.clients = usecase['clients'];
+      this.adhesion = usecase['adhesion'];
       return this.clients;
     } else {
       return null;
@@ -234,19 +251,30 @@ export class Docusign {
       return null;
     }
   }
-  changeRecipientClient(key, data, occurs, idx) {
-    console.log(key, data, occurs, idx);
-    let cli = this.getClient(occurs['recipientIdGuid']);
-    console.log(cli);
-    data[idx]['hostEmail'] = "thierry_gautier@groupe-sma.fr";
-    data[idx]['hostName'] = '"Thierry GAUTIER (mode demo)';
-    data[idx]['signerEmail'] = cli['email'];
-    data[idx]['signerName'] = cli['cum_identite'];
+  changeRecipientClient(key, idx) {
+    console.log("Update data for KEY", key, "INDEX LIST", idx);
+    let popover = this.popoverCtrl.create(SelectDataPage, { "title": "Choisir un client", "items": this.clients, "key": key, "idx": idx });
+    popover.present();
+    this.events.subscribe("SelectedData", response => {
+      let cli = response['data'];
+      let i = response['idx'];
+      let k = response['key'];
+      this.envelopeRecipients[k][i]['recipientIdGuid'] = cli['id'];
+      if (key == "inPersonSigners") {
+        this.envelopeRecipients[k][i]['signerEmail'] = cli['email'];
+        this.envelopeRecipients[k][i]['signerName'] = cli['cum_identite'];
+        //this.envelopeRecipients[k][i]['hostEmail'] = this.conseiller['name'];
+        //this.envelopeRecipients[k][i]['hostName'] = this.conseiller['email'];
+      } else {
+        this.envelopeRecipients[k][i]['email'] = cli['email'];
+        this.envelopeRecipients[k][i]['name'] = cli['cum_identite'];
+      }
+
+    });
   }
   //==================================================
 
   getDataTabs(cli, map, role) {
-    console.log(cli, map, role);
     // Create tabs
     let textTabs = [];
     let listTabs = [];
@@ -277,6 +305,7 @@ export class Docusign {
     let tabs = { "textTabs": textTabs, "listTabs": listTabs, "checkboxTabs": checkTabs, "noteTabs": noteTabs };
     return tabs;
   }
+  /* ** Not Use **
   updateSignData() {
     //console.log("UseCase selected", this.signSend['useCase'], this.lstUseCase);
     let u = this.lstUseCase.filter(item => item['value']['name'] == this.signSend['useCase']);
@@ -343,37 +372,32 @@ export class Docusign {
     //dataSend['templateRoles'] = tmp;
     this.signSend['data'] = dataSend;
   }
+  */
+
   // ===== Get documents info from the platform =====
   listEnvelopes(folder) {
-    this.docuSign.getListEnv(2016, 1, folder).then(response => {
-      //console.log(response);
-      this.lstEnvelopes = response['folderItems'];
-    }, error => {
-      console.log("List Envelopes error", error);
-    });
-  }
-  getDocInfo(item) {
     let loader = this.loadingCtrl.create({
-      content: "Appel à DOCUSIGN : lecture des rôles en cours...",
+      content: "Appel à DOCUSIGN : Liste des enveloppes...",
       duration: 10000
     });
-    let id = item.envelopeId;
-    this.docuSign.getDocSignedData(id).then(data => {
-      console.log(data);
-    }, reason => {
+    loader.present();
+    this.lstEnvelopes = null;
+    this.docuSign.getListEnv(2017, 2, folder).then(response => {
+      console.log(response);
+      this.lstEnvelopes = response['folderItems'];
       loader.dismiss();
-      console.log('Failed: ' + JSON.stringify(reason));
-    })
+    }, error => {
+      console.log("List Envelopes error", error);
+      loader.dismiss();
+    });
   }
-  getDocSigned(item) {
+  getDocSigned(envelopeId) {
     let loader = this.loadingCtrl.create({
       content: "Chargement des documents en cours...",
       duration: 10000
     });
     loader.present();
-    //console.log(item);
-    let id = item.envelopeId;
-    this.docuSign.getDocSigned(id).then(data => {
+    this.docuSign.getDocSigned(envelopeId).then(data => {
       //console.log(data);
       if (this.platform.is('cordova')) {
         this.fileOpe.openDownloadedPdf(data).then(response => {
@@ -450,6 +474,7 @@ export class Docusign {
   getModelDocs() {
     console.log("Get models docs", this.signSend['docModel'])
     this.docsModel = [];
+    this.envelopeRecipientsToDelete = null;
     this.signSend['docModel'].forEach(element => {
       //console.log(element);
       this.docuSign.getModelDocument(element).then(response => {
@@ -514,11 +539,12 @@ export class Docusign {
   // ===== Create Envelopes and update ==============
   envelopCreateFromModels() {
     // Create the envelop with multi-model
-    let loader = this.loadingCtrl.create({
-      content: "Appel à DOCUSIGN : création de l'enveloppe à partir des modèles en cours...",
-      duration: 10000
-    });
     if (this.signSend['docModel']) {
+      let loader = this.loadingCtrl.create({
+        content: "Appel à DOCUSIGN : création de l'enveloppe à partir des modèles...",
+        duration: 10000
+      });
+      loader.present();
       var dataSend = {
         "compositeTemplates": []
       };
@@ -535,12 +561,18 @@ export class Docusign {
         this.signSend['envId'] = response['envelopeId'];
         this.envelopGetData(response['envelopeId']);
         //console.log("Context data", this.signSend);
+        loader.dismiss();
       }, function (reason) {
+        loader.dismiss();
+        let toast = this.toastCtrl.create({
+          message: "Erreur à la création de l'enveloppe : " + reason,
+          duration: 3000,
+          position: "bottom"
+        });
+        toast.present();
         console.log("Create Envelope error", reason);
       });
-      loader.dismiss();
     } else {
-      loader.dismiss();
       let alert = this.alertCtrl.create({
         title: 'Modèle de documents',
         subTitle: 'Veuillez choisir un à N modèles de document dans la liste',
@@ -549,6 +581,7 @@ export class Docusign {
       alert.present();
     }
   }
+  /*
   envelopAddData() {
     let loader = this.loadingCtrl.create({
       content: "Appel à DOCUSIGN : création de l'enveloppe en cours...",
@@ -578,6 +611,7 @@ export class Docusign {
       alert.present();
     }
   };
+  */
   // Update envelope, Doc or Page
   envelopDocUpdate(envelopeId) {
     console.log("Modification des documents de l'enveloppe ", envelopeId);
@@ -607,7 +641,7 @@ export class Docusign {
   }
   envelopGetData(envelopeId) {
     let loader = this.loadingCtrl.create({
-      content: "Lecture de l'enveloppe...",
+      content: "Lecture des destinataires de l'enveloppe...",
     });
     loader.present();
     this.docuSign.getEnvelopeDocuments(envelopeId).then(response => {
@@ -625,6 +659,15 @@ export class Docusign {
           element['recipientIdGuid'] = 0;
         });
         this.envelopeRecipients['inPersonSigners'] = inPersonSigners;
+        let signers = this.envelopeRecipients['signers']
+        signers.forEach(element => {
+          element['accessCode'] = random.natural({ min: 1, max: 9999 });
+          element['recipientIdGuid'] = 0;
+          if (element['roleName'] = "CONSEILLER") {
+            element['name'] = this.conseiller['name'];
+            element['email'] = this.conseiller['email'];
+          }
+        });
         loader.dismiss();
       }, reason => {
         console.log(reason);
@@ -638,40 +681,54 @@ export class Docusign {
   recipientDelete(key, idx) {
     console.log(this.envelopeRecipients[key]);
     this.envelopeRecipients[key].splice(idx, 1);
+    this.envelopeRecipientsToDelete.push(this.envelopeRecipients[key][idx]);
   }
-
-  sendEnvelop() {
+  updateRecipientEnvelop() {
     // Update Recipients and Tabs Data from Use UseCase
     if (this.signSend['useCase']) {
+      let loader = this.loadingCtrl.create({
+        content: "Appel à DOCUSIGN : Mise à jour de l'enveloppe avec les destinataires...",
+        duration: 10000
+      });
+      loader.present();
       let u = this.lstUseCase.filter(item => item['value']['name'] == this.signSend['useCase']);
       let usecase = u[0]['value']['dataUseCase'];
       let process = usecase['process'];
       let map = usecase['mapping'];
-      console.log(usecase, process);
       for (var dest in this.envelopeRecipients) {
-        console.log("Add Tabs for ", dest, this.envelopeRecipients[dest]);
+        //console.log("Add Tabs for ", dest, this.envelopeRecipients[dest]);
         let dataRecipient = this.envelopeRecipients[dest];
         if (Array.isArray(dataRecipient) && dataRecipient.length > 0) {
           dataRecipient.forEach(element => {
-            //console.log(" ==>", element);
             let role = element['roleName'];
-            console.log("  ==> Role ", role);
             let cliRef: number = element['recipientIdGuid'];
             if (cliRef > 0) {
               let cli = this.getClient(cliRef);
-              console.log("  ==> refCli", cliRef, cli);
               let tabs = this.getDataTabs(cli, map, role);
-              console.log("  ==> Tabs", tabs);
               element['tabs'] = tabs;
             }
           });
           this.envelopeRecipients[dest] = dataRecipient;
         }
       }
-      console.log("Recipients updated ", this.envelopeRecipients);
+      console.log("Recipients to update ", this.envelopeRecipients);
       this.docuSign.updateRecipients(this.signSend['envId'], this.envelopeRecipients).then(response => {
         console.log(response);
+        loader.dismiss();
+        let toast = this.toastCtrl.create({
+          message: "Destinataires de l'Enveloppe mise à jour",
+          duration: 3000,
+          position: "bottom"
+        });
+        toast.present();
       }, error => {
+        loader.dismiss();
+        let toast = this.toastCtrl.create({
+          message: "Erreur à la mise à jour de l'enveloppe : ",
+          duration: 3000,
+          position: "bottom"
+        });
+        toast.present();
         console.log(error);
       })
     } else {
@@ -682,21 +739,45 @@ export class Docusign {
       });
       alert.present();
     }
-
-
+  }
+  sendEnvelop() {
+    let loader = this.loadingCtrl.create({
+      content: "Appel à DOCUSIGN : Envoi de l'enveloppe...",
+      duration: 10000
+    });
+    loader.present();
+    this.docuSign.sendEnv(this.signSend['envId']).then(response => {
+      console.log(response);
+      loader.dismiss();
+      let toast = this.toastCtrl.create({
+        message: "Enveloppe envoyée pour signature",
+        duration: 3000,
+        position: "bottom"
+      });
+      toast.present();
+    }, error => {
+      loader.dismiss();
+      let alert = this.alertCtrl.create({
+        title: "Erreur lors de l'envoi de l'enveloppe",
+        subTitle: error['_body']['errorCode'],
+        message: error['_body']['message'],
+        buttons: ["J'ai compris."]
+      });
+      alert.present();
+      console.log(error);
+    })
   }
   // =================================================
 
   // ===== Sign operations ===========================
-  signBySender(item) {
+  signBySender(envelopeId) {
     let loader = this.loadingCtrl.create({
       content: "Appel à DOCUSIGN : envoie des données de signature en cours...",
       duration: 10000
     });
     //let win = this.winCtrl.openWin('/assets/pages/loadingUrl.html');
-    let id = item.envelopeId;
     var dataSend = {};
-    this.docuSign.senderSignEnv(id, dataSend).then(data => {
+    this.docuSign.senderSignEnv(envelopeId, dataSend).then(data => {
       //console.log(data);
       //win.location.href = data['url'];
       this.winCtrl.openWin(data['url']);
@@ -706,7 +787,8 @@ export class Docusign {
     })
     loader.dismiss();
   }
-  signByClient(envelopeId, role) {
+  signByClient(envelopeId, recipient, data) {
+    console.log(data);
     if (envelopeId) {
       //let win = this.winCtrl.openWin('/assets/pages/loadingUrl.html');
       //{"authenticationMethod":"password","email":"doc.gautier@gmail.com","returnUrl":"http://gautiersa.fr/vie/docuSignReturn","userName":"doc.gautier@gmail.com"}
@@ -714,12 +796,22 @@ export class Docusign {
         content: "Appel à DOCUSIGN : ouverture de la page de signature en cours...",
         duration: 10000
       });
-      var dataSend = {
-        "email": role.email,
-        "userName": role.name,
-        "clientUserId": role.clientUserId,
-        "returnUrl": "http://gautiersa.fr/vie/docuSignReturn.php",
-        "authenticationMethod": "password"
+      let dataSend = null;
+      //"clientUserId": data.userId,
+      if (recipient == 'inPersonSigners') {
+        dataSend = {
+          "email": data.signerEmail,
+          "userName": data.signerName,
+          "returnUrl": "http://gautiersa.fr/vie/docuSignReturn.php",
+          "authenticationMethod": "password"
+        }
+      } else {
+        dataSend = {
+          "email": data.email,
+          "userName": data.name,
+          "returnUrl": "http://gautiersa.fr/vie/docuSignReturn.php",
+          "authenticationMethod": "password"
+        }
       }
       console.log(envelopeId, dataSend);
       this.docuSign.destSignEnv(envelopeId, dataSend).then(data => {
@@ -778,4 +870,43 @@ export class Docusign {
     })
   }
   // ================================================
+}
+
+
+/* ===================================================
+  Class for the Docusign Client select page.
+  Display as POPOVER.
+  ====================================================
+*/
+@Component({
+  template: `
+    <ion-list>
+      <ion-list-header>{{title}}</ion-list-header>
+      <ion-item *ngFor="let item of items" (click)="selItem(item)">{{item.cum_identite}}</ion-item>
+    </ion-list>
+    <button ion-button (click)="cancelItem()">Annuler</button>
+     `
+})
+export class SelectDataPage {
+  items: any;
+  title: any = "Veuillez choisir un element";
+  idx: any = null;
+  key: any = null;
+  constructor(private navParams: NavParams, private viewCtrl: ViewController, private events: Events) { }
+  ngOnInit() {
+    console.log("Welcome to SelectDataPage");
+    if (this.navParams.data) {
+      this.items = this.navParams.data['items'];
+      this.title = this.navParams.data['title'];
+      this.idx = this.navParams.data['idx'];
+      this.key = this.navParams.data['key'];
+    }
+  }
+  selItem(item) {
+    this.events.publish("SelectedData", { "key": this.key, "idx": this.idx, "data": item });
+    this.viewCtrl.dismiss();
+  }
+  cancelItem() {
+    this.viewCtrl.dismiss();
+  }
 }

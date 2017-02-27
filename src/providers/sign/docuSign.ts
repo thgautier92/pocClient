@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, } from '@angular/core';
 import { Http, RequestOptions, Headers, Request, RequestMethod, ResponseContentType } from '@angular/http';
 import { Platform } from 'ionic-angular';
 
@@ -17,7 +17,7 @@ export class DocuSignServices {
         this.rootApi = "https://demo.docusign.net/restapi/v2";
         if (this.platform.is('cordova')) {
         } else {
-            console.log("LOCATION ", location);
+            //console.log("LOCATION ", location);
             if (location.hostname == "localhost") {
                 this.rootApi = "/docuSign/restApi/v2";
             } else {
@@ -104,7 +104,7 @@ export class DocuSignServices {
             var dateView = monthView + "/01/" + yearView;
             var lstFolder = ["all", "drafts", "awaiting_my_signature", "completed", "out_for_signature", "sentitems"]
             var folder = lstFolder[numFolder];
-            var api = "accounts/{account}/search_folders/" + folder + "?from_date=" + dateView + "&to_date=&start_position=&count=&order=DESC&order_by=sent&include_recipients=true"
+            var api = "accounts/{account}/search_folders/" + folder + "?from_date=" + dateView + "&to_date=&start_position=&count=&order=DESC&order_by=created&include_recipients=true"
             api = api.replace("{account}", this.account);
             let url = this.rootApi + "/" + api;
             this.options.method = RequestMethod.Get;
@@ -177,25 +177,7 @@ export class DocuSignServices {
                 });
         });
     };
-    senderSignEnv(envelopeId, dataSend) {
-        return new Promise((resolve, reject) => {
-            var api = "accounts/{account}/envelopes/{envelopeId}/views/sender"
-            api = api.replace("{account}", this.account);
-            api = api.replace("{envelopeId}", envelopeId);
-            let url = this.rootApi + "/" + api;
-            this.options.method = RequestMethod.Post;
-            this.options.responseType = ResponseContentType.Json;
-            this.options.body = dataSend;
-            this.http.request(url, this.options)
-                .map(res => res.json())
-                .subscribe(data => {
-                    resolve(data);
-                }, error => {
-                    console.log("GET error", error);
-                    reject(error);
-                });
-        });
-    };
+
     updateRecipients(envelopeId, dataSend) {
         return new Promise((resolve, reject) => {
             var api = "accounts/{account}/envelopes/{envelopeId}/recipients"
@@ -257,6 +239,26 @@ export class DocuSignServices {
                 });
         });
     }
+    sendEnv(envelopeId) {
+        //accounts/{accountId}/envelopes/{envelopeId}
+        return new Promise((resolve, reject) => {
+            var api = "accounts/{accountId}/envelopes/{envelopeId}";
+            api = api.replace("{accountId}", this.account);
+            api = api.replace("{envelopeId}", envelopeId);
+            let url = this.rootApi + "/" + api;
+            this.options.method = RequestMethod.Put;
+            this.options.responseType = ResponseContentType.Json;
+            this.options.body = { "status": "sent" };
+            this.http.request(url, this.options)
+                .map(res => res.json())
+                .subscribe(data => {
+                    resolve(data);
+                }, error => {
+                    console.log("SEND DOC error", error);
+                    reject(error);
+                });
+        });
+    }
     refuseDocEnv(envelopeId, reason?) {
         //voidedDateTime
         //accounts/{accountId}/envelopes/{envelopeId}
@@ -300,8 +302,44 @@ export class DocuSignServices {
                 });
         });
     }
-    // ===== DOC SIGNED =====
-
+    senderSignEnv(envelopeId, dataSend) {
+        return new Promise((resolve, reject) => {
+            var api = "accounts/{account}/envelopes/{envelopeId}/views/sender"
+            api = api.replace("{account}", this.account);
+            api = api.replace("{envelopeId}", envelopeId);
+            let url = this.rootApi + "/" + api;
+            this.options.method = RequestMethod.Post;
+            this.options.responseType = ResponseContentType.Json;
+            this.options.body = dataSend;
+            this.http.request(url, this.options)
+                .map(res => res.json())
+                .subscribe(data => {
+                    resolve(data);
+                }, error => {
+                    console.log("GET error", error);
+                    reject(error);
+                });
+        });
+    };
+    // ===== ENVELOPES DRAFT or SENDED =====
+    getEnvelope(envelopeId) {
+        return new Promise((resolve, reject) => {
+            var api = "accounts/{account}/envelopes/{envelopeId}"
+            api = api.replace("{account}", this.account);
+            api = api.replace("{envelopeId}", envelopeId);
+            let url = this.rootApi + "/" + api;
+            this.options.method = RequestMethod.Get;
+            this.options.responseType = ResponseContentType.Json;
+            this.http.request(url, this.options)
+                .map(res => res.json())
+                .subscribe(data => {
+                    resolve(data);
+                }, error => {
+                    console.log("GET error", error);
+                    reject(error);
+                });
+        });
+    }
     getEnvelopeDocuments(envelopeId) {
         return new Promise((resolve, reject) => {
             var api = "accounts/{account}/envelopes/{envelopeId}/documents"
@@ -338,6 +376,49 @@ export class DocuSignServices {
                 });
         });
     }
+    getEnvelopeAll(envelopeId) {
+        return new Promise((resolve, reject) => {
+            let ret = null;
+            let observableBatch = [];
+            let lstApi = [
+                { "key": "status", "url": "accounts/{account}/envelopes/{envelopeId}" },
+                { "key": "documents", "url": "accounts/{account}/envelopes/{envelopeId}/documents" },
+                { "key": "destinataires", "url": "accounts/{account}/envelopes/{envelopeId}/recipients" }
+            ]
+            //Prepare request
+            let request = [];
+            lstApi.forEach(element => {
+                let api = element['url'];
+                api = api.replace("{account}", this.account);
+                api = api.replace("{envelopeId}", envelopeId);
+                let url = this.rootApi + "/" + api;
+                let opt = this.options;
+                opt.method = RequestMethod.Get;
+                opt.responseType = ResponseContentType.Json;
+                request.push({ "key": element['key'], "url": url, "opt": opt, "reponse": null });
+            });
+            request.forEach(element => {
+                console.info("Get envelop info", element);
+                let k = element['key'];
+                observableBatch.push(
+                    {
+                        "key": element['key'],
+                        "reponse":
+                        this.http.request(element['url'], element['opt'])
+                            .map(res => res.json())
+                            .subscribe(data => {
+                                return data;
+                            }, error => {
+                                console.log("GET error", error);
+                                return error;
+                            })
+                    });
+            });
+            console.log(observableBatch);
+            resolve(observableBatch);
+        });
+    }
+    // ===== ENVELOPES SIGNED===============
     getDocSigned(envelopeId) {
         return new Promise((resolve, reject) => {
             var api = "accounts/{account}/envelopes/{envelopeId}/documents/combined?certificate=true&include_metadata=true&language=fr&show_changes=true"
@@ -414,7 +495,7 @@ export class DocuSignServices {
         });
     }
 
-    // ===== TEMPLATES =====
+    // ===== TEMPLATES ======================
     getTemplates() {
         return new Promise((resolve, reject) => {
             var api = "accounts/{account}/templates"

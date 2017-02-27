@@ -54,32 +54,43 @@
 									<u>Signataires</u>
 								</h2>
 								<ion-list no-padding>
-									<ion-item *ngFor="let s of item.recipients.signers">
-										<ion-row wrap>
-											<ion-col width-10>
-												<h3>{{s.recipientId}}</h3>
-											</ion-col>
-											<ion-col width-70 text-wrap>
-												<h3>{{s.name}} a pour rôle : {{s.roleName}}</h3>
-												<h4>{{s.email}}</h4>
-												<button *ngIf="s.status=='sent'" ion-button color="secondary" (click)="signByClient(item['envelopeId'],s);">Signer - Code d'accès : {{s.accessCode}}</button>
-												<button ion-button outline item-right icon-left (click)="refusedByClient(item['envelopeId'])">Signer le papier</button>
-											</ion-col>
-											<ion-col width-20 text-wrap>
-												<ion-badge color="danger" item-right>{{statusCode[s.status]}}</ion-badge>
-												<br>
-												<ion-note>{{s.signedDateTime}}</ion-note>
-											</ion-col>
-										</ion-row>
-									</ion-item>
+									<div *ngFor="let s of (item.recipients | keysAndFilter:'recipientCount,currentRoutingOrder')">
+										<div *ngIf="s.value.length>0">
+											<ion-item *ngFor="let d of s.value">
+												<ion-row wrap>
+													<ion-col width-10>
+														<h3>{{d.recipientId}}</h3>
+													</ion-col>
+													<ion-col width-70 text-wrap>
+														<div *ngIf="s.key=='signers'">
+															<h3>{{d.name}} a pour rôle : {{d.roleName}}</h3>
+															<ion-note>{{d.email}}</ion-note>
+														</div>
+														<div *ngIf="s.key=='inPersonSigners'">
+															<h3>{{d.signerName}} a pour rôle : {{d.roleName}}</h3>
+															<ion-note>{{d.signerEmail}}</ion-note>
+														</div>
+														<button *ngIf="item.status=='sent'" ion-button color="secondary" (click)="signByClient(item['envelopeId'],s.key,d);">Signer - Code d'accès : {{d.accessCode}}</button>
+														<button ion-button outline item-right icon-left (click)="refusedByClient(item['envelopeId'])">Signer le papier</button>
+													</ion-col>
+
+												</ion-row>
+											</ion-item>
+										</div>
+									</div>
 								</ion-list>
+							</ion-col>
+							<ion-col width-20 text-wrap>
+								<ion-badge color="danger" item-right>{{statusCode[item.status]}}</ion-badge>
+								<br>
+								<ion-note>{{item.signedDateTime}}</ion-note>
 							</ion-col>
 						</ion-row>
 					</ion-item>
 					<ion-item-options side="left">
-						<button ion-button color="primary" (click)="getDocSigned(item);">Voir</button>
-						<button ion-button color="secondary" (click)="signBySender(item);">Emetteur</button>
-						<button ion-button color="danger" (click)="getDocSignedData(item);">Données Preuves</button>
+						<button ion-button color="primary" (click)="getDocSigned(item['envelopeId']);">Voir</button>
+						<button ion-button color="secondary" (click)="signBySender(item['envelopeId']);">Emetteur</button>
+						<button ion-button color="danger" (click)="getDocSignedData(item['envelopeId']);">Données Preuves</button>
 						<button ion-button color="danger" (click)="voidSignedDoc(item['envelopeId']);">Invalider</button>
 					</ion-item-options>
 					<ion-item-options side="right">
@@ -115,13 +126,6 @@
 											<button ion-button clear item-right icon-left (click)="getLstModel()"><ion-icon name="refresh"></ion-icon></button>
 										</ion-item>
 										<ion-item>
-											<ion-label>Données pour alimenter les signatures (Cas de tests)</ion-label>
-											<ion-select [(ngModel)]="signSend.useCase" okText="Choisir" cancelText="Annuler" (ionChange)="getClientsList()">
-												<ion-option *ngFor="let m of lstUseCase" [value]="m.value.name">{{m.value.title}}</ion-option>
-											</ion-select>
-											<button ion-button clear item-right icon-left (click)="getUseCase()"><ion-icon name="refresh"></ion-icon></button>
-										</ion-item>
-										<ion-item>
 											<ion-list *ngIf="docsModel">
 												<ion-item no-padding *ngFor="let m of docsModel">
 													<h4>Modèle ref : {{m.templateId}}</h4>
@@ -134,6 +138,32 @@
 												</ion-item>
 											</ion-list>
 										</ion-item>
+										<ion-item>
+											<ion-label>Données pour alimenter les signatures (Cas de tests)</ion-label>
+											<ion-select [(ngModel)]="signSend.useCase" okText="Choisir" cancelText="Annuler" (ionChange)="getClientsList()">
+												<ion-option *ngFor="let m of lstUseCase" [value]="m.value.name">{{m.value.title}}</ion-option>
+											</ion-select>
+											<button ion-button clear item-right icon-left (click)="getUseCase()"><ion-icon name="refresh"></ion-icon></button>
+										</ion-item>
+										<ion-item>
+											<ion-row>
+												<ion-col *ngIf="conseiller">
+													<h3 ion-text color="primary">Conseiller</h3>
+													<h4>{{conseiller['name']}}</h4>
+													<ion-note>{{conseiller['email']}}</ion-note>
+												</ion-col>
+												<ion-col *ngIf="clients">
+													<h3 ion-text color="primary">Client</h3>
+													<ul>
+														<li *ngFor="let cl of clients">
+															<h4>{{cl.cum_identite}}</h4>
+															<ion-note>{{cl.email}} - {{cl.mobile}}</ion-note>
+														</li>
+													</ul>
+												</ion-col>
+											</ion-row>
+										</ion-item>
+
 									</ion-list>
 								</ion-card-content>
 							</ion-card>
@@ -150,7 +180,7 @@
 											</ion-item>
 										</ion-card-header>
 									</ion-card>
-									<ion-card>
+									<ion-card *ngIf="envelopeDocuments">
 										<ion-card-header>
 											<ion-item>
 												<h4>Cocher les documents à garder</h4>
@@ -165,7 +195,7 @@
 										</ion-list>
 										<button ion-button clear item-right icon-left (click)="envelopDocUpdate(signSend['envId'])">Mise à jour des documents</button>
 									</ion-card>
-									<ion-card>
+									<ion-card *ngIf="envelopeDocuments">
 										<ion-card-header>
 											<ion-item>
 												<h4>Choisir les pages à supprimer</h4>
@@ -200,32 +230,36 @@
 														<td>Code</td>
 													</tr>
 													<tr *ngFor="let d of s.value;let idx=index">
-														<td ion-text color="secondary">
-															{{idx}}{{d.roleName}}
-															<button ion-button clear item-right icon-only (click)="recipientDelete(s.key,idx)"><ion-icon name="trash"></ion-icon></button>
+														<td>
+															<ion-item class="small" text-wrap>
+																{{d.roleName}}
+																<button ion-button clear item-right icon-only (click)="recipientDelete(s.key,idx)"><ion-icon name="trash"></ion-icon></button>
+															</ion-item>
 														</td>
 														<td>
 															<ion-input type="number" [(ngModel)]="d.routingOrder" placeholder="Ordre"></ion-input>
 														</td>
 														<td>
-															<ion-select [(ngModel)]="d.recipientIdGuid" (ionChange)="changeRecipientClient( s.key,s.value,d,$event)">
-																<ion-option *ngFor="let c of clients" [value]="c.id">{{c.cum_identite}}</ion-option>
-															</ion-select>
-															<ion-input type="text" [(ngModel)]="d.recipientIdGuid" placeholder="NumCli"></ion-input>
+															<button ion-button clear item-right icon-only (click)="changeRecipientClient(s.key,idx)"><ion-icon name="arrow-dropright"></ion-icon></button>
 														</td>
-														<td>{{d.signerName}}<br>{{d.signerEmail}}
+														<td class="small">
+															{{d.name}}
+															<ion-note>{{d.email}}</ion-note>
+															{{d.signerName}}
+															<ion-note>{{d.signerEmail}}</ion-note>
 															<!--
-															<ion-input type="email" [(ngModel)]="d.signerEmail" placeholder="email"></ion-input>
-															<ion-input type="text" [(ngModel)]="d.signerName" placeholder="Nom"></ion-input>
+															<ion-input type="email" [(ngModel)]="d.signerEmail" placeholder="email" clearInput=true></ion-input>
+															<ion-input type="text" [(ngModel)]="d.signerName" placeholder="Nom" clearInput=true></ion-input>
 															-->
 														</td>
-														<td>
+														<td style="width=10%">
 															<ion-input type="text" [(ngModel)]="d.accessCode" placeholder="Code d'accés"></ion-input>
 														</td>
 													</tr>
 												</table>
 											</ion-card-content>
 										</ion-card>
+										<button ion-button color="danger" item-right icon-left (click)="updateRecipientEnvelop()">Mise à jour des destinataires</button>
 									</div>
 								</ion-card-content>
 							</ion-card>
@@ -233,8 +267,13 @@
 								<ion-item color="primary">
 									<p item-left>4. Envoyer pour signature</p>
 									<button ion-button color="danger" item-right icon-left (click)="sendEnvelop()"><ion-icon name="send"></ion-icon></button>
+									<button ion-button color="danger" (click)="getDocSigned(signSend['envId']);">Voir</button>
 								</ion-item>
+
 								<ion-card-content>
+									<div *ngIf="dataEnv">
+										<record [dataRecord]="dataEnv" displaySelector=true></record>
+									</div>
 								</ion-card-content>
 							</ion-card>
 						</ion-col>
@@ -252,7 +291,6 @@
 						<ion-title>Actions réalisées par le client</ion-title>
 						<ion-buttons end>
 							<button ion-button color="primary" (click)="goNext()">Données&nbsp; <ion-icon name="arrow-dropright"></ion-icon></button>
-
 						</ion-buttons>
 					</ion-toolbar>
 					<ion-list>
