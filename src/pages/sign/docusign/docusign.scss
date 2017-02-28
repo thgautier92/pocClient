@@ -1,8 +1,15 @@
 page-docusign {
+    .selectable {
+        -webkit-user-select: text;
+        -moz-user-select: text;
+        -ms-user-select: text;
+        user-select: text;
+    }
+    .border {}
     ion-item-divider.item-md {
         padding-left: 16px;
-        color: #222;
-        background-color: #ffe4e4;
+        color: #FFF;
+        background-color: cornflowerblue;
     }
     textarea {
         font-size: 10px;

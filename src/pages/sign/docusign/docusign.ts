@@ -6,6 +6,8 @@ import { CouchDbServices } from '../../../providers/couch/couch';
 import { WinExternal } from '../../../providers/win-external';
 import { PdfComponent } from '../../../components/pdf/pdf';
 import { FilesOperation } from '../../../providers/files-operation';
+//Pipes
+import { groupBy, sortBy } from '../../../pipes/comon';
 declare var Chance: any;
 /*
   Generated class for the Docusign page.
@@ -19,6 +21,8 @@ declare var Chance: any;
 })
 export class Docusign {
   @ViewChild(Slides) slides: Slides;
+  modeDemo: boolean = true;
+  folderFilter: any = null;
   params: any;
   accountInfo: any;
   lstApi: any;
@@ -170,6 +174,7 @@ export class Docusign {
       buttons: [
         {
           text: 'API Explorer',
+          icon: 'construct',
           handler: () => {
             let url = "https://apiexplorer.docusign.com";
             window.open(url, '_blank');
@@ -177,16 +182,25 @@ export class Docusign {
         },
         {
           text: 'Console administration',
+          icon: 'cloud-circle',
           handler: () => {
             let url = "https://account-d.docusign.com/#/web/login";
             window.open(url, '_blank');
           }
         }, {
           text: 'Infos',
+          icon: 'information-circle',
           handler: () => {
             this.getInfo();
           }
         }, {
+          text: 'Mode demo SMAVie Mobilité',
+          icon: (this.modeDemo ? 'checkbox-outline' : 'color-wand'),
+          handler: () => {
+            this.changeModeDemo();
+          }
+        },
+        {
           text: 'Fermer',
           role: 'cancel',
           handler: () => {
@@ -195,6 +209,14 @@ export class Docusign {
       ]
     });
     actionSheet.present();
+  }
+  changeModeDemo() {
+    this.modeDemo = !this.modeDemo;
+    if (this.modeDemo) {
+      this.folderFilter = 'Templates';
+    } else {
+      this.folderFilter = null;
+    }
   }
   goNext() {
     this.slides.slideNext()
@@ -214,7 +236,7 @@ export class Docusign {
     });
     alert.present();
   }
-  // ===== Demo only =================================
+  // ===== Demo only - Method for ======================
   getUseCase() {
     this.couch.getDbViewDocs('poc_data', 'byType', 'sign', 100, 0, this.params).then(response => {
       //console.log(response);
@@ -396,7 +418,7 @@ export class Docusign {
   getDocSigned(envelopeId) {
     let loader = this.loadingCtrl.create({
       content: "Chargement des documents en cours...",
-      duration: 10000
+      duration: 20000
     });
     loader.present();
     this.docuSign.getDocSigned(envelopeId).then(data => {
@@ -427,15 +449,15 @@ export class Docusign {
       loader.dismiss();
     })
   }
-  getDocSignedData(item) {
+  getDocSignedData(id) {
     let loader = this.loadingCtrl.create({
-      content: "Appel à DOCUSIGN : lecture du document en cours...",
+      content: "Appel à DOCUSIGN : lecture des données du document en cours...",
       duration: 10000
     });
-    let id = item.envelopeId;
+    loader.present();
     this.dataDoc = {};
     this.docuSign.getDocSignedData(id).then(data => {
-      //console.log(data);
+      console.log(data);
       this.dataDoc['infoDoc'] = data;
       this.docuSign.getDocEvents(id).then(dataEvents => {
         //console.log(dataEvents);
@@ -451,7 +473,6 @@ export class Docusign {
           loader.dismiss();
           console.log('Failed: ' + JSON.stringify(reason));
         })
-
       }, reason => {
         loader.dismiss();
         console.log('Failed: ' + JSON.stringify(reason));
@@ -460,14 +481,13 @@ export class Docusign {
       loader.dismiss();
       console.log('Failed: ' + JSON.stringify(reason));
     })
-
   }
   // ================================================
 
   // ===== MODEL METHODS ============================
   getLstModel() {
     this.docuSign.getTemplates().then(response => {
-      //console.log("Templates", response);
+      console.log("Templates", response);
       this.lstModels = response;
     }, error => {
       console.log("Templates error", error);
@@ -699,6 +719,49 @@ export class Docusign {
       loader.dismiss();
     });
   }
+  envelopeReorderProcess(envelopId, recipients) {
+    let loader = this.loadingCtrl.create({
+      content: "Appel à DOCUSIGN : Mise à jour du processus de signature...",
+      duration: 10000
+    });
+    console.log("Sort RECIPIENTS", recipients);
+    let exception = "recipientCount,currentRoutingOrder";
+    let so = [];
+    //let so = new sortBy().transform(recipients, 'routingOrder');
+    for (let key in recipients) {
+      if (!exception.includes(key)) {
+        for (let rc of recipients[key]) {
+          rc['type'] = key;
+          so.push(rc);
+        }
+      }
+    }
+    so = new sortBy().transform(so, 'signerName');
+    for (let i = 0; i < so.length; i++) {
+      so[i]["routingOrder"] = (i + 1).toString();
+    }
+    let ret = new groupBy().transform(so, "type");
+    console.log("RECIPIENTS SORT", ret);
+    this.docuSign.updateRecipients(envelopId, ret).then(response => {
+      console.log(response);
+      loader.dismiss();
+      let toast = this.toastCtrl.create({
+        message: "Processus de signature mise à jour",
+        duration: 3000,
+        position: "bottom"
+      });
+      toast.present();
+    }, error => {
+      loader.dismiss();
+      let toast = this.toastCtrl.create({
+        message: "Erreur à la mise à jour du processus : ",
+        duration: 3000,
+        position: "bottom"
+      });
+      toast.present();
+      console.log(error);
+    })
+  }
   updateRecipientEnvelop() {
     // Update Recipients and Tabs Data from Use UseCase
     if (this.signSend['useCase']) {
@@ -772,6 +835,12 @@ export class Docusign {
       });
       toast.present();
       this.envelopGetRecipient(this.signSend['envId']);
+      this.docuSign.getEnvelope(this.signSend['envId']).then(env => {
+        console.log("Enveloppe", env);
+        this.dataEnv = env;
+      }, error => {
+        console.log(error);
+      })
     }, error => {
       loader.dismiss();
       let alert = this.alertCtrl.create({

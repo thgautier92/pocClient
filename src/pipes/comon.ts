@@ -101,7 +101,11 @@ export class textToDate implements PipeTransform {
 }
 @Pipe({ name: 'filterBy' })
 export class filterByPipe implements PipeTransform {
-  transform(array: Array<string>, field: string, value: string): Array<string> {
-    return array.filter(array => array[field] == value);
+  transform(array: Array<string>, field: string, value?: string): Array<string> {
+    let ret = array;
+    if (value) {
+      ret = array.filter(array => array[field] == value);
+    }
+    return ret;
   }
 }
