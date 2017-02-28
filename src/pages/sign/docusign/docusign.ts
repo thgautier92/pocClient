@@ -32,6 +32,7 @@ export class Docusign {
   envelopeDocuments: any = null;
   envelopeRecipients: any = null;
   envelopeRecipientsToDelete: any = null;
+  envelopeRecipientsSent: any = null;
   adhesion: any = null;
   clients: any = null;
   conseiller: any = null;
@@ -153,6 +154,7 @@ export class Docusign {
     this.docsModel = null;
     this.envelopeDocuments = null;
     this.envelopeRecipients = null;
+    this.envelopeRecipientsSent = null;
     this.adhesion = null;
     this.clients = null;
     this.conseiller = null;
@@ -252,7 +254,7 @@ export class Docusign {
     }
   }
   changeRecipientClient(key, idx) {
-    console.log("Update data for KEY", key, "INDEX LIST", idx);
+    //console.log("Update data for KEY", key, "INDEX LIST", idx);
     let popover = this.popoverCtrl.create(SelectDataPage, { "title": "Choisir un client", "items": this.clients, "key": key, "idx": idx });
     popover.present();
     this.events.subscribe("SelectedData", response => {
@@ -683,6 +685,20 @@ export class Docusign {
     this.envelopeRecipients[key].splice(idx, 1);
     this.envelopeRecipientsToDelete.push(this.envelopeRecipients[key][idx]);
   }
+  envelopGetRecipient(envelopeId) {
+    let loader = this.loadingCtrl.create({
+      content: "Lecture des destinataires de l'enveloppe...",
+    });
+    loader.present();
+    this.docuSign.getEnvelopeRecipients(envelopeId).then(response => {
+      console.log("Destinataires", response);
+      this.envelopeRecipientsSent = response;
+      loader.dismiss();
+    }, reason => {
+      console.log(reason);
+      loader.dismiss();
+    });
+  }
   updateRecipientEnvelop() {
     // Update Recipients and Tabs Data from Use UseCase
     if (this.signSend['useCase']) {
@@ -755,6 +771,7 @@ export class Docusign {
         position: "bottom"
       });
       toast.present();
+      this.envelopGetRecipient(this.signSend['envId']);
     }, error => {
       loader.dismiss();
       let alert = this.alertCtrl.create({

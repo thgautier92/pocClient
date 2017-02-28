@@ -270,7 +270,6 @@
 									<button ion-button color="danger" item-right icon-left (click)="sendEnvelop()"><ion-icon name="send"></ion-icon></button>
 									<button ion-button color="danger" (click)="getDocSigned(signSend['envId']);">Voir</button>
 								</ion-item>
-
 								<ion-card-content>
 									<div *ngIf="dataEnv">
 										<record [dataRecord]="dataEnv" displaySelector=true></record>
@@ -294,17 +293,43 @@
 							<button ion-button color="primary" (click)="goNext()">Données&nbsp; <ion-icon name="arrow-dropright"></ion-icon></button>
 						</ion-buttons>
 					</ion-toolbar>
-					<ion-list>
-						<ion-item *ngFor="let s of signSend['data']['templateRoles']">
-							Signature de <span ion-text color="primary">{{s['name']}}</span>, en tant que <span ion-text color="primary">{{s['roleName']}}</span>
-							<button ion-button outline item-right icon-left (click)="signByClient(signSend['envId'],s)">
-      							<ion-icon name="add-circle"></ion-icon>Signer
-							</button>
-							<button ion-button outline item-right icon-left (click)="refusedByClient(signSend['envId'])">
-      							<ion-icon name="add-circle"></ion-icon>Signer le papier
-							</button>
-						</ion-item>
-					</ion-list>
+					<ion-row *ngIf="envelopeRecipientsSent">
+						<ion-col>
+							<h2 ion-text color="primary">
+								<u>Signataires</u>
+							</h2>
+							<ion-list no-padding>
+								<div *ngFor="let s of (envelopeRecipientsSent | keysAndFilter:'recipientCount,currentRoutingOrder')">
+									<div *ngIf="s.value.length>0">
+										<ion-item *ngFor="let d of s.value | sortBy:'signerName'">
+											<ion-row wrap>
+												<ion-col width-20 text-center>
+													<h3>{{d.routingOrder}}</h3>
+													<ion-badge color="primary" item-right>{{statusCode[d.status]}}</ion-badge>
+												</ion-col>
+												<ion-col width-70 text-wrap>
+													<div *ngIf="s.key=='signers'">
+														<h3>{{d.name}} a pour rôle : {{d.roleName}}</h3>
+														<ion-note>{{d.email}}</ion-note>
+													</div>
+													<div *ngIf="s.key=='inPersonSigners'">
+														<h3>{{d.signerName}} a pour rôle : {{d.roleName}}</h3>
+														<ion-note>{{d.signerEmail}}</ion-note>
+													</div>
+													<button ion-button outline item-right icon-left color="secondary" (click)="signByClient(signSend['envId'],s.key,d);">Signer - Code d'accès : {{d.accessCode}}</button>
+													<button ion-button outline item-right icon-left (click)="refusedByClient(signSend['envId'])">Signer le papier</button>
+												</ion-col>
+											</ion-row>
+										</ion-item>
+									</div>
+								</div>
+							</ion-list>
+						</ion-col>
+						<ion-col width-20 text-wrap>
+							<h3>Action attendue par le role N°{{envelopeRecipientsSent.currentRoutingOrder}}</h3>
+							<button ion-button color="primary" (click)="envelopGetRecipient(signSend['envId'])">Actualiser&nbsp; <ion-icon name="refresh"></ion-icon></button>
+						</ion-col>
+					</ion-row>
 				</ion-slide>
 				<!-- Slide DATA-->
 				<ion-slide>
