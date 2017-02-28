@@ -21,7 +21,7 @@ declare var Chance: any;
 })
 export class Docusign {
   @ViewChild(Slides) slides: Slides;
-  modeDemo: boolean = true;
+  modeDemo: boolean = false;
   folderFilter: any = null;
   params: any;
   accountInfo: any;
@@ -131,6 +131,7 @@ export class Docusign {
     }
   }
   ngOnInit() {
+    this.changeModeDemo();
     this.docsModel = null;
     this.envelopeDocuments = null;
     this.signSend = {
