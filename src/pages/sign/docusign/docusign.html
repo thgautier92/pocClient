@@ -68,7 +68,7 @@
 															<ion-note>{{d.signerEmail}}</ion-note>
 														</div>
 														<button *ngIf="item.status=='sent'" ion-button small color="secondary" (click)="signByClient(item['envelopeId'],s.key,d);">Signer - Code d'accès : {{d.accessCode}}</button>
-														<button ion-button small outline item-right icon-left (click)="refusedByClient(item['envelopeId'])">Signer le papier</button>
+														<button ion-button small outline item-right icon-left (click)="refusedByClient(item['envelopeId'],d)">Signer le papier</button>
 													</ion-col>
 												</ion-row>
 											</ion-item>

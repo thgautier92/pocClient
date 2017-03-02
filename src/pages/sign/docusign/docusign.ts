@@ -925,18 +925,33 @@ export class Docusign {
       loader.dismiss();
     })
   };
-  refusedByClient(envelopeId) {
+  refusedByClient(envelopeId, refusData) {
     let loader = this.loadingCtrl.create({
       content: "Appel à DOCUSIGN : refus de signature en cours...",
     });
-    this.docuSign.voidDocEnv(envelopeId, null).then(data => {
-      console.log(data);
+    loader.present();
+    refusData['declinedReason'] = "Signature papier"
+    refusData['declinedDateTime'] = new Date();
+    console.log(refusData);
+    this.docuSign.updateRecipients(envelopeId, refusData).then(response => {
+      console.log(response);
       loader.dismiss();
-    }, reason => {
-      console.log('Failed: ', reason);
+      let toast = this.toastCtrl.create({
+        message: "Destinataires de l'Enveloppe mise à jour",
+        duration: 3000,
+        position: "bottom"
+      });
+      toast.present();
+    }, error => {
       loader.dismiss();
+      let toast = this.toastCtrl.create({
+        message: "Erreur à la mise à jour de l'enveloppe : ",
+        duration: 3000,
+        position: "bottom"
+      });
+      toast.present();
+      console.log(error);
     })
-
   }
   // ================================================
 
