@@ -378,7 +378,6 @@ export class DocuSignServices {
     }
     getEnvelopeAll(envelopeId) {
         return new Promise((resolve, reject) => {
-            let ret = null;
             let observableBatch = [];
             let lstApi = [
                 { "key": "status", "url": "accounts/{account}/envelopes/{envelopeId}" },
@@ -399,7 +398,6 @@ export class DocuSignServices {
             });
             request.forEach(element => {
                 console.info("Get envelop info", element);
-                let k = element['key'];
                 observableBatch.push(
                     {
                         "key": element['key'],

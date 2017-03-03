@@ -251,7 +251,7 @@ export class Docusign {
       let u = this.lstUseCase.filter(item => item['value']['name'] == this.signSend['useCase']);
       let usecase = u[0]['value']['dataUseCase'];
       console.log("UseCase selected", usecase);
-      let map = usecase['mapping'];
+      //let map = usecase['mapping'];
     } else {
       return null;
     }
@@ -773,7 +773,7 @@ export class Docusign {
       loader.present();
       let u = this.lstUseCase.filter(item => item['value']['name'] == this.signSend['useCase']);
       let usecase = u[0]['value']['dataUseCase'];
-      let process = usecase['process'];
+      //let process = usecase['process'];
       let map = usecase['mapping'];
       for (var dest in this.envelopeRecipients) {
         //console.log("Add Tabs for ", dest, this.envelopeRecipients[dest]);

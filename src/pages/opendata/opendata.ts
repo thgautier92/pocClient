@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { RestServices } from '../../providers/rest';
-import { groupBy, KeysPipe, filterByPipe } from '../../pipes/comon';
+import { groupBy } from '../../pipes/comon';
 
 
 /*

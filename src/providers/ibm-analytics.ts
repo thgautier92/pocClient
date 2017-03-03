@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http, Request, RequestMethod, Headers, ResponseContentType } from '@angular/http';
+import { Http, Request, RequestMethod, Headers } from '@angular/http';
 import 'rxjs/add/operator/map';
 
 /*
@@ -30,7 +30,7 @@ export class IbmAnalytics {
       this.http.request(options).subscribe((response) => {
         var mediaType = 'application/json';
         var blob = new Blob([response['_body']], { type: mediaType });
-        var filename = 'export.json';
+        //var filename = 'export.json';
         var url = window.URL.createObjectURL(blob);
         window.open(url);
         resolve(blob);
