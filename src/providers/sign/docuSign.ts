@@ -177,7 +177,6 @@ export class DocuSignServices {
                 });
         });
     };
-
     updateRecipients(envelopeId, dataSend) {
         return new Promise((resolve, reject) => {
             var api = "accounts/{account}/envelopes/{envelopeId}/recipients"
@@ -376,6 +375,45 @@ export class DocuSignServices {
                 });
         });
     }
+    getEnvelopeTabs(envelopeId, recipientId) {
+        return new Promise((resolve, reject) => {
+            var api = "accounts/{accountId}/envelopes/{envelopeId}/recipients/{recipientId}/tabs"
+            api = api.replace("{accountId}", this.account);
+            api = api.replace("{envelopeId}", envelopeId);
+            api = api.replace("{recipientId}", recipientId);
+            let url = this.rootApi + "/" + api;
+            this.options.method = RequestMethod.Get;
+            this.options.responseType = ResponseContentType.Json;
+            this.http.request(url, this.options)
+                .map(res => res.json())
+                .subscribe(data => {
+                    resolve(data);
+                }, error => {
+                    console.log("GET error", error);
+                    reject(error);
+                });
+        });
+    }
+    updateEnvelopeTabs(envelopeId, recipientId, dataSend) {
+        return new Promise((resolve, reject) => {
+            var api = "accounts/{accountId}/envelopes/{envelopeId}/recipients/{recipientId}/tabs"
+            api = api.replace("{accountId}", this.account);
+            api = api.replace("{envelopeId}", envelopeId);
+            api = api.replace("{recipientId}", recipientId);
+            let url = this.rootApi + "/" + api;
+            this.options.method = RequestMethod.Put;
+            this.options.body = dataSend;
+            this.options.responseType = ResponseContentType.Json;
+            this.http.request(url, this.options)
+                .map(res => res.json())
+                .subscribe(data => {
+                    resolve(data);
+                }, error => {
+                    reject(error);
+                });
+        });
+    }
+
     getEnvelopeAll(envelopeId) {
         return new Promise((resolve, reject) => {
             let observableBatch = [];

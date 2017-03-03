@@ -83,13 +83,13 @@ export class Docusign {
         "transfercompleted": "transfert terminé",
         "template": "modèle",
         "correct": "correcte",
-        "signers":"Doit signer",
-        "inPersonSigners":"Signataire en personne",
-        "carbonCopies":"Recoie une copie",
-        "agents":"Doit consulter",
-        "certifiedDeliveries":"Définit les destinataires",
-        "editors":"Autoriser à modifier",
-        "intermediaries":"Mettre à jour les destinataires",
+        "signers": "Doit signer",
+        "inPersonSigners": "Signataire en personne",
+        "carbonCopies": "Recoie une copie",
+        "agents": "Doit consulter",
+        "certifiedDeliveries": "Définit les destinataires",
+        "editors": "Autoriser à modifier",
+        "intermediaries": "Mettre à jour les destinataires",
 
       };
     this.defaultTextTab = {
@@ -307,36 +307,33 @@ export class Docusign {
   }
   //==================================================
 
-  getDataTabs(cli, map, role) {
-    // Create tabs
-    let textTabs = [];
-    let listTabs = [];
-    let checkTabs = [];
-    let noteTabs = [];
-    for (var userKey in map) {
-      let tbs = {};
-      switch (map[userKey]) {
-        case 'text':
-          tbs = { "tabLabel": "text_" + userKey, "value": cli[userKey] }
-          textTabs.push(tbs);
-          break;
-        case 'list':
-          tbs = { "tabLabel": "list_" + userKey, "value": cli[userKey] }
-          listTabs.push(tbs);
-          break;
-        case 'check':
-          tbs = { "tabLabel": "check_" + userKey, "selected": cli[userKey] }
-          checkTabs.push(tbs);
-          break;
-        case 'note':
-          tbs = { "tabLabel": "note_" + userKey, "value": cli[userKey] }
-          noteTabs.push(tbs);
-          break;
-        default:
+  updateDataTabs(envelopeId, recipientId, role, data) {
+    // Update tabs from envelop
+    this.docuSign.getEnvelopeTabs(envelopeId, recipientId).then(tabsData => {
+      //console.log(tabsData);
+      for (var typeSign in tabsData) {
+        //console.log("Update data for ", typeSign);
+        for (var typeTab in tabsData[typeSign]) {
+          //console.log("Update data for tab ", typeTab, tabsData[typeSign][typeTab]);
+          let fl = tabsData[typeSign][typeTab]['tabLabel'];
+          let f = fl.substring(fl.indexOf("_") + 1)
+          if (data[f]) {
+            tabsData[typeSign][typeTab]['value'] = data[f];
+          }
+        }
       }
-    }
-    let tabs = { "textTabs": textTabs, "listTabs": listTabs, "checkboxTabs": checkTabs, "noteTabs": noteTabs };
-    return tabs;
+      console.log("==> Mise à jour des données pour le role ", role, tabsData);
+      this.docuSign.updateEnvelopeTabs(envelopeId, recipientId, tabsData).then(response => {
+        console.log(response);
+        return response;
+      }, error => {
+        console.log("==> Error updating tabs for role ", role, error);
+        return null;
+      })
+    }, tabsError => {
+      console.error(tabsError);
+      return null;
+    })
   }
   /* ** Not Use **
   updateSignData() {
@@ -680,6 +677,7 @@ export class Docusign {
       this.envelopeDocuments.forEach(element => {
         element['pageSuppr'] = 0;
       });
+      this.envelopeRecipients = null;
       this.docuSign.getEnvelopeRecipients(envelopeId).then(response => {
         console.log("Destinataires", response);
         this.envelopeRecipients = response;
@@ -699,6 +697,7 @@ export class Docusign {
             element['email'] = this.conseiller['email'];
           }
         });
+        this.envelopeRecipients['signers'] = signers;
         loader.dismiss();
       }, reason => {
         console.log(reason);
@@ -771,20 +770,16 @@ export class Docusign {
       console.log(error);
     })
   }
-  updateRecipientEnvelop() {
-    // Update Recipients and Tabs Data from Use UseCase
+  updateRecipientTabsEnvelop() {
     if (this.signSend['useCase']) {
       let loader = this.loadingCtrl.create({
-        content: "Appel à DOCUSIGN : Mise à jour de l'enveloppe avec les destinataires...",
+        content: "Appel à DOCUSIGN : Mise à jour des données pour chaque destinataire...",
         duration: 10000
       });
       loader.present();
       let u = this.lstUseCase.filter(item => item['value']['name'] == this.signSend['useCase']);
       let usecase = u[0]['value']['dataUseCase'];
-      //let process = usecase['process'];
-      let map = usecase['mapping'];
       for (var dest in this.envelopeRecipients) {
-        //console.log("Add Tabs for ", dest, this.envelopeRecipients[dest]);
         let dataRecipient = this.envelopeRecipients[dest];
         if (Array.isArray(dataRecipient) && dataRecipient.length > 0) {
           dataRecipient.forEach(element => {
@@ -793,14 +788,24 @@ export class Docusign {
             if (cliRef > 0) {
               //let cli = this.getClient(cliRef);
               let cli = usecase['adhesion'];
-              let tabs = this.getDataTabs(cli, map, role);
-              element['tabs'] = tabs;
+              setTimeout(() => {
+                let tabs = this.updateDataTabs(this.signSend['envId'], element['recipientId'], role, cli);
+              }, 3000);
             }
           });
-          this.envelopeRecipients[dest] = dataRecipient;
         }
       }
-      console.log("Recipients to update ", this.envelopeRecipients);
+    }
+  }
+  updateRecipientEnvelop() {
+    // Update Recipients  from Use UseCase
+    console.log("Recipients to update ", this.envelopeRecipients);
+    if (this.signSend['useCase']) {
+      let loader = this.loadingCtrl.create({
+        content: "Appel à DOCUSIGN : Mise à jour de l'enveloppe avec les destinataires...",
+        duration: 10000
+      });
+      loader.present();
       this.docuSign.updateRecipients(this.signSend['envId'], this.envelopeRecipients).then(response => {
         console.log(response);
         loader.dismiss();
@@ -810,6 +815,7 @@ export class Docusign {
           position: "bottom"
         });
         toast.present();
+        this.updateRecipientTabsEnvelop();
       }, error => {
         loader.dismiss();
         let toast = this.toastCtrl.create({
