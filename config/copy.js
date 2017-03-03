@@ -35,8 +35,7 @@ module.exports = {
     src: ['{{ROOT}}/node_modules/json-formatter-js/dist/json-formatter.js',
       '{{ROOT}}/node_modules/json-formatter-js/dist/json-formatter.js.map',
       '{{ROOT}}/node_modules/chance/dist/chance.min.js',
-      '{{ROOT}}/node_modules/chart.js/dist/Chart.bundle.js',
-      '{{ROOT}}/node_modules/pouchdb/dist/pouchdb.min.js'
+      '{{ROOT}}/node_modules/chart.js/dist/Chart.bundle.js'
     ],
     dest: '{{BUILD}}'
   },

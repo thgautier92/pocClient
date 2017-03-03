@@ -104,7 +104,7 @@
 					<ion-toolbar>
 						<ion-title>Actions réalisées par le conseiller</ion-title>
 						<ion-buttons end>
-							<button ion-button color="primary" (click)="goNext()">Client&nbsp; <ion-icon name="arrow-dropright"></ion-icon></button>
+							<button ion-button color="primary" (click)="goNext()">Clients&nbsp; <ion-icon name="arrow-dropright"></ion-icon></button>
 						</ion-buttons>
 					</ion-toolbar>
 					<ion-row>
@@ -151,7 +151,7 @@
 													<ion-note>{{conseiller['email']}}</ion-note>
 												</ion-col>
 												<ion-col *ngIf="clients">
-													<h3 ion-text color="primary">Client</h3>
+													<h3 ion-text color="primary">Clients</h3>
 													<ul>
 														<li *ngFor="let cl of clients">
 															<h4>{{cl.cum_identite}}</h4>
@@ -285,7 +285,7 @@
 						<ion-buttons start>
 							<button ion-button color="primary" (click)="goPrevious()"><ion-icon name="arrow-dropleft"></ion-icon>&nbsp;Conseiller</button>
 						</ion-buttons>
-						<ion-title>Actions réalisées par le client</ion-title>
+						<ion-title>Actions réalisées par les clients</ion-title>
 						<ion-buttons end>
 							<button ion-button color="primary" (click)="goNext()">Données&nbsp; <ion-icon name="arrow-dropright"></ion-icon></button>
 						</ion-buttons>
@@ -312,7 +312,7 @@
 							</h2>
 							<ion-list no-padding>
 								<ion-item>
-									<button ion-button color="primary" (click)="envelopeReorderProcess(dataEnv.envelopeId,envelopeRecipientsSent)">Optimisation du processus<ion-icon name="arrow-dropright"></ion-icon></button>
+									<button ion-button icon-left small round color="primary" (click)="envelopeReorderProcess(dataEnv.envelopeId,envelopeRecipientsSent)"><ion-icon name="funnel"></ion-icon>Optimisation du processus</button>
 								</ion-item>
 								<div *ngFor="let s of (envelopeRecipientsSent | keysAndFilter:'recipientCount,currentRoutingOrder')">
 									<div *ngIf="s.value.length>0">

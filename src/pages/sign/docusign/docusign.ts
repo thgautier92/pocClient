@@ -82,7 +82,15 @@ export class Docusign {
         "authoritativecopy": "copie autorisée",
         "transfercompleted": "transfert terminé",
         "template": "modèle",
-        "correct": "correcte"
+        "correct": "correcte",
+        "signers":"Doit signer",
+        "inPersonSigners":"Signataire en personne",
+        "carbonCopies":"Recoie une copie",
+        "agents":"Doit consulter",
+        "certifiedDeliveries":"Définit les destinataires",
+        "editors":"Autoriser à modifier",
+        "intermediaries":"Mettre à jour les destinataires",
+
       };
     this.defaultTextTab = {
       "anchorString": null,
@@ -783,7 +791,8 @@ export class Docusign {
             let role = element['roleName'];
             let cliRef: number = element['recipientIdGuid'];
             if (cliRef > 0) {
-              let cli = this.getClient(cliRef);
+              //let cli = this.getClient(cliRef);
+              let cli = usecase['adhesion'];
               let tabs = this.getDataTabs(cli, map, role);
               element['tabs'] = tabs;
             }
