@@ -39,7 +39,7 @@
 							</ion-col>
 							<ion-col width-25 text-wrap>
 								<ion-note class="small">
-									<ion-icon name="mail" item-left></ion-icon> <span class="selectable">{{item.envelopeId}}</span>
+									<ion-icon ion-text color="primary" name="mail" item-left (click)="getEnvelopeProcess(item.envelopeId)"></ion-icon> <span class="selectable">{{item.envelopeId}}</span>
 									<br>Expiration le {{item.expireDateTime | date:'mediumDate' }}
 								</ion-note>
 							</ion-col>
@@ -116,7 +116,7 @@
 								</ion-item>
 								<ion-card-content>
 									<ion-list>
-										<ion-item>
+										<ion-item *ngIf="lstModels">
 											<ion-label>Modèles de document</ion-label>
 											<ion-select [(ngModel)]="signSend.docModel" okText="Choisir" cancelText="Annuler" multiple="true" (ionChange)="getModelDocs()">
 												<ion-option *ngFor="let m of (lstModels['envelopeTemplates'] | filterBy:'folderName':folderFilter)" [value]="m.templateId">{{m.name}}</ion-option>
@@ -216,10 +216,9 @@
 								</ion-item>
 								<ion-card-content>
 									<div *ngIf="signSend">
-										<ion-card *ngFor="let s of envelopeRecipients | keysAndFilter:'recipientCount'">
-											<ion-card-header text-left class="small">{{s.key}}</ion-card-header>
+										<ion-card>
 											<ion-card-content style="overflow-x:auto;">
-												<table *ngIf="s.value.length>0">
+												<table>
 													<tr>
 														<td>Rôle</td>
 														<td>Ordre</td>
@@ -227,7 +226,7 @@
 														<td>Nom/Email</td>
 														<td>Code</td>
 													</tr>
-													<tr *ngFor="let d of s.value;let idx=index">
+													<tr *ngFor="let d of envelopeRecipients ;let idx=index">
 														<td>
 															<ion-item class="small" text-wrap>
 																{{d.roleName}}
@@ -238,7 +237,7 @@
 															<ion-input type="number" [(ngModel)]="d.routingOrder" placeholder="Ordre"></ion-input>
 														</td>
 														<td>
-															<button ion-button clear item-right icon-only (click)="changeRecipientClient(s.key,idx)"><ion-icon name="person"></ion-icon></button>
+															<button ion-button clear item-right icon-only (click)="changeRecipientClient(idx)"><ion-icon name="person"></ion-icon></button>
 														</td>
 														<td class="small">
 															{{d.name}}

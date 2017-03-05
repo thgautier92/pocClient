@@ -28,7 +28,7 @@ export class Docusign {
   lstApi: any;
   signSend: any;
   signModel: any;
-  lstModels: any;
+  lstModels: any = null;;
   lstUseCase: any = [];
   lstUseCaseModel: any = [];
   saveModel: any;
@@ -284,56 +284,119 @@ export class Docusign {
       return null;
     }
   }
-  changeRecipientClient(key, idx) {
+  changeRecipientClient(idx) {
     //console.log("Update data for KEY", key, "INDEX LIST", idx);
-    let popover = this.popoverCtrl.create(SelectDataPage, { "title": "Choisir un client", "items": this.clients, "key": key, "idx": idx });
+    let popover = this.popoverCtrl.create(SelectDataPage, { "title": "Choisir un client", "items": this.clients, "idx": idx });
     popover.present();
     this.events.subscribe("SelectedData", response => {
+      //Read Use case data
+      let u = this.lstUseCase.filter(item => item['value']['name'] == this.signSend['useCase']);
+      let usecase = u[0]['value']['dataUseCase'];
+      let adh = usecase['adhesion'];
+      //Read Client selection 
       let cli = response['data'];
       let i = response['idx'];
-      let k = response['key'];
-      this.envelopeRecipients[k][i]['recipientIdGuid'] = cli['id'];
-      if (key == "inPersonSigners") {
-        this.envelopeRecipients[k][i]['signerEmail'] = cli['email'];
-        this.envelopeRecipients[k][i]['signerName'] = cli['cum_identite'];
-        this.envelopeRecipients[k][i]['hostEmail'] = this.conseiller['email'];
-        this.envelopeRecipients[k][i]['hostName'] = this.conseiller['name'];
+      this.envelopeRecipients[i]['recipientIdGuid'] = cli['id'];
+      if (this.envelopeRecipients[i]['note'] == "inPersonSigners") {
+        this.envelopeRecipients[i]['signerEmail'] = cli['email'];
+        this.envelopeRecipients[i]['signerName'] = cli['cum_identite'];
+        this.envelopeRecipients[i]['hostEmail'] = this.conseiller['email'];
+        this.envelopeRecipients[i]['hostName'] = this.conseiller['name'];
       } else {
-        this.envelopeRecipients[k][i]['email'] = cli['email'];
-        this.envelopeRecipients[k][i]['name'] = cli['cum_identite'];
+        this.envelopeRecipients[i]['email'] = cli['email'];
+        this.envelopeRecipients[i]['name'] = cli['cum_identite'];
       }
-
-    });
-  }
-  //==================================================
-
-  updateDataTabs(envelopeId, recipientId, role, data) {
-    // Update tabs from envelop
-    this.docuSign.getEnvelopeTabs(envelopeId, recipientId).then(tabsData => {
-      //console.log(tabsData);
+      // Update Tabs data
+      let tabsData = this.envelopeRecipients[i]['tabs'];
       for (var typeSign in tabsData) {
         //console.log("Update data for ", typeSign);
         for (var typeTab in tabsData[typeSign]) {
           //console.log("Update data for tab ", typeTab, tabsData[typeSign][typeTab]);
           let fl = tabsData[typeSign][typeTab]['tabLabel'];
           let f = fl.substring(fl.indexOf("_") + 1)
-          if (data[f]) {
-            tabsData[typeSign][typeTab]['value'] = data[f];
+          if (adh[f]) {
+            tabsData[typeSign][typeTab]['value'] = adh[f];
           }
         }
       }
-      console.log("==> Mise à jour des données pour le role ", role, tabsData);
-      this.docuSign.updateEnvelopeTabs(envelopeId, recipientId, tabsData).then(response => {
-        console.log(response);
-        return response;
-      }, error => {
-        console.log("==> Error updating tabs for role ", role, error);
-        return null;
-      })
-    }, tabsError => {
-      console.error(tabsError);
-      return null;
+      this.envelopeRecipients[i]['tabs'] = tabsData;
+      console.info("New value", this.envelopeRecipients);
+    });
+  }
+  //==================================================
+  getEnvelopeProcess(envelopeId) {
+    let loader = this.loadingCtrl.create({
+      content: "Appel à DOCUSIGN : Lecture des destinataires et des données associées..."
+    });
+    loader.present();
+    this.getAllRecipientsWithTabs(envelopeId).then(response => {
+      console.info(response);
+      loader.dismiss();
+    }, error => {
+      console.error(error);
+      loader.dismiss();
     })
+  }
+  getAllRecipientsWithTabs(envelopeId) {
+    return new Promise((resolve, reject) => {
+      let datas = [];
+      this.docuSign.getEnvelopeRecipients(envelopeId).then(lst => {
+        //console.log(lst);
+        let recipientCount: number = lst["recipientCount"];
+        for (var dest in lst) {
+          let recipient = lst[dest];
+          if (Array.isArray(recipient) && recipient.length > 0) {
+            recipient.forEach(element => {
+              element['note'] = dest;
+              this.docuSign.getEnvelopeTabs(envelopeId, element['recipientId']).then(tabsData => {
+                //console.log(tabsData);
+                element['tabs'] = tabsData;
+                datas.push(element);
+                if (datas.length >= recipientCount) {
+                  resolve(datas);
+                }
+              }, tabsError => {
+                console.error("==> Error reading TABs from evelop ", envelopeId, " for recipient ", element['recipientId'], tabsError);
+                reject(tabsError);
+              })
+            });
+          }
+        }
+      }, lstError => {
+        reject(lstError);
+      })
+    });
+  }
+
+  updateDataTabs(envelopeId, recipientId, role, data) {
+    return new Promise((resolve, reject) => {
+      // Update tabs from envelop
+      console.log("===> Lecture des tabs pour le destinataire ", recipientId, role);
+      this.docuSign.getEnvelopeTabs(envelopeId, recipientId).then(tabsData => {
+        //console.log(tabsData);
+        for (var typeSign in tabsData) {
+          //console.log("Update data for ", typeSign);
+          for (var typeTab in tabsData[typeSign]) {
+            //console.log("Update data for tab ", typeTab, tabsData[typeSign][typeTab]);
+            let fl = tabsData[typeSign][typeTab]['tabLabel'];
+            let f = fl.substring(fl.indexOf("_") + 1)
+            if (data[f]) {
+              tabsData[typeSign][typeTab]['value'] = data[f];
+            }
+          }
+        }
+        console.log("==> Mise à jour des données pour le role ", role, tabsData);
+        this.docuSign.updateEnvelopeTabs(envelopeId, recipientId, tabsData).then(response => {
+          resolve(response);
+        }, error => {
+          console.log("==> Error updating tabs for role ", role, error);
+          reject(error);
+        })
+      }, tabsError => {
+        console.error("==> Error reading TABs from evelop ", envelopeId, " for recipient ", recipientId, tabsError);
+        reject(tabsError);
+      })
+    });
   }
   /* ** Not Use **
   updateSignData() {
@@ -678,31 +741,25 @@ export class Docusign {
         element['pageSuppr'] = 0;
       });
       this.envelopeRecipients = null;
-      this.docuSign.getEnvelopeRecipients(envelopeId).then(response => {
-        console.log("Destinataires", response);
+      this.getAllRecipientsWithTabs(envelopeId).then(response => {
+        console.log(response);
         this.envelopeRecipients = response;
-        let random = new Chance();
-        let inPersonSigners = this.envelopeRecipients['inPersonSigners']
-        inPersonSigners.forEach(element => {
+        this.envelopeRecipients.forEach(element => {
+          let random = new Chance();
           element['accessCode'] = random.natural({ min: 1, max: 9999 });
           element['recipientIdGuid'] = 0;
-        });
-        this.envelopeRecipients['inPersonSigners'] = inPersonSigners;
-        let signers = this.envelopeRecipients['signers']
-        signers.forEach(element => {
-          element['accessCode'] = random.natural({ min: 1, max: 9999 });
-          element['recipientIdGuid'] = 0;
-          if (element['roleName'] = "CONSEILLER") {
+          if (element['roleName'] == "CONSEILLER") {
             element['name'] = this.conseiller['name'];
             element['email'] = this.conseiller['email'];
           }
         });
-        this.envelopeRecipients['signers'] = signers;
         loader.dismiss();
-      }, reason => {
-        console.log(reason);
+        console.log("==> Destinataires", this.envelopeRecipients)
+      }, error => {
+        console.log(error);
         loader.dismiss();
-      });
+
+      })
     }, reason => {
       console.log(reason);
       loader.dismiss();
@@ -770,61 +827,48 @@ export class Docusign {
       console.log(error);
     })
   }
-  updateRecipientTabsEnvelop() {
-    if (this.signSend['useCase']) {
-      let loader = this.loadingCtrl.create({
-        content: "Appel à DOCUSIGN : Mise à jour des données pour chaque destinataire...",
-        duration: 10000
-      });
-      loader.present();
-      let u = this.lstUseCase.filter(item => item['value']['name'] == this.signSend['useCase']);
-      let usecase = u[0]['value']['dataUseCase'];
-      for (var dest in this.envelopeRecipients) {
-        let dataRecipient = this.envelopeRecipients[dest];
-        if (Array.isArray(dataRecipient) && dataRecipient.length > 0) {
-          dataRecipient.forEach(element => {
-            let role = element['roleName'];
-            let cliRef: number = element['recipientIdGuid'];
-            if (cliRef > 0) {
-              //let cli = this.getClient(cliRef);
-              let cli = usecase['adhesion'];
-              setTimeout(() => {
-                let tabs = this.updateDataTabs(this.signSend['envId'], element['recipientId'], role, cli);
-              }, 3000);
-            }
-          });
-        }
-      }
-    }
-  }
   updateRecipientEnvelop() {
     // Update Recipients  from Use UseCase
-    console.log("Recipients to update ", this.envelopeRecipients);
     if (this.signSend['useCase']) {
-      let loader = this.loadingCtrl.create({
-        content: "Appel à DOCUSIGN : Mise à jour de l'enveloppe avec les destinataires...",
-        duration: 10000
-      });
-      loader.present();
-      this.docuSign.updateRecipients(this.signSend['envId'], this.envelopeRecipients).then(response => {
-        console.log(response);
-        loader.dismiss();
-        let toast = this.toastCtrl.create({
-          message: "Destinataires de l'Enveloppe mise à jour",
-          duration: 3000,
-          position: "bottom"
+      console.log("Recipients to update ", this.envelopeRecipients);
+      // ===== Update TABS data
+      this.updateRecipientTabsEnvelop().then(ret => {
+        let loader = this.loadingCtrl.create({
+          content: "Appel à DOCUSIGN : Mise à jour des destinataires de l'enveloppe...",
         });
-        toast.present();
-        this.updateRecipientTabsEnvelop();
-      }, error => {
-        loader.dismiss();
-        let toast = this.toastCtrl.create({
-          message: "Erreur à la mise à jour de l'enveloppe : ",
-          duration: 3000,
-          position: "bottom"
+        loader.present();
+        // Prepare data for update recipient informations
+        let data = {};
+        this.envelopeRecipients.forEach(element => {
+          delete element['tabs'];
+          data[element['note']] = [];
         });
-        toast.present();
-        console.log(error);
+        this.envelopeRecipients.forEach(element => {
+          data[element['note']].push(element);
+        });
+        console.log("Mise à jour des destinataires", data);
+        this.docuSign.updateRecipients(this.signSend['envId'], data).then(response => {
+          console.log(response);
+          loader.dismiss();
+          let toast = this.toastCtrl.create({
+            message: "Destinataires de l'Enveloppe mise à jour",
+            duration: 3000,
+            position: "bottom"
+          });
+          toast.present();
+        }, error => {
+          loader.dismiss();
+          let toast = this.toastCtrl.create({
+            message: "Erreur à la mise à jour de l'enveloppe : ",
+            duration: 3000,
+            position: "bottom"
+          });
+          toast.present();
+          console.log(error);
+        })
+      }, err => {
+        console.error("ERR UPDATE TABS", err);
+
       })
     } else {
       let alert = this.alertCtrl.create({
@@ -834,6 +878,32 @@ export class Docusign {
       });
       alert.present();
     }
+  }
+  updateRecipientTabsEnvelop() {
+    return new Promise((resolve, reject) => {
+      console.log("Tabs to update ", this.envelopeRecipients);
+      let loader = this.loadingCtrl.create({
+        content: "Appel à DOCUSIGN : Mise à jour des données pour chaque destinataire...",
+        duration: 10000
+      });
+      loader.present();
+      let ret = []
+      let err = [];
+      this.envelopeRecipients.forEach(element => {
+        this.docuSign.updateEnvelopeTabs(this.signSend['envId'], element['recipientId'], element['tabs']).then(response => {
+          ret.push(response);
+          if (ret.length >= this.envelopeRecipients.length) {
+            console.log(ret);
+            loader.dismiss();
+            resolve(ret);
+          }
+        }, error => {
+          err.push(error);
+          console.log(err);
+          reject(err);
+        })
+      });
+    });
   }
   sendEnvelop() {
     let loader = this.loadingCtrl.create({
@@ -1016,11 +1086,10 @@ export class SelectDataPage {
       this.items = this.navParams.data['items'];
       this.title = this.navParams.data['title'];
       this.idx = this.navParams.data['idx'];
-      this.key = this.navParams.data['key'];
     }
   }
   selItem(item) {
-    this.events.publish("SelectedData", { "key": this.key, "idx": this.idx, "data": item });
+    this.events.publish("SelectedData", { "idx": this.idx, "data": item });
     this.viewCtrl.dismiss();
   }
   cancelItem() {
