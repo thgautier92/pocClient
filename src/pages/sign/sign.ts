@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { Docusign } from './docusign/docusign';
+import { SmavieMobilitePage } from './smavie-mobilite/smavie-mobilite';
 //import { Docapost } from './docapost/docapost';
 //import { SellandsignPage } from './sellandsign/sellandsign';
 
@@ -22,6 +23,7 @@ export class Sign {
     //{ "id": "sellandsign", "title": "", "description": "", "logo": this.imgPath + "NEW_SellSign_Horiz_150.png", "page": SellandsignPage }
     this.products = [
       { "id": "docusign", "title": "", "description": "Solution de signature électronique légale, simple et sécurisée pour envoyer et signer numériquement tous documents, depuis un PC ou un mobile", "logo": this.imgPath + "docuSign.jpg", "page": Docusign },
+            { "id": "smavie_mobilite", "title": "", "description": "Prototype d'intégration des fonctions de signature", "logo": this.imgPath + "logo_smavie_actu2.jpg", "page": SmavieMobilitePage },
     ];
   }
   ionViewDidLoad() {

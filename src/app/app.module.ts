@@ -23,6 +23,7 @@ import { PdfViewerComponent } from 'ng2-pdf-viewer';
 // Signature electronique
 import { Sign } from '../pages/sign/sign';
 import { Docusign, SelectDataPage } from '../pages/sign/docusign/docusign';
+import { SmavieMobilitePage } from '../pages/sign/smavie-mobilite/smavie-mobilite';
 import { DocuSignModel } from '../pages/sign/docusign/docusignmodel';
 import { DocuSignServices } from '../providers/sign/docuSign';
 //import { Docapost } from '../pages/sign/docapost/docapost';
@@ -76,6 +77,7 @@ import { FilesOperation } from '../providers/files-operation';
         Page2,
         PdfGen, Jspdf, Pdfmake,
         Sign, Docusign, SelectDataPage, DocuSignModel,
+        SmavieMobilitePage,
         Simu, Harvest, Epicaste,
         NosqlPage, ParamsPage, CouchBasePage, dbPopoverPage, CouchStatsPage,
         PouchPage, dbPopoverPouchPage,
@@ -100,6 +102,7 @@ import { FilesOperation } from '../providers/files-operation';
         Page2,
         PdfGen, Jspdf, Pdfmake,
         Sign, Docusign, SelectDataPage, DocuSignModel,
+        SmavieMobilitePage,
         Simu, Harvest, Epicaste,
         NosqlPage, ParamsPage, CouchBasePage, dbPopoverPage, CouchStatsPage,
         PouchPage, dbPopoverPouchPage,
