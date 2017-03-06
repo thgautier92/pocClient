@@ -7,12 +7,106 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>smavieMobilite</ion-title>
+    <ion-title>Prototype Smavie Mobilite</ion-title>
   </ion-navbar>
 
 </ion-header>
 
 
 <ion-content padding>
-
+  <ion-slides #slides pager paginationType="progress" spaceBetween=20>
+    <!-- Slide preparation données et envoie de l'enveloppe-->
+    <ion-slide no-padding>
+      <ion-toolbar>
+        <ion-title>Actions réalisées par le conseiller</ion-title>
+        <ion-buttons end>
+          <button ion-button color="primary" (click)="goNext()">Clients&nbsp; <ion-icon name="arrow-dropright"></ion-icon></button>
+        </ion-buttons>
+      </ion-toolbar>
+      <ion-row wrap>
+        <ion-col width-50>
+          <ion-card>
+            <ion-card-content>
+              <ion-item>
+                <ion-label>Données pour alimenter les signatures (Cas de tests)</ion-label>
+                <ion-select [(ngModel)]="signSend.useCase" okText="Choisir" cancelText="Annuler" (ionChange)="getUseCaseDetail()">
+                  <ion-option *ngFor="let m of lstUseCase" [value]="m.value.name">{{m.value.title}}</ion-option>
+                </ion-select>
+                <button ion-button clear item-right icon-left (click)="getUseCase()"><ion-icon name="refresh"></ion-icon></button>
+              </ion-item>
+              <ion-item *ngIf="signSend.useCase">
+                <ion-row>
+                  <ion-col *ngIf="conseiller">
+                    <h3 ion-text color="primary">Conseiller</h3>
+                    <h4>{{conseiller['name']}}</h4>
+                    <ion-note>{{conseiller['email']}}</ion-note>
+                  </ion-col>
+                  <ion-col *ngIf="clients">
+                    <h3 ion-text color="primary">Clients</h3>
+                    <ul>
+                      <li *ngFor="let cl of clients">
+                        <h4>{{cl.cum_identite}}</h4>
+                        <ion-note>{{cl.email}} - {{cl.mobile}}</ion-note>
+                      </li>
+                    </ul>
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>
+                    <ion-col *ngIf="process">
+                      <h3 ion-text color="primary">Rôles</h3>
+                      <ul>
+                        <li *ngFor="let ro of process">
+                          <h4>{{ro}}</h4>
+                          <ion-note></ion-note>
+                        </li>
+                      </ul>
+                    </ion-col>
+                  </ion-col>
+                  <ion-col></ion-col>
+                </ion-row>
+              </ion-item>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        <ion-col width-50>
+          <ion-card>
+            <ion-card-content>
+              <ion-list>
+                <ion-item *ngIf="lstModels">
+                  <ion-label>Modèles de document</ion-label>
+                  <ion-select [(ngModel)]="signSend.docModel" okText="Choisir" cancelText="Annuler" multiple="true" (ionChange)="getModelDocs()">
+                    <ion-option *ngFor="let m of (lstModels['envelopeTemplates'] | filterBy:'folderName':folderFilter)" [value]="m.templateId">{{m.name}}</ion-option>
+                  </ion-select>
+                  <button ion-button clear item-right icon-left (click)="getLstModel()"><ion-icon name="refresh"></ion-icon></button>
+                </ion-item>
+                <ion-item>
+                  <ion-list *ngIf="docsModel">
+                    <ion-item no-padding *ngFor="let m of docsModel">
+                      <h4>Modèle ref : {{m.templateId}}</h4>
+                      <ion-list no-padding no-lines>
+                        <ion-item no-padding class="smallList" *ngFor="let d of m.templateDocuments">
+                          <h3 ion-text color="primary">{{d.order}}. {{d.documentId}}-{{d.name}}</h3>
+                          <ion-badge item-right>{{d.pages}}</ion-badge>
+                        </ion-item>
+                      </ion-list>
+                    </ion-item>
+                  </ion-list>
+                </ion-item>
+              </ion-list>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-slide>
+    <!-- Slide Clients -->
+    <ion-slide no-padding>
+      <ion-toolbar>
+        <ion-title>Actions réalisées par le ou les clients</ion-title>
+        <ion-buttons end>
+          <button ion-button color="primary" (click)="goPrevious()"><ion-icon name="arrow-dropleft"></ion-icon>&nbsp;Conseiller</button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-slide>
+  </ion-slides>
 </ion-content>
