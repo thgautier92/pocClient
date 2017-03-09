@@ -32,6 +32,7 @@
 					</ion-col>
 				</ion-row>
 				<ion-badge item-right color="danger">{{us.value.type}}</ion-badge>
+				<ion-badge item-right [color]="(us.value.modeProto ? 'primary' : 'light')">Mode test</ion-badge>
 				<div *ngIf="displayData">
 					<pre class="jsonpre">{{us.value.dataUseCase |json}}</pre>
 				</div>

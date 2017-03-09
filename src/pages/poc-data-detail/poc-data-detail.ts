@@ -12,6 +12,7 @@ declare var ace: any;
 export class useCase {
     _id: string;
     type: string;
+    modeProto: boolean;
     name: string;
     title: string;
     description: string;
@@ -64,10 +65,12 @@ export class PocDataDetail {
             console.log("Create a new use case");
             this.useCaseDetail = new useCase;
             this.useCaseDetail._id = this.couch.guid();
+            this.useCaseDetail.modeProto = true;
             this.useCaseDetail.name = "";
             this.useCaseDetail.title = "";
             this.useCaseDetail.description = "";
             this.useCaseDetail.dataUseCase = {};
+
         }
         this.text = JSON.stringify(this.useCaseDetail['dataUseCase'], null, '\t');
         this.loadEditor(this.text, "editor", "json");

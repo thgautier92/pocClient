@@ -1,6 +1,7 @@
 import { Injectable, } from '@angular/core';
 import { Http, RequestOptions, Headers, Request, RequestMethod, ResponseContentType } from '@angular/http';
 import { Platform } from 'ionic-angular';
+import { Storage } from '@ionic/storage';
 
 import 'rxjs/add/operator/map';
 
@@ -13,7 +14,7 @@ export class DocuSignServices {
     account: any;
     integratorKey: any;
     accountEmail: any;
-    constructor(private http: Http, public platform: Platform) {
+    constructor(private http: Http, public platform: Platform, public storage: Storage) {
         this.rootApi = "https://demo.docusign.net/restapi/v2";
         if (this.platform.is('cordova')) {
         } else {
@@ -150,6 +151,7 @@ export class DocuSignServices {
             this.http.request(url, this.options)
                 .map(res => res.json())
                 .subscribe(data => {
+                    this.putStoreEnvelopes(data);
                     resolve(data);
                 }, error => {
                     console.log("POST Envelope error", error);
@@ -258,18 +260,19 @@ export class DocuSignServices {
                 });
         });
     }
-    refuseDocEnv(envelopeId, reason?) {
+    refuseDocEnv(envelopeId, recipient, reason?) {
         //voidedDateTime
         //accounts/{accountId}/envelopes/{envelopeId}
         return new Promise((resolve, reject) => {
-            var api = "accounts/{accountId}/envelopes/{envelopeId}";
+            var api = "accounts/{accountId}/envelopes/{envelopeId}/recipients";
             api = api.replace("{accountId}", this.account);
             api = api.replace("{envelopeId}", envelopeId);
             let url = this.rootApi + "/" + api;
             if (!reason) reason = "Le client préfère une signature papier";
+            recipient['declinedReason'] = reason;
             this.options.method = RequestMethod.Put;
             this.options.responseType = ResponseContentType.Json;
-            this.options.body = { "status": "voided", "voidedReason": reason };
+            this.options.body = recipient;
             this.http.request(url, this.options)
                 .map(res => res.json())
                 .subscribe(data => {
@@ -674,4 +677,30 @@ export class DocuSignServices {
     }
     //https://demo.docusign.net/restapi/v2/accounts/1549349/templates/81d3832f-7e34-45f5-bcfc-4e103a682cbc/recipients
     //https://demo.docusign.net/restapi/v2/accounts/1549349/billing_plan 
+
+    // ===== STORE ENVELOPES INFORMATIONS ON LOCAL =====
+    putStoreEnvelopes(envelop) {
+        this.getStoredEnvelopes().then(data => {
+            let d: any = data;
+            d.push(envelop);
+            this.storage.set('envelopes', d);
+        }, error => {
+
+        });
+    }
+    getStoredEnvelopes() {
+        return new Promise((resolve, reject) => {
+            if (this.storage) {
+                this.storage.get('envelopes').then(val => {
+                    console.log("Founded", val)
+                    resolve(val);
+                }, error => {
+                    console.log(error);
+                    resolve([]);
+                })
+            } else {
+                reject(false);
+            }
+        });
+    }
 }

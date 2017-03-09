@@ -41,6 +41,10 @@
 					<ion-label floating>Description Fonctionnelle</ion-label>
 					<ion-textarea [(ngModel)]="useCaseDetail['description']" type="text"></ion-textarea>
 				</ion-item>
+				<ion-item>
+					<ion-label>Mode prototype ?</ion-label>
+					<ion-toggle [(ngModel)]="useCaseDetail['modeProto']"></ion-toggle>
+				</ion-item>
 				<hr>
 				<ion-card>
 					<h5>

@@ -8,4 +8,11 @@ page-smavie-mobilite {
         -ms-user-select: text;
         user-select: text;
     }
+    .alertcss {
+        max-width: 500px;
+    }
+}
+
+.alert-md .alert-wrapper {
+    max-width: 80%;
 }

@@ -21,6 +21,9 @@ declare var Chance: any;
 export class SmavieMobilitePage {
   @ViewChild(Slides) slides: Slides;
   params: any = null;                 // Paramétres de connexion à COUCHDB
+  storedEnvelopes: any = []           // Liste des enveloppes stockées localement
+  selEnvelop: any = null;             // Envelope séléctionnées à partir du stockage local
+
   statusCode: any = null              // Liste des status d'enveloppes, traduction incluse
   signSend: any = null;               // Structure de stockage des données anvoyées à la signature
   // ===== Variables de stockage des information de l'adhesion =====
@@ -106,11 +109,16 @@ export class SmavieMobilitePage {
     this.slides.slideTo(0);
     this.ngOnInit();
   }
+  goHome() {
+    this.navCtrl.pop();
+  }
 
   // ===== Only for proto datas ======
   getUseCase() {
+    // filter for Test Only
     this.couch.getDbViewDocs('poc_data', 'byType', 'sign', 100, 0, this.params).then(response => {
-      this.lstUseCase = response['rows'];
+      this.lstUseCase = response['rows'].filter(item => item['value']['modeProto'] == true);
+      console.log(response, this.lstUseCase);
     }, error => {
       console.error(error);
     });
@@ -156,7 +164,6 @@ export class SmavieMobilitePage {
     });
   }
 
-
   /* ====== Etapes pour l'envoi de l'enveloppe =====
     1. Création de l'enveloppe à partir des modèles
     2. Supression des pages inutiles
@@ -168,24 +175,26 @@ export class SmavieMobilitePage {
     if (this.signSend['docModel']) {
       this.msg.push({ step: "create", msg: "Création de l'enveloppe à partir des modèles", dt: new Date(), status: "En cours" })
       this.envelopCreateFromModels().then(response => {
-        //this.envelopUpdatePages();
         this.msg[this.msg.length - 1].status = "Terminé";
-        this.msg.push({ step: "update", msg: "Mise à jour des informations d'adhesion", dt: new Date(), status: "En cours" })
-        this.envelopUpdateTabs(this.signSend['envelopeId']).then(response => {
+        this.msg.push({ step: "pageDelete", msg: "Supression des pages inutiles", dt: new Date(), status: "En cours" })
+        this.envelopUpdatePages(this.signSend['envelopeId']).then(response => {
           this.msg[this.msg.length - 1].status = "Terminé";
-          this.msg.push({ step: "send", msg: "Envoi pour signature", dt: new Date(), status: "En cours" })
-          this.sendEnvelopWithData(this.signSend['envelopeId']).then(response => {
+          this.msg.push({ step: "update", msg: "Mise à jour des informations d'adhesion", dt: new Date(), status: "En cours" })
+          this.envelopUpdateTabs(this.signSend['envelopeId']).then(response => {
             this.msg[this.msg.length - 1].status = "Terminé";
-            this.msg.push({ step: "sign", msg: "Préparation des actions CLIENT", dt: new Date(), status: "En cours" })
-            this.envelopGetRecipientSent(this.signSend['envelopeId']);
-            this.msg[this.msg.length - 1].status = "Terminé";
-            this.msg.push({ step: "end", msg: "Signature prête", dt: new Date(), status: "Terminé" })
-          }, error => {
+            this.msg.push({ step: "send", msg: "Envoi pour signature", dt: new Date(), status: "En cours" })
+            this.sendEnvelopWithData(this.signSend['envelopeId']).then(response => {
+              this.msg[this.msg.length - 1].status = "Terminé";
+              this.msg.push({ step: "sign", msg: "Préparation des actions CLIENT", dt: new Date(), status: "En cours" })
+              this.envelopGetRecipientSent(this.signSend['envelopeId']);
+              this.msg[this.msg.length - 1].status = "Terminé";
+              this.msg.push({ step: "end", msg: "Signature prête", dt: new Date(), status: "Terminé" });
+            }, error => {
 
-          })
-        }, error => {
+            })
+          }, error => { })
+        }, error => { });
 
-        })
       }, error => { });
     } else {
       let alert = this.alertCtrl.create({
@@ -231,8 +240,22 @@ export class SmavieMobilitePage {
       });
     });
   }
-  envelopUpdatePages() {
-
+  envelopUpdatePages(envelopeId) {
+    return new Promise((resolve, reject) => {
+      this.process.forEach(element => {
+        let pagesToDelete = element['pagesToDelete'];
+        pagesToDelete.forEach(page => {
+          console.log("Delete in docId ", page['docId'], " pageId", page['pageId'])
+          this.docuSign.removePageFormDocEnv(envelopeId, page['docId'], page['pageId']).then(response => {
+            console.log(response);
+          }, reason => {
+            console.log(reason);
+            reject(false);
+          });
+        });
+      });
+      resolve(true);
+    })
   }
   envelopUpdateTabs(envelopeId) {
     return new Promise((resolve, reject) => {
@@ -383,6 +406,49 @@ export class SmavieMobilitePage {
   /* ======Opération faites par le client ============
   
   ===================================================*/
+  envelopeReorderProcess(envelopId, recipients) {
+    let loader = this.loadingCtrl.create({
+      content: "Appel à DOCUSIGN : Mise à jour du processus de signature...",
+      duration: 10000
+    });
+    console.log("Sort RECIPIENTS", recipients);
+    let exception = "recipientCount,currentRoutingOrder";
+    let so = [];
+    //let so = new sortBy().transform(recipients, 'routingOrder');
+    for (let key in recipients) {
+      if (!exception.includes(key)) {
+        for (let rc of recipients[key]) {
+          rc['type'] = key;
+          so.push(rc);
+        }
+      }
+    }
+    so = new sortBy().transform(so, 'signerName');
+    for (let i = 0; i < so.length; i++) {
+      so[i]["routingOrder"] = (i + 1).toString();
+    }
+    let ret = new groupBy().transform(so, "type");
+    console.log("RECIPIENTS SORT", ret);
+    this.docuSign.updateRecipients(envelopId, ret).then(response => {
+      console.log(response);
+      loader.dismiss();
+      let toast = this.toastCtrl.create({
+        message: "Processus de signature mise à jour",
+        duration: 3000,
+        position: "bottom"
+      });
+      toast.present();
+    }, error => {
+      loader.dismiss();
+      let toast = this.toastCtrl.create({
+        message: "Erreur à la mise à jour du processus : ",
+        duration: 3000,
+        position: "bottom"
+      });
+      toast.present();
+      console.log(error);
+    })
+  }
   signBySender(envelopeId) {
     let loader = this.loadingCtrl.create({
       content: "Appel à DOCUSIGN : envoie des données de signature en cours...",
@@ -451,19 +517,24 @@ export class SmavieMobilitePage {
       loader.dismiss();
     })
   };
-  refusedByClient(envelopeId, refusData) {
+  refusedByClient(envelopeId, idx, refusData) {
     let loader = this.loadingCtrl.create({
       content: "Appel à DOCUSIGN : refus de signature en cours...",
     });
     loader.present();
-    refusData['declinedReason'] = "Signature papier"
-    refusData['declinedDateTime'] = new Date();
-    console.log(refusData);
-    this.docuSign.updateRecipients(envelopeId, refusData).then(response => {
+    let d = {};
+    let k = refusData['key'];
+    let v = refusData['value'][idx];
+    v['declinedReason'] = "Signature papier"
+    v['declinedDateTime'] = new Date();
+    d[k] = [];
+    d[k].push(v)
+    console.log(d);
+    this.docuSign.refuseDocEnv(envelopeId, d).then(response => {
       console.log(response);
       loader.dismiss();
       let toast = this.toastCtrl.create({
-        message: "Destinataires de l'Enveloppe mise à jour",
+        message: "Signature par papier mémorisée.",
         duration: 3000,
         position: "bottom"
       });
@@ -575,4 +646,33 @@ export class SmavieMobilitePage {
     })
   }
   // =================================================
+  showStoredEnvelopes() {
+    this.docuSign.getStoredEnvelopes().then(data => {
+      this.storedEnvelopes = data;
+      let alert = this.alertCtrl.create();
+      alert.setTitle('Enveloppes enregistrées');
+      alert.setCssClass("alertcss");
+      this.storedEnvelopes.forEach(element => {
+        alert.addInput({
+          type: 'radio',
+          label: element['statusDateTime'],
+          value: element['envelopeId'],
+          checked: false
+        });
+      });
+      alert.addButton('Annuler');
+      alert.addButton({
+        text: 'Choisir',
+        handler: data => {
+          console.log("Envelop selected", data);
+          this.envelopGetRecipientSent(data);
+          this.signSend['envelopeId'] = data;
+        }
+      });
+      alert.present();
+    }, error => {
+      console.log("Fonction Storage non disponible");
+    });
+
+  }
 }
