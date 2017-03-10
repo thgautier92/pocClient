@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { Platform, NavController, NavParams, Events, AlertController, LoadingController, ActionSheetController, Slides, PopoverController, ViewController, ToastController } from 'ionic-angular';
+import { Platform, NavController, NavParams, Events, AlertController, LoadingController, ActionSheetController, Slides, PopoverController, ToastController } from 'ionic-angular';
 import { DocuSignServices } from '../../../providers/sign/docuSign';
 import { CouchDbServices } from '../../../providers/couch/couch';
 import { WinExternal } from '../../../providers/win-external';
@@ -33,6 +33,7 @@ export class SmavieMobilitePage {
   conseiller: any = null              // Conseiller connécté
   adhesion: any = null;               // Données de l'adhésion
   process: any = null;                // Processus d'adhesion
+  pagesToDelete: any = null           // Liste des pages inutiles, à trier en ordre inverse 
 
   lstModels: any = null               // Liste des modèles de signature DocuSign
   docsModel: any = null               // Liste des documents contenus dans le(s) modèle(s)
@@ -89,6 +90,8 @@ export class SmavieMobilitePage {
     this.msg = null;
     this.clients = null;
     this.conseiller = null;
+    this.process = null;
+    this.pagesToDelete = null;
     this.folderFilter = 'Templates';
     this.couch.getParams().then(data => {
       this.params = data;
@@ -131,6 +134,7 @@ export class SmavieMobilitePage {
       this.clients = usecase['clients'];
       this.adhesion = usecase['adhesion'];
       this.process = usecase['process'];
+      this.pagesToDelete = usecase['pagesToDelete'];
     } else {
     }
   }
@@ -189,12 +193,9 @@ export class SmavieMobilitePage {
               this.envelopGetRecipientSent(this.signSend['envelopeId']);
               this.msg[this.msg.length - 1].status = "Terminé";
               this.msg.push({ step: "end", msg: "Signature prête", dt: new Date(), status: "Terminé" });
-            }, error => {
-
-            })
+            }, error => { })
           }, error => { })
         }, error => { });
-
       }, error => { });
     } else {
       let alert = this.alertCtrl.create({
@@ -242,16 +243,13 @@ export class SmavieMobilitePage {
   }
   envelopUpdatePages(envelopeId) {
     return new Promise((resolve, reject) => {
-      this.process.forEach(element => {
-        let pagesToDelete = element['pagesToDelete'];
-        pagesToDelete.forEach(page => {
-          console.log("Delete in docId ", page['docId'], " pageId", page['pageId'])
-          this.docuSign.removePageFormDocEnv(envelopeId, page['docId'], page['pageId']).then(response => {
-            console.log(response);
-          }, reason => {
-            console.log(reason);
-            reject(false);
-          });
+      this.pagesToDelete.forEach(page => {
+        console.log("Delete in docId ", page['docId'], " pageId", page['pageId'])
+        this.docuSign.removePageFormDocEnv(envelopeId, page['docId'], page['pageId']).then(response => {
+          console.log(response);
+        }, reason => {
+          console.log(reason);
+          reject(false);
         });
       });
       resolve(true);
@@ -264,12 +262,12 @@ export class SmavieMobilitePage {
         duration: 10000
       });
       loader.present();
-
       this.getAllRecipientsWithTabs(envelopeId).then(response => {
         //console.log(response);
         this.envelopeRecipients = response;
-        // 3. Apply DATA on TABS 
-        this.envelopeRecipients.forEach(element => {
+        // 3. Apply DATA on TABS
+        let deleteRecipients = {};
+        this.envelopeRecipients.forEach((element, idx) => {
           // =====Update Tabs data
           let tabsData = element['tabs'];
           for (var typeSign in tabsData) {
@@ -303,49 +301,63 @@ export class SmavieMobilitePage {
               element['name'] = this.conseiller['name'];
               element['email'] = this.conseiller['email'];
             }
+            element['smadelete'] = false;
           } else {
-            console.info("Role non trouvé dans le paramétrage edition", element['roleName']);
+            console.info("Role non trouvé dans le paramétrage édition", element, idx);
+            //supression du role dans les documents
+            element['smadelete'] = true;
+            if (!deleteRecipients[element['note']]) {
+              deleteRecipients[element['note']] = [];
+            }
+            deleteRecipients[element['note']].push({ "recipientId": element['recipientId'] });
           }
         });
-
-        // 3. Call DOCUSIGN for UPDATE RECIPIENT TABS 
-        this.nextUpdateRecipientTabs(-1);
-        // 4. Call DOCUSIGN for UPDATE RECIPIENT
-        this.events.subscribe("AllTabsUptdated", response => {
-          // Preparation des données pour mise à jour des destinataires
-          let data = {};
-          this.envelopeRecipients.forEach(element => {
-            delete element['tabs'];
-            data[element['note']] = [];
-          });
-          this.envelopeRecipients.forEach(element => {
-            data[element['note']].push(element);
-          });
-          // API : Mise à jour de la liste des destinataires
-          console.log("Mise à jour des destinataires", data);
-          this.docuSign.updateRecipients(envelopeId, data).then(response => {
-            //console.log(response);
-            loader.dismiss();
-            let toast = this.toastCtrl.create({
-              message: "Destinataires de l'Enveloppe mise à jour",
-              duration: 3000,
-              position: "bottom"
+        this.docuSign.removeRecipientsFormDocEnv(envelopeId, deleteRecipients).then(response => {
+          console.info("STATUS : Recipients deleted", response);
+          // 4. Call DOCUSIGN for UPDATE RECIPIENT TABS 
+          this.nextUpdateRecipientTabs(-1);
+          // 5. Call DOCUSIGN for UPDATE RECIPIENT
+          this.events.subscribe("AllTabsUpdated", response => {
+            // Preparation des données pour mise à jour des destinataires
+            let data = {};
+            this.envelopeRecipients.forEach(element => {
+              delete element['tabs'];
+              data[element['note']] = [];
             });
-            toast.present();
-            resolve(true);
-          }, error => {
-            console.log(error);
-            loader.dismiss();
-            let toast = this.toastCtrl.create({
-              message: "Erreur à la mise à jour de l'enveloppe : ",
-              duration: 3000,
-              position: "bottom"
+            this.envelopeRecipients.forEach(element => {
+              let key = element['note'];
+              delete element['note'];
+              if (!element['smadelete']) {
+                data[key].push(element);
+              }
             });
-            toast.present();
-            resolve(false);
+            // API : Mise à jour de la liste des destinataires
+            console.log("Mise à jour des destinataires", data);
+            this.docuSign.updateRecipients(envelopeId, data).then(response => {
+              //console.log(response);
+              loader.dismiss();
+              let toast = this.toastCtrl.create({
+                message: "Destinataires de l'Enveloppe mise à jour",
+                duration: 3000,
+                position: "bottom"
+              });
+              toast.present();
+              resolve(true);
+            }, error => {
+              console.log(error);
+              loader.dismiss();
+              let toast = this.toastCtrl.create({
+                message: "Erreur à la mise à jour de l'enveloppe : ",
+                duration: 3000,
+                position: "bottom"
+              });
+              toast.present();
+              resolve(false);
+            })
           })
-        })
-        loader.dismiss();
+          loader.dismiss();
+        }, error => { })
+
       }, error => {
         resolve(false);
       })
@@ -620,14 +632,19 @@ export class SmavieMobilitePage {
   nextUpdateRecipientTabs(idx) {
     idx = idx + 1;
     if (this.envelopeRecipients.length > idx) {
-      //console.log("RECIPIENT", idx, this.envelopeRecipients[idx]);
+      console.log("RECIPIENT", idx, this.envelopeRecipients[idx]);
       let tabs = this.envelopeRecipients[idx]['tabs'];
       let i = this.envelopeRecipients[idx]['recipientId'];
       let role = this.envelopeRecipients[idx]['roleName'];
-      this.updateRecipientTabs(idx, i, tabs, role);
+      if (!this.envelopeRecipients[idx]['smadelete']) {
+        this.updateRecipientTabs(idx, i, tabs, role);
+      } else {
+        this.nextUpdateRecipientTabs(idx);
+      }
+
     } else {
       console.log("UPDATE FINISHED");
-      this.events.publish("AllTabsUptdated", true);
+      this.events.publish("AllTabsUpdated", true);
     }
   }
   // API : Mise à jour des champs pour un destinataire

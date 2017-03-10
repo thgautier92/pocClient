@@ -240,6 +240,30 @@ export class DocuSignServices {
                 });
         });
     }
+    removeRecipientsFormDocEnv(envelopeId, recipientsList) {
+        // DELETE v2/accounts/{accountId}/envelopes/{envelopeId}/recipients
+        console.log("Recipients list to delete", recipientsList, "texte:", JSON.stringify(recipientsList), ":")
+        return new Promise((resolve, reject) => {
+            if (JSON.stringify(recipientsList) !== "") {
+                var api = "accounts/{accountId}/envelopes/{envelopeId}/recipients";
+                api = api.replace("{accountId}", this.account);
+                api = api.replace("{envelopeId}", envelopeId);
+                let url = this.rootApi + "/" + api;
+                this.options.method = RequestMethod.Delete;
+                this.options.responseType = ResponseContentType.Json;
+                this.options.body = recipientsList;
+                this.http.request(url, this.options)
+                    .subscribe(data => {
+                        resolve(data);
+                    }, error => {
+                        console.log(error);
+                        reject(error);
+                    });
+            } else {
+                resolve({ "reason": "Nothing to delete" });
+            }
+        });
+    }
     sendEnv(envelopeId) {
         //accounts/{accountId}/envelopes/{envelopeId}
         return new Promise((resolve, reject) => {
