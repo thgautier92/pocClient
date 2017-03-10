@@ -151,7 +151,7 @@
             </h2>
             <ion-list no-padding>
               <ion-item>
-                <button ion-button icon-left small round color="primary" (click)="envelopeReorderProcess(dataEnv.envelopeId,envelopeRecipientsSent)"><ion-icon name="funnel"></ion-icon>Optimisation du processus</button>
+                <button ion-button icon-left small round color="primary" (click)="envelopeReorderProcess(signSend['envelopeId'],envelopeRecipientsSent)"><ion-icon name="funnel"></ion-icon>Optimisation du processus</button>
               </ion-item>
               <div *ngFor="let s of (envelopeRecipientsSent | keysAndFilter:'recipientCount,currentRoutingOrder')">
                 <div *ngIf="s.value.length>0">

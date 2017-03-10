@@ -91,7 +91,11 @@ export class SmavieMobilitePage {
     this.clients = null;
     this.conseiller = null;
     this.process = null;
+    this.adhesion = null;
     this.pagesToDelete = null;
+    this.envelopeRecipients = null;
+    this.envelopeRecipientsSent = null;
+    this.docsModel = null;
     this.folderFilter = 'Templates';
     this.couch.getParams().then(data => {
       this.params = data;
@@ -121,7 +125,8 @@ export class SmavieMobilitePage {
     // filter for Test Only
     this.couch.getDbViewDocs('poc_data', 'byType', 'sign', 100, 0, this.params).then(response => {
       this.lstUseCase = response['rows'].filter(item => item['value']['modeProto'] == true);
-      console.log(response, this.lstUseCase);
+      //console.log(response, this.lstUseCase);
+      console.info("USECASE readed");
     }, error => {
       console.error(error);
     });
@@ -150,17 +155,18 @@ export class SmavieMobilitePage {
   getLstModel() {
     this.docuSign.getTemplates().then(response => {
       this.lstModels = response;
+      console.info("TEMPLATES readed");
     }, error => {
       console.log("Templates error", error);
     })
   }
   getModelDocs() {
-    console.log("Get models docs", this.signSend['docModel'])
+    //console.log("Get models docs", this.signSend['docModel'])
     this.docsModel = [];
     this.signSend['docModel'].forEach(element => {
       //console.log(element);
       this.docuSign.getModelDocument(element).then(response => {
-        console.log("Docs of model", response);
+        //console.log("Docs of model", response);
         this.docsModel.push(response);
       }, error => {
         console.error(error);
@@ -210,7 +216,7 @@ export class SmavieMobilitePage {
     return new Promise((resolve, reject) => {
       // Create the envelop with multi-model
       let loader = this.loadingCtrl.create({
-        content: "Appel à DOCUSIGN : création de l'enveloppe à partir des modèles...",
+        content: "DocuSign : création de l'enveloppe à partir des modèles...",
         duration: 10000
       });
       loader.present();
@@ -243,22 +249,18 @@ export class SmavieMobilitePage {
   }
   envelopUpdatePages(envelopeId) {
     return new Promise((resolve, reject) => {
-      this.pagesToDelete.forEach(page => {
-        console.log("Delete in docId ", page['docId'], " pageId", page['pageId'])
-        this.docuSign.removePageFormDocEnv(envelopeId, page['docId'], page['pageId']).then(response => {
-          console.log(response);
-        }, reason => {
-          console.log(reason);
-          reject(false);
-        });
-      });
-      resolve(true);
+      this.nextUpdatePages(envelopeId, -1);
+      this.events.subscribe("AllPagesUpdated", response => {
+        resolve(true);
+      }, error => {
+        reject(error);
+      })
     })
   }
   envelopUpdateTabs(envelopeId) {
     return new Promise((resolve, reject) => {
       let loader = this.loadingCtrl.create({
-        content: "Appel à DOCUSIGN : Mise à jour des données par rôle...",
+        content: "DocuSign : Mise à jour des données par rôle...",
         duration: 10000
       });
       loader.present();
@@ -287,8 +289,10 @@ export class SmavieMobilitePage {
           element['recipientIdGuid'] = 0;
           let r = this.process.filter(item => item.role == element['roleName']);
           if (r.length > 0) {
+            // Mise à jour des données destinataire
+            element['smadelete'] = false;
             let cli = this.getClient(r[0]['clientId']);
-            if (element['note'] == "inPersonSigners") {
+            if (element['typeSign'] == "inPersonSigners") {
               element['signerEmail'] = cli['email'];
               element['signerName'] = cli['cum_identite'];
               element['hostEmail'] = this.conseiller['email'];
@@ -301,38 +305,39 @@ export class SmavieMobilitePage {
               element['name'] = this.conseiller['name'];
               element['email'] = this.conseiller['email'];
             }
-            element['smadelete'] = false;
           } else {
-            console.info("Role non trouvé dans le paramétrage édition", element, idx);
+            //console.info("Role non trouvé dans le paramétrage édition", element, idx);
             //supression du role dans les documents
             element['smadelete'] = true;
-            if (!deleteRecipients[element['note']]) {
-              deleteRecipients[element['note']] = [];
+            if (!deleteRecipients[element['typeSign']]) {
+              deleteRecipients[element['typeSign']] = [];
             }
-            deleteRecipients[element['note']].push({ "recipientId": element['recipientId'] });
+            deleteRecipients[element['typeSign']].push({ "recipientId": element['recipientId'] });
           }
         });
         this.docuSign.removeRecipientsFormDocEnv(envelopeId, deleteRecipients).then(response => {
-          console.info("STATUS : Recipients deleted", response);
+          console.info("DEST : Supprimés de l'enveloppe", response);
           // 4. Call DOCUSIGN for UPDATE RECIPIENT TABS 
           this.nextUpdateRecipientTabs(-1);
           // 5. Call DOCUSIGN for UPDATE RECIPIENT
           this.events.subscribe("AllTabsUpdated", response => {
             // Preparation des données pour mise à jour des destinataires
+            console.log("Destinataires", this.envelopeRecipients);
             let data = {};
             this.envelopeRecipients.forEach(element => {
+              let key = element['typeSign'];
               delete element['tabs'];
-              data[element['note']] = [];
+              data[key] = [];
             });
             this.envelopeRecipients.forEach(element => {
-              let key = element['note'];
-              delete element['note'];
+              let key = element['typeSign'];
               if (!element['smadelete']) {
                 data[key].push(element);
               }
             });
+            console.log("Destinataires", data);
             // API : Mise à jour de la liste des destinataires
-            console.log("Mise à jour des destinataires", data);
+            console.info("Mise à jour des destinataires", data);
             this.docuSign.updateRecipients(envelopeId, data).then(response => {
               //console.log(response);
               loader.dismiss();
@@ -366,7 +371,7 @@ export class SmavieMobilitePage {
   sendEnvelopWithData(envelopeId) {
     return new Promise((resolve, reject) => {
       let loader = this.loadingCtrl.create({
-        content: "Appel à DOCUSIGN : Envoi de l'enveloppe...",
+        content: "DocuSign : Envoi de l'enveloppe...",
         duration: 10000
       });
       loader.present();
@@ -420,9 +425,9 @@ export class SmavieMobilitePage {
   ===================================================*/
   envelopeReorderProcess(envelopId, recipients) {
     let loader = this.loadingCtrl.create({
-      content: "Appel à DOCUSIGN : Mise à jour du processus de signature...",
-      duration: 10000
+      content: "DocuSign : Mise à jour du processus de signature...",
     });
+    loader.present();
     console.log("Sort RECIPIENTS", recipients);
     let exception = "recipientCount,currentRoutingOrder";
     let so = [];
@@ -463,10 +468,11 @@ export class SmavieMobilitePage {
   }
   signBySender(envelopeId) {
     let loader = this.loadingCtrl.create({
-      content: "Appel à DOCUSIGN : envoie des données de signature en cours...",
-      duration: 10000
+      content: "DocuSign : envoie des données de signature en cours...",
     });
-    //let win = this.winCtrl.openWin('/assets/pages/loadingUrl.html');
+    loader.present();
+    //let win =
+    this.winCtrl.openWin('/assets/pages/loadingUrl.html');
     var dataSend = {};
     this.docuSign.senderSignEnv(envelopeId, dataSend).then(data => {
       //console.log(data);
@@ -479,14 +485,14 @@ export class SmavieMobilitePage {
     loader.dismiss();
   }
   signByClient(envelopeId, recipient, data) {
-    console.log(data);
     if (envelopeId) {
       //let win = this.winCtrl.openWin('/assets/pages/loadingUrl.html');
       //{"authenticationMethod":"password","email":"doc.gautier@gmail.com","returnUrl":"http://gautiersa.fr/vie/docuSignReturn","userName":"doc.gautier@gmail.com"}
       let loader = this.loadingCtrl.create({
-        content: "Appel à DOCUSIGN : ouverture de la page de signature en cours...",
+        content: "DocuSign : ouverture de la page de signature en cours...",
         duration: 10000
       });
+      loader.present();
       let dataSend = null;
       //"clientUserId": data.userId,
       if (recipient == 'inPersonSigners') {
@@ -506,11 +512,13 @@ export class SmavieMobilitePage {
       }
       console.log(envelopeId, dataSend);
       this.docuSign.destSignEnv(envelopeId, dataSend).then(data => {
+        loader.dismiss();
         //console.log(data);
         //this.sendSign['urlSign'] = data['url'];
         this.winCtrl.openWin(data['url']);
         //win.location.href = data['url'];
       }, reason => {
+        loader.dismiss();
         console.log('Failed: ' + JSON.stringify(reason));
         //win.document.body.innerHTML = "Erreur de préparation.<br>Veuillez fermer cet onglet.";
       })
@@ -519,8 +527,9 @@ export class SmavieMobilitePage {
   };
   voidSignedDoc(envelopeId) {
     let loader = this.loadingCtrl.create({
-      content: "Appel à DOCUSIGN : invalidation du document en cours...",
+      content: "DocuSign : invalidation du document en cours...",
     });
+    loader.present();
     this.docuSign.voidDocEnv(envelopeId, null).then(data => {
       console.log(data);
       loader.dismiss();
@@ -531,7 +540,7 @@ export class SmavieMobilitePage {
   };
   refusedByClient(envelopeId, idx, refusData) {
     let loader = this.loadingCtrl.create({
-      content: "Appel à DOCUSIGN : refus de signature en cours...",
+      content: "DocuSign : refus de signature en cours...",
     });
     loader.present();
     let d = {};
@@ -608,7 +617,7 @@ export class SmavieMobilitePage {
           let recipient = lst[dest];
           if (Array.isArray(recipient) && recipient.length > 0) {
             recipient.forEach(element => {
-              element['note'] = dest;
+              element['typeSign'] = dest;
               this.docuSign.getEnvelopeTabs(envelopeId, element['recipientId']).then(tabsData => {
                 //console.log(tabsData);
                 element['tabs'] = tabsData;
@@ -632,7 +641,7 @@ export class SmavieMobilitePage {
   nextUpdateRecipientTabs(idx) {
     idx = idx + 1;
     if (this.envelopeRecipients.length > idx) {
-      console.log("RECIPIENT", idx, this.envelopeRecipients[idx]);
+      //console.log("RECIPIENT", idx, this.envelopeRecipients[idx]);
       let tabs = this.envelopeRecipients[idx]['tabs'];
       let i = this.envelopeRecipients[idx]['recipientId'];
       let role = this.envelopeRecipients[idx]['roleName'];
@@ -641,16 +650,15 @@ export class SmavieMobilitePage {
       } else {
         this.nextUpdateRecipientTabs(idx);
       }
-
     } else {
-      console.log("UPDATE FINISHED");
+      //console.log("UPDATE FINISHED");
       this.events.publish("AllTabsUpdated", true);
     }
   }
   // API : Mise à jour des champs pour un destinataire
   updateRecipientTabs(idx, recipientId, tabs, role) {
     let loader = this.loadingCtrl.create({
-      content: "Appel à DOCUSIGN : mise à jour des données pour le rôle " + role,
+      content: "DocuSign : mise à jour des données pour le rôle " + role,
     });
     loader.present();
     this.docuSign.updateEnvelopeTabs(this.signSend['envelopeId'], recipientId, tabs).then(response => {
@@ -661,6 +669,27 @@ export class SmavieMobilitePage {
       loader.dismiss();
       console.error(error);
     })
+  }
+
+  // API : Supression des pages inutiles
+  nextUpdatePages(envelopeId, idx) {
+    idx = idx + 1;
+    if (this.pagesToDelete.length > idx) {
+      let page = this.pagesToDelete[idx];
+      this.updatePage(envelopeId, page, idx);
+    } else {
+      console.log("UPDATE Pages FINISHED");
+      this.events.publish("AllPagesUpdated", true);
+    }
+  }
+  updatePage(envelopeId, page, idx) {
+    console.info("Delete in docId ", page['docId'], " pageId", page['pageId'])
+    this.docuSign.removePageFormDocEnv(envelopeId, page['docId'], page['pageId']).then(response => {
+      console.log(response);
+      this.nextUpdatePages(envelopeId, idx);
+    }, reason => {
+      console.error(reason);
+    });
   }
   // =================================================
   showStoredEnvelopes() {

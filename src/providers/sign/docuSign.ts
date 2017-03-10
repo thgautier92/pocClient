@@ -242,9 +242,9 @@ export class DocuSignServices {
     }
     removeRecipientsFormDocEnv(envelopeId, recipientsList) {
         // DELETE v2/accounts/{accountId}/envelopes/{envelopeId}/recipients
-        console.log("Recipients list to delete", recipientsList, "texte:", JSON.stringify(recipientsList), ":")
+        console.log("Recipients list to delete", recipientsList, Object.keys(recipientsList).length)
         return new Promise((resolve, reject) => {
-            if (JSON.stringify(recipientsList) !== "") {
+            if (Object.keys(recipientsList).length > 0) {
                 var api = "accounts/{accountId}/envelopes/{envelopeId}/recipients";
                 api = api.replace("{accountId}", this.account);
                 api = api.replace("{envelopeId}", envelopeId);
@@ -716,7 +716,7 @@ export class DocuSignServices {
         return new Promise((resolve, reject) => {
             if (this.storage) {
                 this.storage.get('envelopes').then(val => {
-                    console.log("Founded", val)
+                    //console.log("Founded", val)
                     resolve(val);
                 }, error => {
                     console.log(error);
