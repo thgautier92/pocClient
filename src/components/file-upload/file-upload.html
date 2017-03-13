@@ -4,11 +4,11 @@
   See https://angular.io/docs/ts/latest/api/core/index/ComponentMetadata-class.html
   for more info on Angular 2 Components.
 -->
-<ion-list no-lines>
-  <ion-item>
+<ion-list no-lines no-padding>
+  <ion-item no-padding>
     <input type="file" accept="application/pdf, *" (change)="changeListener($event)">
   </ion-item>
-  <ion-item *ngIf="imageSrc">
+  <ion-item no-padding *ngIf="imageSrc">
     <ion-thumbnail item-left>
       <img src="assets/img/pdfDoc.png" />
     </ion-thumbnail>

@@ -40,4 +40,11 @@ page-docusignmodel {
     .small {
         font-size: small;
     }
+    .card-bg {
+        background-color: color($colors, primary);
+    }
+    .card-bg-header {
+        background-color: transparent;
+        color: white;
+    }
 }

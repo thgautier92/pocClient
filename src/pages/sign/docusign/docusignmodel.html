@@ -11,7 +11,8 @@
     <ion-card>
         <ion-card-header>
             <ion-item (click)="display.dataModel=!display.dataModel">
-                <h2 ion-text color="primary">Caractéristiques de l'enveloppe modèle</h2>
+                <h2 ion-text color="primary">
+                    <ion-icon name="eye"></ion-icon>&nbsp;&nbsp;Caractéristiques du MODELE d'enveloppe</h2>
                 <button ion-button icon-only item-right clear><ion-icon name="expand"></ion-icon></button>
             </ion-item>
         </ion-card-header>
@@ -34,7 +35,7 @@
                             <record [dataRecord]='dataDoc'></record>
                         </ion-col>
                         <ion-col padding>
-                            <textarea rows="30" cols="120">{{dataDoc | json}}</textarea>
+                            <textarea rows="25" cols="120">{{dataDoc | json}}</textarea>
                         </ion-col>
                     </ion-row>
                 </ion-item>
@@ -44,20 +45,23 @@
     <ion-card>
         <ion-card-header>
             <ion-item (click)="display.generatorFromModel=!display.generatorFromModel">
-                <h2 ion-text color="danger">Génération d'un modèle d'enveloppe à partir d'une précédente sauvegarde</h2>
+                <h2 ion-text color="danger">
+                    <ion-icon name="document"></ion-icon>&nbsp;&nbsp;Génération d'un modèle d'enveloppe à partir d'une précédente sauvegarde</h2>
                 <button ion-button icon-only clear item-right><ion-icon name="expand"></ion-icon></button>
             </ion-item>
         </ion-card-header>
         <ion-card-content>
             <div [hidden]="!display.generatorFromModel">
+                <p>Cette fonction permet de recréer un modèle à partir de données préalablement sauvegardées de DocuSign</p>
+                <p>Pour sauvegarder des modèles, veuillez charger utiliser la fonction ci-dessus.</p>
                 <ion-row>
                     <ion-col>
-                        <ion-label>Document à charger dans le modèle</ion-label>
+                        <ion-label>1. Document à charger dans le modèle</ion-label>
                         <ion-item>
                             <file-upload></file-upload>
                         </ion-item>
                         <ion-item>
-                            <ion-label>Données de paramétrage du modèle sauvegardé</ion-label>
+                            <ion-label>2. Données de paramétrage du modèle sauvegardé</ion-label>
                             <ion-select [(ngModel)]="signModel.useCaseSaved" okText="Choisir" cancelText="Annuler">
                                 <ion-option *ngFor="let cm of lstUseCaseModelSaved" [value]="cm">{{cm.value.title}}</ion-option>
                             </ion-select>
@@ -66,9 +70,9 @@
                     </ion-col>
                     <ion-col>
                         <ion-item no-padding>
-                            <ion-label floating text-wrap>Nom du modèle à créer</ion-label>
+                            <ion-label floating text-wrap>3. Nom du modèle à créer</ion-label>
                             <ion-input [(ngModel)]="signModel.name" type="text"></ion-input>
-                            <button ion-button clear item-right icon-left (click)="generateModelDataToSave()"><ion-icon name="build"></ion-icon>Crèer le nouveau modèle</button>
+                            <button ion-button clear item-right icon-left (click)="generateModelDataToSave()"><ion-icon name="build"></ion-icon>4. Crèer le nouveau modèle</button>
                         </ion-item>
                     </ion-col>
                 </ion-row>
@@ -88,14 +92,13 @@
     <ion-card>
         <ion-card-header>
             <ion-item (click)="display.generatorModel=!display.generatorModel">
-                <h2 ion-text color="primary">Génération d'un modèle d'enveloppe à partir d'une liste de champs</h2>
+                <h2 ion-text color="primary">
+                    <ion-icon name="add-circle"></ion-icon>&nbsp;&nbsp;Génération d'un modèle d'enveloppe à partir d'une liste de champs</h2>
                 <button ion-button icon-only clear item-right><ion-icon name="expand"></ion-icon></button>
             </ion-item>
         </ion-card-header>
         <ion-card-content>
             <div [hidden]="!display.generatorModel">
-                <p>Cette fonction permet de recréer un modèle à partir de données préalablement sauvegardées de DocuSign</p>
-                <p>Pour sauvegarder des modèles, veuillez charger utiliser la fonction ci-dessus</p>
                 <ion-row>
                     <ion-col>
                         <ion-label>Document à charger dans le modèle</ion-label>
