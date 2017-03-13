@@ -1,38 +1,40 @@
 <ion-header>
     <ion-navbar color="secondary">
-        <button ion-button menuToggle>
-      <ion-icon name="menu"></ion-icon>
-    </button>
+        <button ion-button menuToggle><ion-icon name="menu"></ion-icon></button>
         <ion-title>DocuSign - Modèles</ion-title>
+        <ion-buttons end>
+            <button ion-button block (click)="goToUseCase()">Cas de tests</button>
+        </ion-buttons>
     </ion-navbar>
 </ion-header>
 <ion-content>
-    <ion-list no-lines>
-        <ion-item>
-            <ion-label>Modèle de document</ion-label>
-            <ion-select [(ngModel)]="signModel.docModel" okText="Choisir" cancelText="Annuler" (ionChange)="loadModel()">
-                <ion-option *ngFor="let m of lstModels['envelopeTemplates']" [value]="m.templateId">{{m.name}}</ion-option>
-            </ion-select>
-            <button ion-button clear item-right icon-left (click)="getLstModel()"><ion-icon name="refresh"></ion-icon></button>
-            <button *ngIf="signModel.docModel" ion-button clear item-right icon-left (click)="loadModel()"><ion-icon name="eye"></ion-icon>Détail</button>
-        </ion-item>
-    </ion-list>
     <ion-card>
         <ion-card-header>
             <ion-item (click)="display.dataModel=!display.dataModel">
-                <h2>Caractéristiques de l'enveloppe modèle</h2>
+                <h2 ion-text color="primary">Caractéristiques de l'enveloppe modèle</h2>
                 <button ion-button icon-only item-right clear><ion-icon name="expand"></ion-icon></button>
             </ion-item>
         </ion-card-header>
         <ion-card-content>
             <ion-list [hidden]="!display.dataModel" no-lines>
+                <ion-item>
+                    <ion-label>Choisir un modèle de document</ion-label>
+                    <ion-select [(ngModel)]="signModel.docModel" okText="Choisir" cancelText="Annuler" (ionChange)="loadModel()">
+                        <ion-option *ngFor="let m of lstModels['envelopeTemplates']" [value]="m.templateId">{{m.name}}</ion-option>
+                    </ion-select>
+                    <button ion-button clear item-right icon-left (click)="getLstModel()"><ion-icon name="refresh"></ion-icon></button>
+                    <button *ngIf="signModel.docModel" ion-button clear item-right icon-left (click)="loadModel()"><ion-icon name="eye"></ion-icon>Détail</button>
+                </ion-item>
+            </ion-list>
+            <ion-list [hidden]="!display.dataModel" no-lines>
+                <button ion-button item-right primary (click)="saveModelToDatabase()"><ion-icon name="cloud-upload"></ion-icon>Sauvegarder le modèle...</button>
                 <ion-item *ngIf="dataDoc">
                     <ion-row wrap>
                         <ion-col padding>
                             <record [dataRecord]='dataDoc'></record>
                         </ion-col>
                         <ion-col padding>
-                            <textarea rows="15" cols="80">{{dataDoc | json}}</textarea>
+                            <textarea rows="30" cols="120">{{dataDoc | json}}</textarea>
                         </ion-col>
                     </ion-row>
                 </ion-item>
@@ -41,13 +43,59 @@
     </ion-card>
     <ion-card>
         <ion-card-header>
+            <ion-item (click)="display.generatorFromModel=!display.generatorFromModel">
+                <h2 ion-text color="danger">Génération d'un modèle d'enveloppe à partir d'une précédente sauvegarde</h2>
+                <button ion-button icon-only clear item-right><ion-icon name="expand"></ion-icon></button>
+            </ion-item>
+        </ion-card-header>
+        <ion-card-content>
+            <div [hidden]="!display.generatorFromModel">
+                <ion-row>
+                    <ion-col>
+                        <ion-label>Document à charger dans le modèle</ion-label>
+                        <ion-item>
+                            <file-upload></file-upload>
+                        </ion-item>
+                        <ion-item>
+                            <ion-label>Données de paramétrage du modèle sauvegardé</ion-label>
+                            <ion-select [(ngModel)]="signModel.useCaseSaved" okText="Choisir" cancelText="Annuler">
+                                <ion-option *ngFor="let cm of lstUseCaseModelSaved" [value]="cm">{{cm.value.title}}</ion-option>
+                            </ion-select>
+                            <button ion-button clear item-right icon-left (click)="getUseCaseModelSaved()"><ion-icon name="refresh"></ion-icon></button>
+                        </ion-item>
+                    </ion-col>
+                    <ion-col>
+                        <ion-item no-padding>
+                            <ion-label floating text-wrap>Nom du modèle à créer</ion-label>
+                            <ion-input [(ngModel)]="signModel.name" type="text"></ion-input>
+                            <button ion-button clear item-right icon-left (click)="generateModelDataToSave()"><ion-icon name="build"></ion-icon>Crèer le nouveau modèle</button>
+                        </ion-item>
+                    </ion-col>
+                </ion-row>
+                <ion-row>
+                    <ion-col>
+                        <h3 ion-text color="primary">Champs de fusion de documents</h3>
+                        <record [dataRecord]='signModel.useCase'></record>
+                    </ion-col>
+                    <ion-col>
+                        <h3 ion-text color="primary">Identifiant du modèle généré</h3>
+                        <record [dataRecord]='signModel.modelGenerate'></record>
+                    </ion-col>
+                </ion-row>
+            </div>
+        </ion-card-content>
+    </ion-card>
+    <ion-card>
+        <ion-card-header>
             <ion-item (click)="display.generatorModel=!display.generatorModel">
-                <h2>Génération d'un modèle d'enveloppe</h2>
+                <h2 ion-text color="primary">Génération d'un modèle d'enveloppe à partir d'une liste de champs</h2>
                 <button ion-button icon-only clear item-right><ion-icon name="expand"></ion-icon></button>
             </ion-item>
         </ion-card-header>
         <ion-card-content>
             <div [hidden]="!display.generatorModel">
+                <p>Cette fonction permet de recréer un modèle à partir de données préalablement sauvegardées de DocuSign</p>
+                <p>Pour sauvegarder des modèles, veuillez charger utiliser la fonction ci-dessus</p>
                 <ion-row>
                     <ion-col>
                         <ion-label>Document à charger dans le modèle</ion-label>

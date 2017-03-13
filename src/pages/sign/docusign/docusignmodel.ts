@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
-import { Platform, NavController, NavParams, Events, AlertController, LoadingController, ActionSheetController } from 'ionic-angular';
+import { Platform, NavController, NavParams, Events, ToastController, AlertController, LoadingController, ActionSheetController } from 'ionic-angular';
 import { DocuSignServices } from '../../../providers/sign/docuSign';
 import { CouchDbServices } from '../../../providers/couch/couch';
+import { useCase } from '../../poc-data-detail/poc-data-detail';
+import { PocData } from '../../poc-data/poc-data';
 //import { WinExternal } from '../../../providers/win-external';
 
 /*
@@ -21,18 +23,21 @@ export class DocuSignModel {
   signModel: any;
   lstModels: any = [];
   lstUseCaseModel: any = [];
+  lstUseCaseModelSaved: any = [];
   saveModel: any;
   docsModel: any = null;
   statusCode: any;
   dataDoc: any = null;
   defaultTextTab: any;
-  display: any = { dataModel: false, generatorModel: false };
+  display: any = { dataModel: false, generatorFromModel: false, generatorModel: false };
   constructor(public platform: Platform, public navCtrl: NavController, public navParams: NavParams,
     public events: Events, public alertCtrl: AlertController, public actionSheetCtrl: ActionSheetController,
+    public toastCtrl: ToastController,
     public loadingCtrl: LoadingController,
     private docuSign: DocuSignServices, private couch: CouchDbServices) {
     this.signModel = {
       "useCase": "",
+      "useCaseSaved": "",
       "name": "",
       "docModel": "",
       "doc": null,
@@ -55,9 +60,11 @@ export class DocuSignModel {
       console.log("Params", data);
       this.params = data;
       this.getUseCaseModel();
+      this.getUseCaseModelSaved();
     }).catch(error => {
       this.params = null;
       this.getUseCaseModel();
+      this.getUseCaseModelSaved();
     })
     this.getLstModel();
     this.dataDoc = { "documents": null, "signProcess": null, "fieldsByRole": null };
@@ -65,6 +72,9 @@ export class DocuSignModel {
   ionViewDidLoad() {
     console.log('Hello DocuSignModel Page');
   };
+  /* ====== Generate from scratch a model ===========
+  *
+  ================================================== */
   getLstModel() {
     this.docuSign.getTemplates().then(response => {
       //console.log("Templates", response);
@@ -99,12 +109,12 @@ export class DocuSignModel {
         //console.log(response[d]);
         if (Array.isArray(response[d])) {
           for (var dd in response[d]) {
-            //console.log("-->", response[d][dd]);
+            console.log("-->", response[d][dd]);
             let id = response[d][dd]['recipientId'];
             let role = response[d][dd]['roleName'];
             this.docuSign.getModelFields(this.signModel['docModel'], id).then(responseFields => {
               //console.log(responseFields)
-              lstFields.push({ "recipientId": id, "roleName": role, "fields": responseFields });
+              lstFields.push({ "recipientId": id, "roleName": role, "tabs": responseFields });
             }, error => {
               console.error(error);
               loader.dismiss();
@@ -221,4 +231,84 @@ export class DocuSignModel {
       loader.dismiss();
     })
   }
+
+  /* ====== Save an restore model methods ============
+  *
+  ===================================================*/
+  getUseCaseModelSaved() {
+    this.couch.getDbViewDocs('poc_data', 'byType', 'signModelSaved', 100, 0, this.params).then(response => {
+      console.log("Use case model saved", response);
+      this.lstUseCaseModelSaved = response['rows'];
+    }, error => {
+      console.error(error);
+    });
+  };
+  saveModelToDatabase() {
+    console.log(this.dataDoc);
+    let prompt = this.alertCtrl.create({
+      title: 'Sauvegarde du modèle',
+      message: "Entrer les caractèristiques du modèles",
+      inputs: [
+        {
+          name: 'name',
+          placeholder: 'Nom'
+        },
+        {
+          name: 'title',
+          placeholder: 'Titre'
+        },
+        {
+          name: 'description',
+          placeholder: 'Description'
+        },
+      ],
+      buttons: [
+        {
+          text: 'Annuler',
+          handler: data => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Enregistrer',
+          handler: data => {
+            console.log("Create a new use case");
+            let useCaseDetail = new useCase;
+            useCaseDetail._id = this.couch.guid();
+            useCaseDetail.type = "signModelSaved";
+            useCaseDetail.modeProto = false;
+            useCaseDetail.name = data.name;
+            useCaseDetail.title = data.title;
+            useCaseDetail.description = data.description;
+            useCaseDetail.dataUseCase = this.dataDoc;
+            this.couch.addDoc('poc_data', useCaseDetail, this.params).then(response => {
+              //console.log(response, this.useCaseDetail);
+              let toast = this.toastCtrl.create({
+                message: 'Cas enregistré.',
+                duration: 3000
+              });
+              toast.present();
+            }, error => {
+              console.log("ERR save DATA", error);
+              let toast = this.toastCtrl.create({
+                message: 'Erreur de sauvegarde',
+                duration: 3000
+              });
+              toast.present();
+            })
+          }
+        }
+      ]
+    });
+    prompt.present();
+  }
+  generateModelDataToSave() {
+    console.log(this.signModel['useCaseSaved']);
+  }
+  goToUseCase() {
+    this.navCtrl.push(PocData);
+  }
+
+
+
 }
