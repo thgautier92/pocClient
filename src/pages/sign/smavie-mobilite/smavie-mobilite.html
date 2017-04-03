@@ -11,110 +11,162 @@
 </ion-header>-->
 <ion-content padding>
   <ion-slides #slides pager paginationType="progress" spaceBetween=20>
+    <ion-slide no-padding>
+      <ion-toolbar>
+        <ion-title>Historique des signatures</ion-title>
+        <ion-buttons end>
+          <button ion-button color="primary" (click)="goNext()">Conseiller&nbsp; <ion-icon name="arrow-dropright"></ion-icon></button>
+        </ion-buttons>
+      </ion-toolbar>
+      <ion-content>
+        <button ion-button color="primary" (click)="goNew()"><ion-icon name="mail-open"></ion-icon>&nbsp;Créer une enveloppe</button>
+        <ion-grid>
+          <ion-row class="rowHeader">
+            <ion-col>Enveloppe N°</ion-col>
+            <ion-col>Status</ion-col>
+            <ion-col>Le</ion-col>
+            <ion-col>Actions</ion-col>
+          </ion-row>
+          <ion-row *ngFor="let item of storedEnvelopes" class="rowSmall">
+            <ion-col class="rowXSmall selectable">{{item.envelopeId}}</ion-col>
+            <ion-col>{{statusCode[item.status]}}</ion-col>
+            <ion-col>{{item.statusDateTime | date:'dd/MM/yyyy, HH:mm:ss'}}</ion-col>
+            <ion-col>
+              <button ion-button clear>Poursuivre</button>
+              <button ion-button clear (click)="envelopDocuments(item.envelopeId)">Consulter</button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-content>
+    </ion-slide>
     <!-- Slide preparation données et envoie de l'enveloppe -->
     <ion-slide no-padding>
       <ion-toolbar>
         <ion-title>Actions réalisées par le conseiller</ion-title>
         <ion-buttons end>
+          <button ion-button color="primary" (click)="goPrevious()"><ion-icon name="arrow-dropleft"></ion-icon>&nbsp;Historique</button>
           <button ion-button color="primary" (click)="goNext()">Clients&nbsp; <ion-icon name="arrow-dropright"></ion-icon></button>
         </ion-buttons>
       </ion-toolbar>
       <ion-content>
-        <ion-row wrap>
-          <ion-col width-50>
-            <ion-card>
-              <ion-card-content>
-                <ion-item>
-                  <ion-label>Données pour alimenter les signatures (Cas de tests)</ion-label>
-                  <ion-select [(ngModel)]="signSend.useCase" okText="Choisir" cancelText="Annuler" (ionChange)="getUseCaseDetail()">
-                    <ion-option *ngFor="let m of lstUseCase" [value]="m.value.name">{{m.value.title}}</ion-option>
-                  </ion-select>
-                  <button ion-button clear item-right icon-left (click)="getUseCase()"><ion-icon name="refresh"></ion-icon></button>
-                </ion-item>
-                <ion-item *ngIf="signSend.useCase">
-                  <ion-row>
-                    <ion-col *ngIf="conseiller">
-                      <h3 ion-text color="primary">Conseiller</h3>
-                      <h3>{{conseiller['name']}}</h3>
-                      <ion-note>{{conseiller['email']}}</ion-note>
-                    </ion-col>
-                    <ion-col *ngIf="clients">
-                      <h3 ion-text color="primary">Clients</h3>
-                      <ion-list>
-                        <ion-item *ngFor="let cl of clients" text-wrap no-padding>
-                          <h3>{{cl.cum_identite}}</h3>
-                          <ion-note>{{cl.email}}</ion-note>
-                          <ion-note>{{cl.mobile}}</ion-note>
-                        </ion-item>
-                      </ion-list>
-                    </ion-col>
-                  </ion-row>
-                  <ion-row>
-                    <ion-col>
-                      <ion-col *ngIf="process">
-                        <h3 ion-text color="primary">Rôles</h3>
-                        <ion-list>
-                          <ion-item *ngFor="let ro of process" no-padding>
-                            <h4>{{ro.ordre}} - <span ion-text color="primary">{{ro.role}}</span> : {{getClient(ro.clientId).cum_identite}}</h4>
-                          </ion-item>
-                        </ion-list>
-                      </ion-col>
-                    </ion-col>
-                    <ion-col></ion-col>
-                  </ion-row>
-                </ion-item>
-              </ion-card-content>
-            </ion-card>
-          </ion-col>
-          <ion-col width-50>
-            <ion-card>
-              <ion-card-content>
-                <ion-list>
-                  <ion-item *ngIf="lstModels">
-                    <ion-label>Modèles de document</ion-label>
-                    <ion-select [(ngModel)]="signSend.docModel" okText="Choisir" cancelText="Annuler" multiple="true" (ionChange)="getModelDocs()">
-                      <ion-option *ngFor="let m of (lstModels['envelopeTemplates'] | filterBy:'folderName':folderFilter)" [value]="m.templateId">{{m.name}}</ion-option>
-                    </ion-select>
-                    <button ion-button clear item-right icon-left (click)="getLstModel()"><ion-icon name="refresh"></ion-icon></button>
-                  </ion-item>
-                  <ion-item>
-                    <ion-list *ngIf="docsModel">
-                      <ion-item no-padding *ngFor="let m of docsModel">
-                        <h4>Modèle ref : {{m.templateId}}</h4>
-                        <ion-list no-padding no-lines>
-                          <ion-item no-padding class="smallList" *ngFor="let d of m.templateDocuments">
-                            <h3 ion-text color="primary">{{d.order}}. {{d.documentId}}-{{d.name}}</h3>
-                            <ion-badge item-right>{{d.pages}}</ion-badge>
-                          </ion-item>
-                        </ion-list>
+        <ion-card>
+          <ion-card-header>
+            <ion-item color="primary">
+              Etape 1 : Ajouter des documents
+            </ion-item>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-list>
+              <ion-item *ngIf="lstModels">
+                <ion-label>Modèles</ion-label>
+                <ion-select [(ngModel)]="signSend.docModel" okText="Choisir" cancelText="Annuler" multiple="true" (ionChange)="getModelDocs()">
+                  <ion-option *ngFor="let m of (lstModels['envelopeTemplates'] | filterBy:'folderName':folderFilter)" [value]="m.templateId">{{m.name}}</ion-option>
+                </ion-select>
+                <button ion-button clear item-right icon-left (click)="getLstModel()"><ion-icon name="refresh"></ion-icon></button>
+              </ion-item>
+              <ion-item>
+                <ion-list *ngIf="docsModel">
+                  <ion-item no-padding *ngFor="let m of docsModel">
+                    <h4>Modèle ref : {{m.templateId}}</h4>
+                    <ion-list no-padding no-lines>
+                      <ion-item no-padding class="smallList" *ngFor="let d of m.templateDocuments">
+                        <h3 ion-text color="primary">{{d.order}}. {{d.documentId}}-{{d.name}}</h3>
+                        <ion-badge item-right>{{d.pages}}</ion-badge>
                       </ion-item>
                     </ion-list>
                   </ion-item>
-                  <ion-item>
-                    <button ion-button outline item-left icon-left (click)="sendEnvelop()"><ion-icon name="send"></ion-icon>Création de l'enveloppe</button>
-                  </ion-item>
                 </ion-list>
-              </ion-card-content>
-            </ion-card>
-            <ion-card *ngIf="signSend['envelopeId']">
-              <ion-card-content>
-                <ion-list>
-                  <ion-item>
-                    <ion-icon name="mail" item-left></ion-icon>
-                    <span class="selectable">{{signSend['envelopeId']}}</span>
-                  </ion-item>
-                </ion-list>
-                <ion-list *ngIf="msg">
-                  <ion-item-divider color="primary" no-padding>Suivi des opérations de préparation de la signature</ion-item-divider>
-                  <ion-item no-padding *ngFor="let item of msg">
-                    <h4>{{item.msg}}</h4>
-                    <ion-badge item-right>{{item.status}}</ion-badge>
-                  </ion-item>
-                </ion-list>
-              </ion-card-content>
-            </ion-card>
-          </ion-col>
-        </ion-row>
+              </ion-item>
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
+        <ion-card>
+          <ion-card-header>
+            <ion-item color="primary">
+              Etape 2 : Ajouter des signataires
+            </ion-item>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-item>
+              <ion-label>PROTOTYPE : Données pour alimenter les signatures (Cas de tests)</ion-label>
+              <ion-select [(ngModel)]="signSend.useCase" okText="Choisir" cancelText="Annuler" (ionChange)="getUseCaseDetail()">
+                <ion-option *ngFor="let m of lstUseCase" [value]="m.value.name">{{m.value.title}}</ion-option>
+              </ion-select>
+              <button ion-button clear item-right icon-left (click)="getUseCase()"><ion-icon name="refresh"></ion-icon></button>
+            </ion-item>
+            <div *ngIf="signSend.useCase">
+              <ion-note *ngIf="conseiller">{{conseiller['name']}} emet l'enveloppe, à partir de {{conseiller['email']}}</ion-note>
+              <ion-grid *ngIf="clients">
+                <ion-row class="rowHeader">
+                  <ion-col>Nom</ion-col>
+                  <ion-col>Rôles</ion-col>
+                  <ion-col>Email@</ion-col>
+                  <ion-col>Téléphone</ion-col>
+                  <ion-col>Type pièce d'identité</ion-col>
+                  <ion-col>Action</ion-col>
+                </ion-row>
+                <ion-row *ngFor="let cl of clients">
+                  <ion-col>{{cl.cum_identite}}</ion-col>
+                  <ion-col>
+                    <ion-row>
+                      <ion-col col-9>
+                        <h4 *ngFor="let r of cl.roles">{{r}}
+                        </h4>
+                      </ion-col>
+                      <ion-col col-3>
+                        <ion-item no-padding>
+                          <button ion-button outline item-right icon-left icon-only (click)="selectRole(cl)">
+                                <ion-icon name="star"></ion-icon>
+                              </button>
+                        </ion-item>
+                      </ion-col>
+                    </ion-row>
+                  </ion-col>
+                  <ion-col>{{cl.email}}</ion-col>
+                  <ion-col>{{cl.mobile}}</ion-col>
+                  <ion-col>{{cl.typePiece}}</ion-col>
+                  <ion-col>
+                    <button ion-button clear color="danger">Supprimer</button>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </div>
+          </ion-card-content>
+        </ion-card>
+        <ion-card>
+          <ion-card-header>
+            <ion-item color="primary">
+              Etape 3 : Informations complémentaires
+            </ion-item>
+          </ion-card-header>
+          <ion-card-content></ion-card-content>
+        </ion-card>
+        <ion-card>
+          <ion-card-header>
+            <ion-item color="primary">
+              Etape 4 : Création de l'enveloppe
+              <button ion-button outline item-right icon-left color="light" (click)="sendEnvelop()">
+                <ion-icon name="send"></ion-icon>
+                Valider
+              </button>
+            </ion-item>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-list *ngIf="signSend['envelopeId']">
+              <ion-item>
+                <ion-icon name="mail" item-left></ion-icon>
+                <span class="selectable">{{signSend['envelopeId']}}</span>
+              </ion-item>
+            </ion-list>
+            <ion-list *ngIf="msg">
+              <ion-item-divider color="primary" no-padding>Suivi des opérations de préparation de la signature</ion-item-divider>
+              <ion-item no-padding *ngFor="let item of msg">
+                <h4>{{item.msg}}</h4>
+                <ion-badge item-right>{{item.status}}</ion-badge>
+              </ion-item>
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
       </ion-content>
     </ion-slide>
     <!-- Slide Clients -->
@@ -126,7 +178,7 @@
         </ion-buttons>
       </ion-toolbar>
       <ion-content>
-        <ion-row *ngIf="signSend['envelopeData']">
+        <ion-row *ngIf="signSend[ 'envelopeData']">
           <ion-col width-75 text-wrap text-left>
             <h3 ion-text color="primary">{{signSend['envelopeData'].emailSubject}}</h3>
             <ion-note class="small">Crée le {{signSend['envelopeData'].createdDateTime | date:'mediumDate'}} à {{signSend['envelopeData'].createdDateTime
@@ -151,9 +203,10 @@
             </h2>
             <ion-list no-padding>
               <ion-item>
-                <button ion-button icon-left small round color="primary" (click)="envelopeReorderProcess(signSend['envelopeId'],envelopeRecipientsSent)"><ion-icon name="funnel"></ion-icon>Optimisation du processus</button>
+                <button ion-button icon-left small round color="primary" (click)="envelopeReorderProcess(signSend[
+                'envelopeId'],envelopeRecipientsSent)"><ion-icon name="funnel"></ion-icon>Optimisation du processus</button>
               </ion-item>
-              <div *ngFor="let s of (envelopeRecipientsSent | keysAndFilter:'recipientCount,currentRoutingOrder')">
+              <div *ngFor="let s of (envelopeRecipientsSent | keysAndFilter: 'recipientCount,currentRoutingOrder')">
                 <div *ngIf="s.value.length>0">
                   <ion-item *ngFor="let d of s.value | sortBy:'signerName';let idx=index;">
                     <ion-row wrap>
@@ -170,7 +223,7 @@
                           <h3>{{d.signerName}} a pour rôle : {{d.roleName}}</h3>
                           <ion-note>{{d.signerEmail}}</ion-note>
                         </div>
-                        <button ion-button outline item-right icon-left color="secondary" (click)="signByClient(signSend['envelopeId'],s.key,d);">Signer - Code d'accès : {{d.accessCode}}</button>
+                        <button ion-button outline item-right icon-left color="danger" (click)="signByClient(signSend['envelopeId'],s.key,d);">Signer - Code d'accès : {{d.accessCode}}</button>
                         <button ion-button outline item-right icon-left (click)="refusedByClient(signSend['envelopeId'],idx,s)">Signer le papier</button>
                       </ion-col>
                     </ion-row>
@@ -188,11 +241,11 @@
       </ion-content>
     </ion-slide>
   </ion-slides>
-  <ion-fab right bottom color="danger">
-    <button ion-fab mini><ion-icon name="add"></ion-icon></button>
+  <ion-fab right bottom>
+    <button ion-fab mini color="danger"><ion-icon name="add"></ion-icon></button>
     <ion-fab-list side="left">
-      <button ion-fab (click)="goNew()"><ion-icon name="mail"></ion-icon></button>
-      <button ion-fab color="danger" *ngIf="signSend['envelopeId']"><ion-icon name="eye" click="getDocSigned(signSend['envelopeId'])"></ion-icon></button>
+      <button ion-fab (click)="goNew()"><ion-icon name="mail-open"></ion-icon></button>
+      <button ion-fab color="danger" *ngIf="signSend['envelopeId']" (click)="getDocSigned(signSend['envelopeId'])"><ion-icon name="eye"></ion-icon></button>
       <button ion-fab color="secondary" (click)="showStoredEnvelopes()"><ion-icon name="archive"></ion-icon></button>
       <button ion-fab color="primary" (click)="goHome()"><ion-icon name="home"></ion-icon></button>
     </ion-fab-list>

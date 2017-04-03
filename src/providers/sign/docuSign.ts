@@ -240,6 +240,32 @@ export class DocuSignServices {
                 });
         });
     }
+
+    addRecipientsFormDocEnv(envelopeId, recipientsList) {
+        // DELETE v2/accounts/{accountId}/envelopes/{envelopeId}/recipients
+        console.log("Recipients list to add", recipientsList, Object.keys(recipientsList).length)
+        return new Promise((resolve, reject) => {
+            if (Object.keys(recipientsList).length > 0) {
+                var api = "accounts/{accountId}/envelopes/{envelopeId}/recipients";
+                api = api.replace("{accountId}", this.account);
+                api = api.replace("{envelopeId}", envelopeId);
+                let url = this.rootApi + "/" + api;
+                this.options.method = RequestMethod.Post;
+                this.options.responseType = ResponseContentType.Json;
+                this.options.body = recipientsList;
+                this.http.request(url, this.options)
+                    .subscribe(data => {
+                        resolve(data);
+                    }, error => {
+                        console.log(error);
+                        reject(error);
+                    });
+            } else {
+                resolve({ "reason": "Nothing to add" });
+            }
+        });
+    }
+
     removeRecipientsFormDocEnv(envelopeId, recipientsList) {
         // DELETE v2/accounts/{accountId}/envelopes/{envelopeId}/recipients
         console.log("Recipients list to delete", recipientsList, Object.keys(recipientsList).length)
@@ -705,9 +731,11 @@ export class DocuSignServices {
     // ===== STORE ENVELOPES INFORMATIONS ON LOCAL =====
     putStoreEnvelopes(envelop) {
         this.getStoredEnvelopes().then(data => {
+            //console.log("Envelopes stored on local", data);
             let d: any = data;
             d.push(envelop);
             this.storage.set('envelopes', d);
+            console.info("New Envelopes ID stored on local", envelop);
         }, error => {
 
         });
@@ -717,7 +745,11 @@ export class DocuSignServices {
             if (this.storage) {
                 this.storage.get('envelopes').then(val => {
                     //console.log("Founded", val)
-                    resolve(val);
+                    if (val) {
+                        resolve(val);
+                    } else {
+                        resolve([]);
+                    }
                 }, error => {
                     console.log(error);
                     resolve([]);

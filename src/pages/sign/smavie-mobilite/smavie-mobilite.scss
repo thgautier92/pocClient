@@ -1,18 +1,28 @@
 page-smavie-mobilite {
-    .slide-zoom {
-        height: 100%;
-    }
-    .selectable {
-        -webkit-user-select: text;
-        -moz-user-select: text;
-        -ms-user-select: text;
-        user-select: text;
-    }
-    .alertcss {
-        max-width: 500px;
-    }
+  .slide-zoom {
+    height: 100%;
+  }
+  .selectable {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+  }
+  .alertcss {
+    max-width: 500px;
+  }
+  .rowHeader {
+    background-color: color($colors, primary);
+    color: color($colors, light);
+  }
+  .rowSmall {
+    font-size: 16px;
+  }
+  .rowXSmall {
+    font-size: small;
+  }
 }
 
 .alert-md .alert-wrapper {
-    max-width: 80%;
+  max-width: 80%;
 }
