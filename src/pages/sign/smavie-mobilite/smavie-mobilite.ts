@@ -171,12 +171,15 @@ export class SmavieMobilitePage {
     alert.addButton({
       text: 'Choisir',
       handler: data => {
-        console.log('Checkbox data:', data);
-        console.log(data)
+        //console.log('Checkbox data:', data);
         item.roles = data;
       }
     });
     alert.present();
+
+  }
+  verifRole() {
+    // Vérification choix role unique
 
   }
   // ====== Dousign Operations =======
@@ -219,36 +222,39 @@ export class SmavieMobilitePage {
         this.envelopDocuments(this.signSend['envelopeId']);
         this.envelopFusionRole(this.signSend['envelopeId']).then(response => {
           this.msg[this.msg.length - 1].status = "Terminé";
-          this.msg.push({ step: "send", msg: "Envoi pour signature", dt: new Date(), status: "En cours" })
-          this.sendEnvelopWithData(this.signSend['envelopeId']).then(response => {
-            this.msg[this.msg.length - 1].status = "Terminé";
-            this.msg.push({ step: "sign", msg: "Préparation des actions CLIENT", dt: new Date(), status: "En cours" })
-            this.envelopGetRecipientSent(this.signSend['envelopeId']);
-            this.msg[this.msg.length - 1].status = "Terminé";
-            this.msg.push({ step: "end", msg: "Signature prête", dt: new Date(), status: "Terminé" });
+          this.msg.push({ step: "pageDelete", msg: "Supression des pages inutiles", dt: new Date(), status: "En cours" })
+          this.envelopUpdatePages(this.signSend['envelopeId']).then(response => {
+            this.msg.push({ step: "send", msg: "Envoi pour signature", dt: new Date(), status: "En cours" })
+            this.sendEnvelopWithData(this.signSend['envelopeId']).then(response => {
+              this.msg[this.msg.length - 1].status = "Terminé";
+              this.msg.push({ step: "sign", msg: "Préparation des actions CLIENT", dt: new Date(), status: "En cours" })
+              this.envelopGetRecipientSent(this.signSend['envelopeId']);
+              this.msg[this.msg.length - 1].status = "Terminé";
+              this.msg.push({ step: "end", msg: "Signature prête", dt: new Date(), status: "Terminé" });
+            }, error => { })
           }, error => { })
         }, error => {
           console.log(error);
         })
         /*
+          this.msg[this.msg.length - 1].status = "Terminé";
+          this.msg.push({ step: "pageDelete", msg: "Supression des pages inutiles", dt: new Date(), status: "En cours" })
+          this.envelopUpdatePages(this.signSend['envelopeId']).then(response => {
+            this.msg[this.msg.length - 1].status = "Terminé";
+            this.msg.push({ step: "update", msg: "Mise à jour des informations d'adhesion", dt: new Date(), status: "En cours" })
+            this.envelopUpdateTabs(this.signSend['envelopeId']).then(response => {
+              this.msg[this.msg.length - 1].status = "Terminé";
+              this.msg.push({ step: "send", msg: "Envoi pour signature", dt: new Date(), status: "En cours" })
+              this.sendEnvelopWithData(this.signSend['envelopeId']).then(response => {
                 this.msg[this.msg.length - 1].status = "Terminé";
-                this.msg.push({ step: "pageDelete", msg: "Supression des pages inutiles", dt: new Date(), status: "En cours" })
-                this.envelopUpdatePages(this.signSend['envelopeId']).then(response => {
-                  this.msg[this.msg.length - 1].status = "Terminé";
-                  this.msg.push({ step: "update", msg: "Mise à jour des informations d'adhesion", dt: new Date(), status: "En cours" })
-                  this.envelopUpdateTabs(this.signSend['envelopeId']).then(response => {
-                    this.msg[this.msg.length - 1].status = "Terminé";
-                    this.msg.push({ step: "send", msg: "Envoi pour signature", dt: new Date(), status: "En cours" })
-                    this.sendEnvelopWithData(this.signSend['envelopeId']).then(response => {
-                      this.msg[this.msg.length - 1].status = "Terminé";
-                      this.msg.push({ step: "sign", msg: "Préparation des actions CLIENT", dt: new Date(), status: "En cours" })
-                      this.envelopGetRecipientSent(this.signSend['envelopeId']);
-                      this.msg[this.msg.length - 1].status = "Terminé";
-                      this.msg.push({ step: "end", msg: "Signature prête", dt: new Date(), status: "Terminé" });
-                    }, error => { })
-                  }, error => { })
-                }, error => { });
-            */
+                this.msg.push({ step: "sign", msg: "Préparation des actions CLIENT", dt: new Date(), status: "En cours" })
+                this.envelopGetRecipientSent(this.signSend['envelopeId']);
+                this.msg[this.msg.length - 1].status = "Terminé";
+                this.msg.push({ step: "end", msg: "Signature prête", dt: new Date(), status: "Terminé" });
+              }, error => { })
+            }, error => { })
+          }, error => { });
+        */
       }, error => { });
     } else {
       let alert = this.alertCtrl.create({
@@ -345,6 +351,7 @@ export class SmavieMobilitePage {
           }
           // Mise à jour des champs et de l'ordre de signature
           let validRoles = [];
+          let validTabs = [];
           for (var d in lstRoles) {
             let roleMaj = lstRoles[d]['roleName'];
             console.debug("Mise à jour des champs pour le role ", roleMaj, lstRoles[d]);
@@ -370,21 +377,27 @@ export class SmavieMobilitePage {
                   }
                 }
               }
-              lstRoles[d]['tabs'] = tabsData;
+              //lstRoles[d]['tabs'] = tabsData;
+              delete lstRoles[d]['tabs'];
               validRoles.push(lstRoles[d]);
+              validTabs.push({ "recipientId": lstRoles[d]['recipientId'], "roleName": lstRoles[d]['roleName'], "tabs": tabsData })
             }
           }
           console.info("Destinataires finaux", validRoles);
           this.docuSign.addRecipientsFormDocEnv(envelopeId, { "inPersonSigners": validRoles }).then(response => {
             console.log("Mise à jour des destinataires : OK", response);
-            loader.dismiss();
-            let toast = this.toastCtrl.create({
-              message: "Destinataires de l'Enveloppe mise à jour",
-              duration: 3000,
-              position: "bottom"
+            console.info("Mise à jour des données par destinataire");
+            this.nextAddRecipientTabs(validTabs, -1);
+            this.events.subscribe("AllTabsAdded", response => {
+              loader.dismiss();
+              let toast = this.toastCtrl.create({
+                message: "Destinataires de l'Enveloppe mise à jour",
+                duration: 3000,
+                position: "bottom"
+              });
+              toast.present();
+              resolve(true);
             });
-            toast.present();
-            resolve(true);
           }, error => {
             loader.dismiss();
             console.log("Erreur de mise à jour des destinataires", response);
@@ -420,6 +433,7 @@ export class SmavieMobilitePage {
       })
     })
   }
+  /* ==== NON UTILISE =====
   envelopUpdateTabs(envelopeId) {
     return new Promise((resolve, reject) => {
       let loader = this.loadingCtrl.create({
@@ -531,6 +545,8 @@ export class SmavieMobilitePage {
       })
     });
   }
+  */
+
   sendEnvelopWithData(envelopeId) {
     return new Promise((resolve, reject) => {
       let loader = this.loadingCtrl.create({
@@ -800,7 +816,37 @@ export class SmavieMobilitePage {
       })
     });
   }
-  // API : Mise à jour d'un destinataire
+  // API : boucle d'ajout des champs pour un destinataire
+  nextAddRecipientTabs(roles, idx) {
+    idx = idx + 1;
+    if (roles.length > idx) {
+      //console.log("RECIPIENT", idx, this.envelopeRecipients[idx]);
+      let tabs = roles[idx]['tabs'];
+      let i = roles[idx]['recipientId'];
+      let role = roles[idx]['roleName'];
+      this.addRecipientTabs(roles, idx, i, tabs, role);
+    } else {
+      //console.log("UPDATE FINISHED");
+      this.events.publish("AllTabsAdded", true);
+    }
+  }
+  // API : Ajout des champs pour un destinataire
+  addRecipientTabs(roles, idx, recipientId, tabs, role) {
+    let loader = this.loadingCtrl.create({
+      content: "DocuSign : mise à jour des données pour le rôle " + role,
+    });
+    loader.present();
+    this.docuSign.addRecipientsTabs(this.signSend['envelopeId'], roles[idx]['recipientId'], tabs).then(response => {
+      //console.log(response);
+      loader.dismiss();
+      this.nextAddRecipientTabs(roles, idx);
+    }, error => {
+      loader.dismiss();
+      console.error(error);
+    })
+  }
+
+  /* ===== NON UTILISE ===== API : Mise à jour d'un destinataire
   nextUpdateRecipientTabs(idx) {
     idx = idx + 1;
     if (this.envelopeRecipients.length > idx) {
@@ -818,7 +864,7 @@ export class SmavieMobilitePage {
       this.events.publish("AllTabsUpdated", true);
     }
   }
-  // API : Mise à jour des champs pour un destinataire
+  // ===== NON UTILISE =====  API : Mise à jour des champs pour un destinataire
   updateRecipientTabs(idx, recipientId, tabs, role) {
     let loader = this.loadingCtrl.create({
       content: "DocuSign : mise à jour des données pour le rôle " + role,
@@ -833,6 +879,9 @@ export class SmavieMobilitePage {
       console.error(error);
     })
   }
+  */
+
+
 
   // API : Supression des pages inutiles
   nextUpdatePages(envelopeId, idx) {

@@ -140,11 +140,14 @@ export class DocuSignServices {
         });
     }
     // ===== SIGN API ========================
-    sendSignEnv(dataSend) {
+    sendSignEnv(dataSend, fusion?) {
         return new Promise((resolve, reject) => {
             var api = "accounts/{account}/envelopes"
             api = api.replace("{account}", this.account);
             let url = this.rootApi + "/" + api;
+            if (fusion) {
+                url = url + "?merge_roles_on_draft=true";
+            }
             this.options.method = RequestMethod.Post;
             this.options.responseType = ResponseContentType.Json;
             this.options.body = dataSend;
@@ -253,6 +256,31 @@ export class DocuSignServices {
                 this.options.method = RequestMethod.Post;
                 this.options.responseType = ResponseContentType.Json;
                 this.options.body = recipientsList;
+                this.http.request(url, this.options)
+                    .subscribe(data => {
+                        resolve(data);
+                    }, error => {
+                        console.log(error);
+                        reject(error);
+                    });
+            } else {
+                resolve({ "reason": "Nothing to add" });
+            }
+        });
+    }
+    addRecipientsTabs(envelopeId, recipientId, tabsList) {
+        // DELETE v2/accounts/{accountId}/envelopes/{envelopeId}/recipients
+        console.log("Tab list to add to recipientId:", recipientId, tabsList)
+        return new Promise((resolve, reject) => {
+            if (Object.keys(tabsList).length > 0) {
+                var api = "accounts/{accountId}/envelopes/{envelopeId}/recipients/{recipientId}/tabs";
+                api = api.replace("{accountId}", this.account);
+                api = api.replace("{envelopeId}", envelopeId);
+                api = api.replace("{recipientId}", recipientId);
+                let url = this.rootApi + "/" + api;
+                this.options.method = RequestMethod.Post;
+                this.options.responseType = ResponseContentType.Json;
+                this.options.body = tabsList;
                 this.http.request(url, this.options)
                     .subscribe(data => {
                         resolve(data);
