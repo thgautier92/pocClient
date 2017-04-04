@@ -664,6 +664,7 @@ export class SmavieMobilitePage {
   readEnvelope(envelopId) {
     this.docuSign.senderSignEnv(envelopId, {}).then(response => {
       console.info("Url sender view", response);
+      this.winCtrl.openWin(response['url']);
     }, error => {
       console.error(error);
     });

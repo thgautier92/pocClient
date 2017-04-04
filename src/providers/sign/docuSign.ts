@@ -704,17 +704,17 @@ export class DocuSignServices {
         });
 
     }
-    createRole(templateId, role) {
+    createRole(templateId, type, role) {
         // POST /v2/accounts/{accountId}/templates/{templateId}/recipients
         return new Promise((resolve, reject) => {
-            var api = "accounts/{account}/templates/#templateId#/recipients"
+            var api = "accounts/{account}/templates/{templateId}/recipients"
             api = api.replace("{account}", this.account);
-            api = api.replace("#templateId#", templateId);
+            api = api.replace("{templateId}", templateId);
             let url = this.rootApi + "/" + api;
             this.options.method = RequestMethod.Post;
             this.options.responseType = ResponseContentType.Json;
             this.options.body = {
-                "inPersonSigners": [
+                type: [
                     { "recipientId": "123", "roleName": role }
                 ]
             };

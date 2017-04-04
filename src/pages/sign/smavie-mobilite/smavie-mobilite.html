@@ -34,8 +34,8 @@
             <ion-col>{{statusCode[item.status]}}</ion-col>
             <ion-col>{{item.statusDateTime | date:'dd/MM/yyyy, HH:mm:ss'}}</ion-col>
             <ion-col>
-              <button ion-button clear>Poursuivre</button>
-              <button ion-button clear (click)="envelopDocuments(item.envelopeId)">Consulter</button>
+              <button ion-button clear (click)="readEnvelope(item.envelopeId)">Poursuivre</button>
+              <button ion-button clear (click)="readEnvelope(item.envelopeId)">Consulter</button>
               <button ion-button clear color="danger" (click)="deleteEnvelop(idx)">Supprimer</button>
             </ion-col>
           </ion-row>
