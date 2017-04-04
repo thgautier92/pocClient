@@ -253,7 +253,15 @@ export class SmavieMobilitePage {
               this.envelopGetRecipientSent(this.signSend['envelopeId']);
               this.msg[this.msg.length - 1].status = "Terminé";
               this.msg.push({ step: "end", msg: "Signature prête", dt: new Date(), status: "Terminé" });
-              this.content.scrollTo(0, 500, 200);
+              let toast = this.toastCtrl.create({
+                message: 'Adhésion prête pour signature..',
+                duration: 4000,
+                position: 'middle'
+              });
+              toast.onDidDismiss(() => {
+                this.goNext();
+              });
+              toast.present();
             }, error => { })
           }, error => { })
         }, error => {
@@ -653,6 +661,13 @@ export class SmavieMobilitePage {
   /* ======Opérations faites par le client ============
   
   ===================================================*/
+  readEnvelope(envelopId) {
+    this.docuSign.senderSignEnv(envelopId, {}).then(response => {
+      console.info("Url sender view", response);
+    }, error => {
+      console.error(error);
+    });
+  }
   envelopeReorderProcess(envelopId, recipients) {
     let loader = this.loadingCtrl.create({
       content: "DocuSign : Mise à jour du processus de signature...",

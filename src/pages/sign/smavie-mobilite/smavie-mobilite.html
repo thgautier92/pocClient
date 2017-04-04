@@ -156,17 +156,21 @@
                 <ion-icon name="send"></ion-icon>
                 Valider
               </button>
+              <button *ngIf="signSend['envelopeId']" ion-button outline item-right icon-left color="light" (click)="readEnvelope(signSend['envelopeId'])">
+                <ion-icon name="eye"></ion-icon>
+                Voir les documents
+              </button>
             </ion-item>
           </ion-card-header>
           <ion-card-content>
             <ion-list *ngIf="signSend['envelopeId']">
               <ion-item>
                 <ion-icon name="mail" item-left></ion-icon>
-                <span class="selectable">{{signSend['envelopeId']}}</span>
+                <div class="selectable">{{signSend['envelopeId']}}</div>
               </ion-item>
             </ion-list>
-            <ion-list *ngIf="msg">
-              <ion-item-divider color="primary" no-padding>Suivi des opérations de préparation de la signature</ion-item-divider>
+            <ion-list *ngIf="msg" padding>
+              <ion-item-divider color="ligth" no-padding>Suivi des opérations de préparation de la signature</ion-item-divider>
               <ion-item *ngFor="let item of msg">
                 <h4>{{item.msg}}</h4>
                 <ion-badge item-right>{{item.status}}</ion-badge>
@@ -180,7 +184,7 @@
     <!-- Slide Clients -->
     <ion-slide no-padding>
       <ion-toolbar>
-        <ion-title>Signatures réalisées par le ou les clients</ion-title>
+        <ion-title>Signature des adhésions</ion-title>
         <ion-buttons end>
           <button ion-button color="primary" (click)="goPrevious()"><ion-icon name="arrow-dropleft"></ion-icon>&nbsp;Conseiller</button>
         </ion-buttons>
@@ -211,8 +215,8 @@
             </h2>
             <ion-list no-padding>
               <ion-item>
-                <button ion-button icon-left small round color="primary" (click)="envelopeReorderProcess(signSend[
-                'envelopeId'],envelopeRecipientsSent)"><ion-icon name="funnel"></ion-icon>Optimisation du processus</button>
+                <!--<button ion-button icon-left small round color="primary" (click)="envelopeReorderProcess(signSend[
+                'envelopeId'],envelopeRecipientsSent)"><ion-icon name="funnel"></ion-icon>Optimisation du processus</button>-->
               </ion-item>
               <div *ngFor="let s of (envelopeRecipientsSent | keysAndFilter: 'recipientCount,currentRoutingOrder')">
                 <div *ngIf="s.value.length>0">
