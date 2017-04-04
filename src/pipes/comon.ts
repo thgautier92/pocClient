@@ -101,7 +101,7 @@ export class filterByPipe implements PipeTransform {
   transform(array: Array<string>, field: string, value?: string): Array<string> {
     let ret = array;
     if (value) {
-      ret = array.filter(array => array[field] == value);
+      ret = array.filter(item => item[field] == value);
     }
     return ret;
   }

@@ -21,19 +21,22 @@
       <ion-content>
         <button ion-button color="primary" (click)="goNew()"><ion-icon name="mail-open"></ion-icon>&nbsp;Créer une enveloppe</button>
         <ion-grid>
-          <ion-row class="rowHeader">
+          <ion-row class="rowHeader" (click)="getStoredEnvelopes()">
             <ion-col>Enveloppe N°</ion-col>
             <ion-col>Status</ion-col>
             <ion-col>Le</ion-col>
             <ion-col>Actions</ion-col>
           </ion-row>
-          <ion-row *ngFor="let item of storedEnvelopes" class="rowSmall">
-            <ion-col class="rowXSmall selectable">{{item.envelopeId}}</ion-col>
+          <ion-row *ngFor="let item of storedEnvelopes,let idx=index" class="rowSmall">
+            <ion-col class="rowXSmall selectable">
+              {{idx}} - {{item.envelopeId}}
+            </ion-col>
             <ion-col>{{statusCode[item.status]}}</ion-col>
             <ion-col>{{item.statusDateTime | date:'dd/MM/yyyy, HH:mm:ss'}}</ion-col>
             <ion-col>
               <button ion-button clear>Poursuivre</button>
               <button ion-button clear (click)="envelopDocuments(item.envelopeId)">Consulter</button>
+              <button ion-button clear color="danger" (click)="deleteEnvelop(idx)">Supprimer</button>
             </ion-col>
           </ion-row>
         </ion-grid>
@@ -71,7 +74,7 @@
                     <ion-list no-padding no-lines>
                       <ion-item no-padding class="smallList" *ngFor="let d of m.templateDocuments">
                         <h3 ion-text color="primary">{{d.order}}. {{d.documentId}}-{{d.name}}</h3>
-                        <ion-badge item-right>{{d.pages}}</ion-badge>
+                        <ion-badge item-right>{{d.pages}} pages</ion-badge>
                       </ion-item>
                     </ion-list>
                   </ion-item>
@@ -116,7 +119,7 @@
                       <ion-col col-3>
                         <ion-item no-padding>
                           <button ion-button outline item-right icon-left icon-only (click)="selectRole(cl)">
-                                <ion-icon name="star"></ion-icon>
+                                <ion-icon name="search"></ion-icon>
                               </button>
                         </ion-item>
                       </ion-col>
@@ -130,6 +133,10 @@
                   </ion-col>
                 </ion-row>
               </ion-grid>
+              <ion-item>
+                <ion-label color="danger"> Optimiser le nombre de signatures</ion-label>
+                <ion-toggle [(ngModel)]="fusionRole"></ion-toggle>
+              </ion-item>
             </div>
           </ion-card-content>
         </ion-card>
@@ -141,7 +148,7 @@
           </ion-card-header>
           <ion-card-content></ion-card-content>
         </ion-card>
-        <ion-card>
+        <ion-card id="suiviSign">
           <ion-card-header>
             <ion-item color="primary">
               Etape 4 : Création de l'enveloppe
@@ -160,13 +167,14 @@
             </ion-list>
             <ion-list *ngIf="msg">
               <ion-item-divider color="primary" no-padding>Suivi des opérations de préparation de la signature</ion-item-divider>
-              <ion-item no-padding *ngFor="let item of msg">
+              <ion-item *ngFor="let item of msg">
                 <h4>{{item.msg}}</h4>
                 <ion-badge item-right>{{item.status}}</ion-badge>
               </ion-item>
             </ion-list>
           </ion-card-content>
         </ion-card>
+        <ion-row></ion-row>
       </ion-content>
     </ion-slide>
     <!-- Slide Clients -->

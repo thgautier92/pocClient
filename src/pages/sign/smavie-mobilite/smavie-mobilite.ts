@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { Platform, NavController, NavParams, Events, AlertController, LoadingController, ActionSheetController, Slides, PopoverController, ToastController } from 'ionic-angular';
+import { Platform, Content, NavController, NavParams, Events, AlertController, LoadingController, ActionSheetController, Slides, PopoverController, ToastController } from 'ionic-angular';
 import { DocuSignServices } from '../../../providers/sign/docuSign';
 import { CouchDbServices } from '../../../providers/couch/couch';
 import { WinExternal } from '../../../providers/win-external';
@@ -20,9 +20,12 @@ declare var Chance: any;
 })
 export class SmavieMobilitePage {
   @ViewChild(Slides) slides: Slides;
+  @ViewChild(Content) content: Content;
+
   params: any = null;                 // Paramétres de connexion à COUCHDB
   storedEnvelopes: any = []           // Liste des enveloppes stockées localement
   selEnvelop: any = null;             // Envelope séléctionnées à partir du stockage local
+  fusionRole: boolean = false;        // Flag de fusion des multi-roles par personne
 
   statusCode: any = null              // Liste des status d'enveloppes, traduction incluse
   signSend: any = null;               // Structure de stockage des données anvoyées à la signature
@@ -35,6 +38,7 @@ export class SmavieMobilitePage {
   process: any = null;                // Processus d'adhesion
   pagesToDelete: any = null           // Liste des pages inutiles, à trier en ordre inverse 
 
+  lstEnvelop: any = null              // Liste des enveloppes stockés dans DOCUSIGN
   lstModels: any = null               // Liste des modèles de signature DocuSign
   docsModel: any = null               // Liste des documents contenus dans le(s) modèle(s)
   envelopeRecipients: any = null      // Liste des destinataires de l'enveloppe
@@ -89,9 +93,16 @@ export class SmavieMobilitePage {
       this.params = null;
       this.getUseCase();
     })
-    this.getStoredEnvelopes();
+    this.getLstEnvelopes().then(response => {
+      this.getStoredEnvelopes();
+
+    }, error => {
+      this.getStoredEnvelopes();
+    });
+
     this.newSign();
   };
+  // ===== Navigation ================
   newSign() {
     this.signSend = {
       "useCase": null,
@@ -204,8 +215,18 @@ export class SmavieMobilitePage {
       });
     });
   }
-
-
+  getLstEnvelopes() {
+    return new Promise((resolve, reject) => {
+      this.docuSign.getListEnv(2017, 1, 0).then(response => {
+        this.lstEnvelop = response['folderItems'];
+        console.info('Liste des enveloppes stockées sur DS', this.lstEnvelop);
+        resolve(true);
+      }, error => {
+        this.lstEnvelop = [];
+        reject(false);
+      });
+    });
+  }
   /* ====== Etapes pour l'envoi de l'enveloppe =====
     1. Création de l'enveloppe à partir des modèles
     2. Supression des pages inutiles
@@ -213,6 +234,7 @@ export class SmavieMobilitePage {
     4. Affectation des personnes aux rôles
   ==================================================*/
   sendEnvelop() {
+    this.content.scrollTo(0, 500, 200);
     this.msg = [];
     if (this.signSend['docModel']) {
       this.msg.push({ step: "create", msg: "Création de l'enveloppe à partir des modèles", dt: new Date(), status: "En cours" })
@@ -231,6 +253,7 @@ export class SmavieMobilitePage {
               this.envelopGetRecipientSent(this.signSend['envelopeId']);
               this.msg[this.msg.length - 1].status = "Terminé";
               this.msg.push({ step: "end", msg: "Signature prête", dt: new Date(), status: "Terminé" });
+              this.content.scrollTo(0, 500, 200);
             }, error => { })
           }, error => { })
         }, error => {
@@ -311,10 +334,11 @@ export class SmavieMobilitePage {
       this.getAllRecipientsWithTabs(envelopeId).then(response => {
         let lstRoles = response;
         this.docuSign.removeRecipientsFormDocEnv(envelopeId, { "inPersonSigners": response }).then(response => {
-          console.info("Suppression des destinataires de l'enveloppe : OK");
+          console.info("Suppression de tous les destinataires de l'enveloppe : OK");
           let lstIdRoleToSuppress = [];
           let roleFusion = new groupBy().transform(lstRoles, "roleName");
           //console.log(roleFusion);
+          // == Fusion des rôles en double dans l'enveloppe
           for (var key in roleFusion) {
             if (roleFusion[key].length > 1) {
               //console.debug("Fusion des champs pour le role ", key);
@@ -335,11 +359,39 @@ export class SmavieMobilitePage {
               }
             }
           }
+          // == Fusion des multi-roles par destinataires
+          if (this.fusionRole) {
+            for (var c in this.clients) {
+              let r = this.clients[c]['roles'];
+              if (r.length > 1) {
+                // fusion des roles
+                let uniqueRole = roleFusion[r[0]][0];
+                let tabDest = uniqueRole['tabs'];
+                console.log("Unique Role", uniqueRole, tabDest);
+                for (let i = 1; i < r.length; i++) {
+                  console.log("==>", r[i]);
+                  let t = roleFusion[r[i]][0]['tabs'];
+                  for (var typeTab in t) {
+                    //console.debug("Fusion pour le type ", typeTab);
+                    if (!tabDest.hasOwnProperty(typeTab)) {
+                      tabDest[typeTab] = [];
+                    }
+                    let result = tabDest[typeTab].concat(t[typeTab]);
+                    tabDest[typeTab] = result;
+                    roleFusion[r[i]][0]['tabs'] = {};
+                  }
+                  roleFusion[r[0]][0]['tabs'] = tabDest;
+                  lstIdRoleToSuppress.push(roleFusion[r[i]][0]['recipientId'])
+                }
+              }
+            }
+          }
           console.info("Résultat de la fusion des roles : ", roleFusion);
           console.info("Destinataires à supprimer : ", lstIdRoleToSuppress);
           console.info("Mise à jour des destinataires : ", lstRoles);
+
+          // == Suppression du destinataires 
           for (var d in lstRoles) {
-            // Suppression du destinataires 
             lstIdRoleToSuppress.forEach(elt => {
               try {
                 if (elt == lstRoles[d]['recipientId']) {
@@ -349,18 +401,19 @@ export class SmavieMobilitePage {
               } catch (e) { }
             });
           }
-          // Mise à jour des champs et de l'ordre de signature
+          // == Mise à jour des champs et de l'ordre de signature
           let validRoles = [];
           let validTabs = [];
           for (var d in lstRoles) {
             let roleMaj = lstRoles[d]['roleName'];
-            console.debug("Mise à jour des champs pour le role ", roleMaj, lstRoles[d]);
+            //console.debug("Mise à jour des champs pour le role ", roleMaj, lstRoles[d]);
+            console.debug("Mise à jour des champs pour le role ", roleMaj);
             lstRoles[d]['tabs'] = roleFusion[roleMaj][0]['tabs'];
             // Mise àjour de l'ordre de signature paramétré ===
             lstRoles[d]['routingOrder'] = this.process.filter(item => item['role'] == roleMaj)[0]['ordre'];
             // Affectation des clients aux roles
             let c = this.clients.filter(item => item.roles.indexOf(roleMaj) >= 0)
-            console.info("Client role trouvé :", c);
+            //console.info("Client role trouvé :", c);
             if (c.length > 0) {
               lstRoles[d]['signerEmail'] = c[0]['email'];
               lstRoles[d]['signerName'] = c[0]['cum_identite'];
@@ -377,7 +430,6 @@ export class SmavieMobilitePage {
                   }
                 }
               }
-              //lstRoles[d]['tabs'] = tabsData;
               delete lstRoles[d]['tabs'];
               validRoles.push(lstRoles[d]);
               validTabs.push({ "recipientId": lstRoles[d]['recipientId'], "roleName": lstRoles[d]['roleName'], "tabs": tabsData })
@@ -545,13 +597,12 @@ export class SmavieMobilitePage {
       })
     });
   }
-  */
+  ==========================*/
 
   sendEnvelopWithData(envelopeId) {
     return new Promise((resolve, reject) => {
       let loader = this.loadingCtrl.create({
         content: "DocuSign : Envoi de l'enveloppe...",
-        duration: 10000
       });
       loader.present();
       this.docuSign.sendEnv(envelopeId).then(response => {
@@ -784,6 +835,7 @@ export class SmavieMobilitePage {
       loader.dismiss();
     })
   }
+
   // =================================================
   // Lecture des destinataires et des champs associés
   getAllRecipientsWithTabs(envelopeId) {
@@ -950,5 +1002,14 @@ export class SmavieMobilitePage {
     }, error => {
       this.storedEnvelopes = [];
     });
+  }
+  deleteEnvelop(id) {
+    console.info("Delete HISTORY at position ", id);
+    this.docuSign.delStoreEnvelopes(id).then(data => {
+      console.info("HISTORY updated");
+      this.storedEnvelopes = data;
+    }, error => {
+      this.storedEnvelopes = [];
+    })
   }
 }

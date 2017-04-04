@@ -296,7 +296,7 @@ export class DocuSignServices {
 
     removeRecipientsFormDocEnv(envelopeId, recipientsList) {
         // DELETE v2/accounts/{accountId}/envelopes/{envelopeId}/recipients
-        console.log("Recipients list to delete", recipientsList, Object.keys(recipientsList).length)
+        //console.log("Recipients list to delete", recipientsList, Object.keys(recipientsList).length)
         return new Promise((resolve, reject) => {
             if (Object.keys(recipientsList).length > 0) {
                 var api = "accounts/{accountId}/envelopes/{envelopeId}/recipients";
@@ -766,6 +766,20 @@ export class DocuSignServices {
             console.info("New Envelopes ID stored on local", envelop);
         }, error => {
 
+        });
+    }
+    delStoreEnvelopes(id) {
+        return new Promise((resolve, reject) => {
+            this.getStoredEnvelopes().then(data => {
+                console.log("Envelopes stored on local", data);
+                let d: any = data;
+                d.splice(id, 1);
+                this.storage.set('envelopes', d);
+                console.info("Envelopes ID deleted on local", d);
+                resolve(d);
+            }, error => {
+                reject([]);
+            });
         });
     }
     getStoredEnvelopes() {
