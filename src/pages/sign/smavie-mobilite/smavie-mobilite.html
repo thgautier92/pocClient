@@ -22,21 +22,21 @@
         <button ion-button color="primary" (click)="goNew()"><ion-icon name="mail-open"></ion-icon>&nbsp;Créer une enveloppe</button>
         <ion-grid>
           <ion-row class="rowHeader" (click)="getStoredEnvelopes()">
-            <ion-col>Enveloppe N°</ion-col>
-            <ion-col>Status</ion-col>
-            <ion-col>Le</ion-col>
-            <ion-col>Actions</ion-col>
+            <ion-col width-30>Enveloppe N°</ion-col>
+            <ion-col width-10>Status</ion-col>
+            <ion-col width-20>Le</ion-col>
+            <ion-col width-40>Actions</ion-col>
           </ion-row>
           <ion-row *ngFor="let item of storedEnvelopes,let idx=index" class="rowSmall">
-            <ion-col class="rowXSmall selectable">
-              {{idx}} - {{item.envelopeId}}
+            <ion-col class="rowXSmall selectable" width-30>
+              {{idx+1}} - {{item.envelopeId}}
             </ion-col>
-            <ion-col>{{statusCode[item.status]}}</ion-col>
-            <ion-col>{{item.statusDateTime | date:'dd/MM/yyyy, HH:mm:ss'}}</ion-col>
-            <ion-col>
+            <ion-col width-10>{{statusCode[item.status]}}</ion-col>
+            <ion-col width-20>{{item.statusDateTime | date:'dd/MM/yyyy, HH:mm:ss'}}</ion-col>
+            <ion-col width-40>
               <button ion-button clear (click)="readEnvelope(item.envelopeId)">Poursuivre</button>
               <button ion-button clear (click)="readEnvelope(item.envelopeId)">Consulter</button>
-              <button ion-button clear color="danger" (click)="deleteEnvelop(idx)">Supprimer</button>
+              <button ion-button clear small color="danger" (click)="deleteEnvelop(idx)">Supprimer</button>
             </ion-col>
           </ion-row>
         </ion-grid>
