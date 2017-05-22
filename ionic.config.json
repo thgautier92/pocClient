@@ -1,8 +1,6 @@
 {
   "name": "pocClient",
   "app_id": "fr.smabtp.pocClient",
-  "v2": true,
-  "typescript": true,
   "proxies": [
     {
       "path": "/docuSign",
@@ -24,5 +22,6 @@
       "path": "/mfp",
       "proxyUrl": "http://gautiersa.fr:8080/mfp"
     }
-  ]
+  ],
+  "type": "ionic-angular"
 }
